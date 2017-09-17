@@ -979,16 +979,16 @@ equal_range 3: 3
 
 ## Print
 
-<sub>template <<code>typename Printer</code>></sub><br>
+<sub>template <<code>bool Verbose = false, typename Printer</code>></sub><br>
 <a name="print1" href="#print1">#</a> `void` **print** (<code>Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename Printer</code>></sub><br>
+<sub>template <<code>bool Verbose = false, typename Printer</code>></sub><br>
 <a name="print2" href="#print2">#</a> `void` **print** ([<code>const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename Printer, typename T</code>></sub><br>
+<sub>template <<code>bool Verbose = false, typename Printer, typename T</code>></sub><br>
 <a name="print3" href="#print3">#</a> `void` **print** (<code>const T &<b>tr</b>, Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename Printer, typename T</code>></sub><br>
+<sub>template <<code>bool Verbose = false, typename Printer, typename T</code>></sub><br>
 <a name="print4" href="#print4">#</a> `void` **print** (<code>const T &<b>tr</b></code> [<code>, const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
-Prints the tree or subtree to the ***stdout***.
+Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, aditional internal tree information is also displayed.
 
 **<u>Note</u>:** `Printer` should print an element to the ***stdout*** without the *new line* character.
 
