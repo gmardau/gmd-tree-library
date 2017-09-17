@@ -1,0 +1,8 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{ "taskName": "Compile examples", "type": "shell", "group": "build", "command": "make clean all -C docs/examples" },
+		{ "taskName": "Do tests",         "type": "shell", "group": "test",  "command": "make tests -C test && test/test" },
+		{ "taskName": "Compile tests",    "type": "shell", "group": "test",  "command": "make tests -C test" },
+		{ "taskName": "Run tests",        "type": "shell", "group": "test",  "command": "test/test" } ]
+}
