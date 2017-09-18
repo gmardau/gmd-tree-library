@@ -687,7 +687,7 @@ struct binary_tree_base
 		int side; _Node *place = _place(side, key);
 		if(side == -1) return {place, false};
 		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
-			::std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
+			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
 	public:
@@ -698,7 +698,7 @@ struct binary_tree_base
 		int side; _Node *place = _place(side, ::std::move(key));
 		if(side == -1) return {place, false};
 		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
-			::std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
+			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
 	public:
@@ -1927,9 +1927,9 @@ struct binary_tree_base
 		if(_head._up == nullptr) { side = 0; return &_head; }
 		_Node *node = _head._up, *save = nullptr;
 		for( ; ; ) {
-			side = !_comparator(key, **node);
-			if(side) { save = node; if(node->_down[1]) node = node->_down[1]; else break; }
-			else     {              if(node->_down[0]) node = node->_down[0]; else break; } }
+			if(_comparator(key, **node))
+				 {              if(node->_down[0]) node = node->_down[0]; else { side = 0; break; } }
+			else { save = node; if(node->_down[1]) node = node->_down[1]; else { side = 1; break; } } }
 		if(save == nullptr) { side = 0; return node; }
 		if(_comparator(**save, key)) return node;
 		side = -1; return save;
@@ -1944,9 +1944,9 @@ struct binary_tree_base
 		if(_head._up == nullptr) { side = 0; return &_head; }
 		const _Node *node = _head._up, *save = nullptr;
 		for( ; ; ) {
-			side = !_comparator(key, **node);
-			if(side) { save = node; if(node->_down[1]) node = node->_down[1]; else break; }
-			else     {              if(node->_down[0]) node = node->_down[0]; else break; } }
+			if(_comparator(key, **node))
+				 {              if(node->_down[0]) node = node->_down[0]; else { side = 0; break; } }
+			else { save = node; if(node->_down[1]) node = node->_down[1]; else { side = 1; break; } } }
 		if(save == nullptr) { side = 0; return node; }
 		if(_comparator(**save, key)) return node;
 		side = -1; return save;
@@ -1959,9 +1959,9 @@ struct binary_tree_base
 	{
 		if(_head._up == nullptr) { side = 0; return &_head; }
 		for(_Node *node = _head._up; ; ) {
-			side = !_comparator(key, **node);
-			if(side) { if(node->_down[1]) node = node->_down[1]; else return node; }
-			else     { if(node->_down[0]) node = node->_down[0]; else return node; } }
+			if(_comparator(key, **node))
+				 { if(node->_down[0]) node = node->_down[0]; else { side = 0; return node; } }
+			else { if(node->_down[1]) node = node->_down[1]; else { side = 1; return node; } } }
 	}
 
 	protected:
@@ -1972,9 +1972,9 @@ struct binary_tree_base
 	{
 		if(_head._up == nullptr) { side = 0; return &_head; }
 		for(const _Node *node = _head._up; ; ) {
-			side = !_comparator(key, **node);
-			if(side) { if(node->_down[1]) node = node->_down[1]; else return node; }
-			else     { if(node->_down[0]) node = node->_down[0]; else return node; } }
+			if(_comparator(key, **node))
+				 { if(node->_down[0]) node = node->_down[0]; else { side = 0; return node; } }
+			else { if(node->_down[1]) node = node->_down[1]; else { side = 1; return node; } } }
 	}
 
 	protected:

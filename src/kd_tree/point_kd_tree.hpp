@@ -94,6 +94,11 @@ struct point_kd_tree_node<Key, Value, Info, SetMap, false>
 	template <typename Node_Other>
 	point_kd_tree_node (_Base *up, Node_Other *) : _Base(up) {}
 	/* === Constructor & Destructor === */
+
+	/* === Print === */
+	private:
+	inline void print () const {}
+	/* === Print === */
 };
 
 template <typename Key, typename Value, typename Info, bool SetMap>
@@ -128,6 +133,11 @@ struct point_kd_tree_node<Key, Value, Info, SetMap, true>
 	template <typename Node_Other>
 	point_kd_tree_node (_Base *up, Node_Other *other) : _Base(up), _weight(other->_weight) {}
 	/* === Constructor & Destructor === */
+
+	/* === Print === */
+	private:
+	inline void print () const { printf("-%lu", _weight); }
+	/* === Print === */
 };
 
 template <ushort K, typename Node, bool Multi, typename Comparator, typename Equal, typename Allocator>
@@ -146,8 +156,8 @@ struct point_kd_tree_base
 	using  _Traversor  = point_kd_tree_traversor<false, Node>;
 	using _CTraversor  = point_kd_tree_traversor<true , Node>;
 
-	using  _Range = kd_tree_range<false, Node, Allocator>;
-	using _CRange = kd_tree_range<true , Node, Allocator>;
+	using  _Range = point_kd_tree_range<false, Node, Allocator>;
+	using _CRange = point_kd_tree_range<true , Node, Allocator>;
 
 	using _Iteration = point_kd_tree_iteration;
 
@@ -164,10 +174,10 @@ struct point_kd_tree_base
 	using     key_compare = Comparator;
 	using       key_equal = Equal;
 	using  allocator_type = Allocator;
-	using       reference =       value_type&;
-	using const_reference = const value_type&;
-	using         pointer = typename _ATraits::      pointer;
-	using   const_pointer = typename _ATraits::const_pointer;
+	using       reference =       value_type &;
+	using const_reference = const value_type &;
+	using         pointer =       value_type *;
+	using   const_pointer = const value_type *;
 
 	using       traversor =  _Traversor; using       iterator =  _Traversor;
 	using const_traversor = _CTraversor; using const_iterator = _CTraversor;
@@ -181,8 +191,8 @@ struct point_kd_tree_base
 	Equal _equal;
 	_Allocator _allocator;
 	_Allocator_Pointer _allocator_pointer;
-	_Node _head = _Node(nullptr);
 	size_t _size = 0;
+	_Node _head = _Node(nullptr);
 	constexpr static double _factor = 0.2;
 	/* === Variables === */
 
@@ -499,7 +509,8 @@ struct point_kd_tree_base
 	inline Comparator key_comp () const { return _comparator; }
 
 	public:
-	template <typename = ::std::enable_if_t<Node::_SetMap>> struct Info_Comparator {
+	struct Info_Comparator {
+		template <ushort, typename, bool, typename, typename, typename> friend struct point_kd_tree_base;
 		private: Comparator _comparator; Info_Comparator (Comparator c) : _comparator(c) {}
 		public: bool operator() (const typename Node::_Info &v1, const typename Node::_Info &v2) const {
 			return _comparator(v1.first, v2.first); } };
@@ -508,7 +519,7 @@ struct point_kd_tree_base
 	template <bool _ = !Node::_SetMap> inline ::std::enable_if_t<_, Comparator>
 	value_comp () const { return _comparator; }
 
-	template <bool _ =  Node::_SetMap> inline ::std::enable_if_t<_, Info_Comparator<>>
+	template <bool _ =  Node::_SetMap> inline ::std::enable_if_t<_, Info_Comparator>
 	value_comp () const { return Info_Comparator(_comparator); }
 
 	public:
@@ -522,7 +533,8 @@ struct point_kd_tree_base
 	inline Equal key_eq () const { return _equal; }
 
 	public:
-	template <typename = ::std::enable_if_t<Node::_SetMap>> struct Info_Equal {
+	struct Info_Equal {
+		template <ushort, typename, bool, typename, typename, typename> friend struct point_kd_tree_base;
 		private: Equal _equal; Info_Equal (Equal c) : _equal(c) {}
 		public: bool operator() (const typename Node::_Info &v1, const typename Node::_Info &v2) const {
 			return _equal(v1.first, v2.first); } };
@@ -531,7 +543,7 @@ struct point_kd_tree_base
 	template <bool _ = !Node::_SetMap> inline ::std::enable_if_t<_, Equal>
 	value_eq () const { return _equal; }
 
-	template <bool _ =  Node::_SetMap> inline ::std::enable_if_t<_, Info_Equal<>>
+	template <bool _ =  Node::_SetMap> inline ::std::enable_if_t<_, Info_Equal>
 	value_eq () const { return Info_Equal(_equal); }
 
 	public:
@@ -624,18 +636,6 @@ struct point_kd_tree_base
 	{ return _insert(::std::move(info)).first; }
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<!Multi && _is_traversor_v<TOut>, ::std::pair<TOut, bool>>
-	insert (const TIn &tr)
-	{ return insert<Replace, TOut>(*tr); }
-
-	public:
-	template <typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut>, TOut>
-	insert (const TIn &tr)
-	{ return insert<TOut>(*tr); }
-
-	public:
 	template <bool Replace = false, typename T1, typename T2>
 	::std::enable_if_t<!Multi && Replace == Replace, size_t>
 	insert (const T1 &first, const T2 &last)
@@ -715,13 +715,19 @@ struct point_kd_tree_base
 
 	/* === Erase === */
 	public:
-	void
+	template <bool _ = 0>
+	::std::enable_if_t<!Multi && _ == _, bool>
+	erase (const typename Node::_Key &key)
+	{ _Node *node = _find(key); if(node == &_head) return false; _erase_(node, true); return true; }
+
+	public:
+	template <bool _ = 0>
+	::std::enable_if_t<Multi && _ == _, size_t>
 	erase (const typename Node::_Key &key)
 	{
-		if(!Multi) { _Node *node = _find(key); if(node != &_head) _erase(node, true); }
-		else {
-			_Range r = _equal_range(key);
-			for(typename _Range::iterator it = r.begin(); it != r.end(); ++it) _erase(it.node(), true); }
+		_Range r = _equal_range(key);
+		for(typename _Range::iterator it = r.begin(); it != r.end(); ++it) _erase(it.node(), true);
+		return r.size();
 	}
 
 	public:
@@ -731,9 +737,13 @@ struct point_kd_tree_base
 	{ _erase(tr.node(), true); }
 
 	public:
-	inline void
+	inline size_t
 	erase (const ::std::initializer_list<typename Node::_Key> &il)
-	{ for(const typename Node::_Key *key = il.begin(); key != il.end(); ++key) erase(*key); }
+	{
+		size_t count = 0;
+		for(const typename Node::_Key *key = il.begin(); key != il.end(); ++key) count += erase(*key);
+		return count;
+	}
 	/* === Erase === */
 
 
@@ -954,7 +964,7 @@ struct point_kd_tree_base
 	at (const Key &key)
 	{
 		_Node *node = _find(key);
-		if(node == &_head) throw ::std::out_of_range("point_kd_tree_map");
+		if(node == &_head) throw ::std::out_of_range("point_kd_tree_map.at() out_of_range");
 		return node->value();
 	}
 
@@ -966,7 +976,7 @@ struct point_kd_tree_base
 	const
 	{
 		const _Node *node = _find(key);
-		if(node == &_head) throw ::std::out_of_range("point_kd_tree_map");
+		if(node == &_head) throw ::std::out_of_range("point_kd_tree_map.at() out_of_range");
 		return node->value();
 	}
 	/* === At === */
@@ -979,33 +989,16 @@ struct point_kd_tree_base
 	/* === Count === */
 	public:
 	template <typename Key>
-	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
-		size_t>
+	::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
 	count (const Key &key)
-	{ return _find(key) != &_head; }
+	{ return !Multi ? _find(key) != &_head : _count(key); }
 
 	public:
 	template <typename Key>
-	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
-		size_t>
+	::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
 	count (const Key &key)
 	const
-	{ return _find(key) != &_head; }
-
-	public:
-	template <typename Key>
-	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
-		size_t>
-	count (const Key &key)
-	{ return _count(key); }
-
-	public:
-	template <typename Key>
-	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
-		size_t>
-	count (const Key &key)
-	const
-	{ return _count(key); }
+	{ return !Multi ? _find(key) != &_head : _count(key); }
 	/* === Count === */
 
 
@@ -1118,7 +1111,7 @@ struct point_kd_tree_base
 	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key1> && std::is_same_v<typename Node::_Key, Key2>)
 							  || _is_transparent_v<Comparator, Key1>, _Range>
 	range_search (const Key1 &min, const Key2 &max)
-	{ _Range range(::std::sqrt(_size)); _range_search(range, min, max, 0, 0, _head._up); range._done(); return range; }
+	{ _Range range(::std::sqrt(_size)); _range_search(range, min, max, 0, 0, _head._up); return range; }
 
 	public:
 	template <typename Key1, typename Key2>
@@ -1126,7 +1119,7 @@ struct point_kd_tree_base
 							  || _is_transparent_v<Comparator, Key1>, _CRange>
 	range_search (const Key1 &min, const Key2 &max)
 	const
-	{ _CRange range(::std::sqrt(_size)); _range_search(range, min, max, 0, 0, _head._up); range._done(); return range; }
+	{ _CRange range(::std::sqrt(_size)); _range_search(range, min, max, 0, 0, _head._up); return range; }
 	/* === Range search === */
 	/* ############################## Lookup ############################### */
 	/* ##################################################################### */
@@ -1135,17 +1128,25 @@ struct point_kd_tree_base
 	/* ##################################################################### */
 	/* ############################### Print ############################### */
 	public:
-	template <typename Printer>             inline void
-	print (                   Printer &printer            ) const { if(_size > 0) _print(printer, 0, 0, 0, _head._up, 0); }
+	template <bool Verbose = false, typename Printer>
+	inline void
+	print (Printer &printer) const
+	{ if(_size > 0) _print<Verbose>(printer, 0, 0, 0, _head._up, 0); }
 
-	template <typename Printer>             inline void
-	print (             const Printer &printer = Printer()) const { if(_size > 0) _print(printer, 0, 0, 0, _head._up, 0); }
+	template <bool Verbose = false, typename Printer>
+	inline void
+	print (const Printer &printer = Printer()) const
+	{ if(_size > 0) _print<Verbose>(printer, 0, 0, 0, _head._up, 0); }
 
-	template <typename Printer, typename T> inline ::std::enable_if_t<_is_traversor_v<T>, void>
-	print (const T &tr,       Printer &printer            ) const { _print(printer, 0, 0, 0, tr.node(), _get_d(tr.node())); }
+	template <bool Verbose = false, typename Printer, typename T>
+	inline ::std::enable_if_t<_is_traversor_v<T>, void>
+	print (const T &tr, Printer &printer) const
+	{ _print<Verbose>(printer, 0, 0, 0, tr._node, _get_d(tr.node())); }
 
-	template <typename Printer, typename T> inline ::std::enable_if_t<_is_traversor_v<T>, void>
-	print (const T &tr, const Printer &printer = Printer()) const { _print(printer, 0, 0, 0, tr.node(), _get_d(tr.node())); }
+	template <bool Verbose = false, typename Printer, typename T>
+	inline ::std::enable_if_t<_is_traversor_v<T>, void>
+	print (const T &tr, const Printer &printer = Printer()) const
+	{ _print<Verbose>(printer, 0, 0, 0, tr._node, _get_d(tr.node())); }
 	/* ############################### Print ############################### */
 	/* ##################################################################### */
 
@@ -1729,10 +1730,10 @@ struct point_kd_tree_base
 		if(_head._up == nullptr) { side = 0; return &_head; }
 		_Node *node = _head._up;
 		for(ushort d = 0; ; d = (d + 1) % K) {
-			if(!Multi && _equal(**node, key)) { side = -1; return node; }
-			if(_comparator(d, **node, key))
-				 { if(node->_down[1] != nullptr) node = node->_down[1]; else { side = 1; return node; } }
-			else { if(node->_down[0] != nullptr) node = node->_down[0]; else { side = 0; return node; } } }
+			if(!Multi && _equal(key, **node)) { side = -1; return node; }
+			if(_comparator(d, key, **node))
+				 { if(node->_down[0] != nullptr) node = node->_down[0]; else { side = 0; return node; } }
+			else { if(node->_down[1] != nullptr) node = node->_down[1]; else { side = 1; return node; } } }
 	}
 
 	private:
@@ -1744,9 +1745,9 @@ struct point_kd_tree_base
 		const _Node *node = _head._up;
 		for(ushort d = 0; ; d = (d + 1) % K) {
 			if(!Multi && _equal(**node, key)) { side = -1; return node; }
-			if(_comparator(d, **node, key))
-				 { if(node->_down[1] != nullptr) node = node->_down[1]; else { side = 1; return node; } }
-			else { if(node->_down[0] != nullptr) node = node->_down[0]; else { side = 0; return node; } } }
+			if(_comparator(d, key, **node))
+				 { if(node->_down[0] != nullptr) node = node->_down[0]; else { side = 0; return node; } }
+			else { if(node->_down[1] != nullptr) node = node->_down[1]; else { side = 1; return node; } } }
 	}
 	/* === Place === */
 
@@ -1962,7 +1963,7 @@ struct point_kd_tree_base
 	void
 	_replace_node (_Node *node1, _Node *node2, const bool del)
 	{
-		_replace_weight(node1, node2);
+		if(Node::_Balanced) _replace_weight(node1, node2);
 		node2->_up = node1->_up;
 		node2->_down[0] = node1->_down[0];
 		node2->_down[1] = node1->_down[1];
@@ -2081,9 +2082,9 @@ struct point_kd_tree_base
 	_Node *
 	_construct_routine (_Node *node, _Node **nodes, ushort d, size_t first, size_t last)
 	{
-		size_t median = (first + last) >> 1;
 		:: std::sort(&nodes[first], &nodes[last + 1], [d, this](_Node *a, _Node *b) { return _comparator(d, **a, **b); });
-		for( ; median < last && !_comparator(d, **nodes[median], **nodes[median + 1]); ++median) {}
+		size_t median = (first + last + 1) >> 1;
+		for( ; median > first && !_comparator(d, **nodes[median - 1], **nodes[median]); --median) {}
 		nodes[median]->_up = node;
 		if(median != first) {
 			nodes[median]->_down[0] = _construct_routine<New>(nodes[median], nodes, (d + 1) % K, first, median - 1); }
@@ -2099,9 +2100,9 @@ struct point_kd_tree_base
 	_Node *
 	_construct_routine (_Node *node, _Node **nodes, ushort d, size_t first, size_t last)
 	{
-		size_t median = (first + last) >> 1;
 		:: std::sort(&nodes[first], &nodes[last + 1], [d, this](_Node *a, _Node *b) { return _comparator(d, **a, **b); });
-		for( ; median < last && !_comparator(d, **nodes[median], **nodes[median + 1]); ++median) {}
+		size_t median = (first + last + 1) >> 1;
+		for( ; median > first && !_comparator(d, **nodes[median - 1], **nodes[median]); --median) {}
 		nodes[median]->_up = node;
 		if(!New) nodes[median]->cast()->_weight = 0;
 		if(median != first) {
@@ -2129,7 +2130,7 @@ struct point_kd_tree_base
 	{
 		size_t count = 0;
 		_Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) ++count;
 		return count;
 	}
@@ -2142,7 +2143,7 @@ struct point_kd_tree_base
 	{
 		size_t count = 0;
 		const _Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) ++count;
 		return count;
 	}
@@ -2156,7 +2157,7 @@ struct point_kd_tree_base
 	_find (const Key &key)
 	{
 		_Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) return node;
 		return &_head;
 	}
@@ -2168,7 +2169,7 @@ struct point_kd_tree_base
 	const
 	{
 		const _Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) return node;
 		return &_head;
 	}
@@ -2183,9 +2184,9 @@ struct point_kd_tree_base
 	{
 		_Range range;
 		_Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) range._push(node);
-		range._done(); return range;
+		return range;
 	}
 
 	private:
@@ -2196,9 +2197,9 @@ struct point_kd_tree_base
 	{
 		_CRange range;
 		const _Node *node = _head._up;
-		for(ushort d = 0; node != nullptr; node = node->_down[_comparator(d, **node, key)], d = (d + 1) % K)
+		for(ushort d = 0; node != nullptr; node = node->_down[!_comparator(d, key, **node)], d = (d + 1) % K)
 			if(_equal(**node, key)) range._push(node);
-		range._done(); return range;
+		return range;
 	}
 	/* === Equal range === */
 
@@ -2212,7 +2213,7 @@ struct point_kd_tree_base
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(_comparator(d, **node, key)) {
+		if(!_comparator(d, key, **node)) {
 			if(node->_down[1] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
@@ -2233,7 +2234,7 @@ struct point_kd_tree_base
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(_comparator(d, **node, key)) {
+		if(!_comparator(d, key, **node)) {
 			if(node->_down[1] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
@@ -2253,7 +2254,7 @@ struct point_kd_tree_base
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(_comparator(d, **node, key)) {
+		if(!_comparator(d, key, **node)) {
 			if(node->_down[1] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
@@ -2274,7 +2275,7 @@ struct point_kd_tree_base
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(_comparator(d, **node, key)) {
+		if(!_comparator(d, key, **node)) {
 			if(node->_down[1] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
@@ -2299,32 +2300,33 @@ struct point_kd_tree_base
 			if(!_comparator(d, max, **node)) {
 				if(_range_inside(min, max, d, node)) range._push(node);
 			     if(node->_down[0] != nullptr)
-				 	_range_routine(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
+				 	_range_search(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
 			else if(node->_down[0] != nullptr)
-				_range_routine(range, min, max, bounds, (d + 1) % K, node->_down[0]);
+				_range_search(range, min, max, bounds, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && _comparator(d, **node, max))
-				_range_routine(range, min, max, bounds | (1 << (d * 2)), (d + 1) % K, node->_down[1]); }
+				_range_search(range, min, max, bounds | (1 << (d * 2)), (d + 1) % K, node->_down[1]); }
 		else if(node->_down[1] != nullptr && _comparator(d, **node, max))
-			_range_routine(range, min, max, bounds, (d+1)%K, node->_down[1]);
+			_range_search(range, min, max, bounds, (d + 1) % K, node->_down[1]);
 	}
 
 	private:
 	template <typename Key1, typename Key2>
 	void
 	_range_search (_CRange &range, const Key1 &min, const Key2 &max, ushort bounds, ushort d, const _Node *node)
+	const
 	{
 		if(_range_bounded(bounds)) { _report_subtree(range, node); return; }
 		if(!_comparator(d, **node, min)) {
 			if(!_comparator(d, max, **node)) {
 				if(_range_inside(min, max, d, node)) range._push(node);
 			     if(node->_down[0] != nullptr)
-				 	_range_routine(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
+				 	_range_search(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
 			else if(node->_down[0] != nullptr)
-				_range_routine(range, min, max, bounds, (d + 1) % K, node->_down[0]);
+				_range_search(range, min, max, bounds, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && _comparator(d, **node, max))
-				_range_routine(range, min, max, bounds | (1 << (d * 2)), (d + 1) % K, node->_down[1]); }
+				_range_search(range, min, max, bounds | (1 << (d * 2)), (d + 1) % K, node->_down[1]); }
 		else if(node->_down[1] != nullptr && _comparator(d, **node, max))
-			_range_routine(range, min, max, bounds, (d+1)%K, node->_down[1]);
+			_range_search(range, min, max, bounds, (d + 1) % K, node->_down[1]);
 	}
 
 	private:
@@ -2380,14 +2382,15 @@ struct point_kd_tree_base
 	/* ##################################################################### */
 	/* ############################### Print ############################### */
 	private:
-	template <typename Printer>
+	template <bool Verbose, typename Printer>
 	void
 	_print (Printer &printer, long long int branches, ushort depth, bool side, const _Node *node, ushort d)
 	const
 	{
 		if(node->_down[1] != nullptr)
-			_print(printer, side == 0 ? branches | (1 << (depth - 1)) : branches, depth + 1, 1, node->_down[1], (d+1)%K);
-		if(depth == 0) printf("\u2500\u2574");
+			_print<Verbose>
+				(printer, side == 0 ? branches | (1 << (depth - 1)) : branches, depth + 1, 1, node->_down[1], (d + 1) % K);
+		if(depth == 0) printf("%s\u2574", node->_up == &_head ? "\u2500" : "\u2504");
 		else           printf("  ");
 		if(depth > 1) {
 			for(ushort i = 0; i < depth - 1; ++i) {
@@ -2396,21 +2399,23 @@ struct point_kd_tree_base
 		if(depth > 0) {
 			if(side == 0) printf("\u2514\u2500\u2500\u2574");
 			else          printf("\u250c\u2500\u2500\u2574"); }
-		printf("\x1B[90m%lu\x1B[0m ", d); asdf(node);
+		if(Verbose) { printf("\x1B[90m%lu", d); node->cast()->print(); printf("\x1B[0m "); }
 		printer(node->info()); printf("\n");
 		if(node->_down[0] != nullptr)
-			_print(printer, side == 1 ? branches | (1 << (depth - 1)) : branches, depth + 1, 0, node->_down[0], (d+1)%K);
+			_print<Verbose>
+				(printer, side == 1 ? branches | (1 << (depth - 1)) : branches, depth + 1, 0, node->_down[0], (d + 1) % K);
 	}
 
 	private:
-	template <typename Printer>
+	template <bool Verbose, typename Printer>
 	void
 	_print (const Printer &printer, long long int branches, ushort depth, bool side, const _Node *node, ushort d)
 	const
 	{
 		if(node->_down[1] != nullptr)
-			_print(printer, side == 0 ? branches | (1 << (depth - 1)) : branches, depth + 1, 1, node->_down[1], (d+1)%K);
-		if(depth == 0) printf("\u2500\u2574");
+			_print<Verbose>
+				(printer, side == 0 ? branches | (1 << (depth - 1)) : branches, depth + 1, 1, node->_down[1], (d + 1) % K);
+		if(depth == 0) printf("%s\u2574", node->_up == &_head ? "\u2500" : "\u2504");
 		else           printf("  ");
 		if(depth > 1) {
 			for(ushort i = 0; i < depth - 1; ++i) {
@@ -2419,10 +2424,11 @@ struct point_kd_tree_base
 		if(depth > 0) {
 			if(side == 0) printf("\u2514\u2500\u2500\u2574");
 			else          printf("\u250c\u2500\u2500\u2574"); }
-		printf("\x1B[90m%lu\x1B[0m ", d);
+		if(Verbose) { printf("\x1B[90m%lu", d); node->cast()->print(); printf("\x1B[0m "); }
 		printer(node->info()); printf("\n");
 		if(node->_down[0] != nullptr)
-			_print(printer, side == 1 ? branches | (1 << (depth - 1)) : branches, depth + 1, 0, node->_down[0], (d+1)%K);
+			_print<Verbose>
+				(printer, side == 1 ? branches | (1 << (depth - 1)) : branches, depth + 1, 0, node->_down[0], (d + 1) % K);
 	}
 	/* ############################### Print ############################### */
 	/* ##################################################################### */

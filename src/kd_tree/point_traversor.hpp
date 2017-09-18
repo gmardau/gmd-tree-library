@@ -255,21 +255,20 @@ struct point_kd_tree_range
 	inline _R_CIterator cbegin () const { return _R_CIterator(&_nodes[0]); }
 
 	template <bool _ = !Const, typename = ::std::enable_if_t<_>>
-	inline  _R_Iterator  end ()       { return  _R_Iterator(&_nodes[_nodes.size() - 1]); }
-	inline _R_CIterator  end () const { return _R_CIterator(&_nodes[_nodes.size() - 1]); }
-	inline _R_CIterator cend () const { return _R_CIterator(&_nodes[_nodes.size() - 1]); }
+	inline  _R_Iterator  end ()       { return  _R_Iterator(&_nodes[_nodes.size()]); }
+	inline _R_CIterator  end () const { return _R_CIterator(&_nodes[_nodes.size()]); }
+	inline _R_CIterator cend () const { return _R_CIterator(&_nodes[_nodes.size()]); }
 	/* === Iterators === */
 
 	/* === Capacity === */
 	public:
-	bool  empty () const { return _nodes.size() == 1; }
-	size_t size () const { return _nodes.size() - 1;  }
+	bool  empty () const { return _nodes.empty(); }
+	size_t size () const { return _nodes.size();  }
 	/* === Capacity === */
 
 	/* === Modifiers === */
 	private:
-	inline void _push (_Node *node) { _nodes.push_back(node);    }
-	inline void _done ()            { _nodes.push_back(nullptr); }
+	inline void _push (_Node *node) { _nodes.push_back(node); }
 	/* === Modifiers === */
 };
 

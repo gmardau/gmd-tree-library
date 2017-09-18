@@ -120,64 +120,64 @@ template <binary_tree_type Tree, typename Key, typename Comparator = ::std::less
 
 /* ######################################################################### */
 /* ############################### K-D Tree ################################ */
-// #include "kd_tree/traversor.hpp"
-// #include "kd_tree/point_kd_tree.hpp"
+#include "kd_tree/point_traversor.hpp"
+#include "kd_tree/point_kd_tree.hpp"
 
-// template <size_t K, typename Key, typename Comparator, bool Balanced = false, typename Equal = ::std::equal_to<Key>,
-// 		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>
-// struct point_kd_tree_set
-// : public point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, false, Comparator, Equal, Allocator>
-// {
-// 	private:
-// 	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, false, Comparator, Equal, Allocator>;
-// 	using value_compare = Comparator;
-// 	using value_equal   = Equal;
-// 	public: using _Base::_Base; using _Base::operator=;
-// };
+template <size_t K, typename Key, typename Comparator, bool Balanced = false, typename Equal = ::std::equal_to<Key>,
+		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>
+struct point_kd_tree_set
+: public point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, false, Comparator, Equal, Allocator>
+{
+	private:
+	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, false, Comparator, Equal, Allocator>;
+	public: using _Base::_Base; using _Base::operator=;
+	using value_compare = Comparator;
+	using value_equal   = Equal;
+};
 
-// template <size_t K, typename Key, typename Comparator, bool Balanced = false, typename Equal = ::std::equal_to<Key>,
-// 		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>
-// struct point_kd_tree_multiset
-// : public point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, true, Comparator, Equal, Allocator>
-// {
-// 	private:
-// 	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, true, Comparator, Equal, Allocator>;
-// 	using value_compare = Comparator;
-// 	using value_equal   = Equal;
-// 	public: using _Base::_Base; using _Base::operator=;
-// };
+template <size_t K, typename Key, typename Comparator, bool Balanced = false, typename Equal = ::std::equal_to<Key>,
+		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>
+struct point_kd_tree_multiset
+: public point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, true, Comparator, Equal, Allocator>
+{
+	private:
+	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Key, Key, 0, Balanced>, true, Comparator, Equal, Allocator>;
+	public: using _Base::_Base; using _Base::operator=;
+	using value_compare = Comparator;
+	using value_equal   = Equal;
+};
 
-// template <size_t K, typename Key, typename Value, typename Comparator, bool Balanced = false,
-// 		  typename Equal = ::std::equal_to<Key>, typename Allocator = ::std::allocator<::std::pair<Key, Value>>,
-// 		  typename = ::std::enable_if_t<(K >= 1)>>
-// struct point_kd_tree_map
-// : public point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
-//                             false, Comparator, Equal, Allocator>
-// {
-// 	private:
-// 	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
-// 	                                 false, Comparator, Equal, Allocator>;
-// 	using mapped_type = Value;
-// 	using value_compare = typename _Base::Info_Comparator;
-// 	using value_equal   = typename _Base::Info_Equal;
-// 	public: using _Base::_Base; using _Base::operator=;
-// };
+template <size_t K, typename Key, typename Value, typename Comparator, bool Balanced = false,
+		  typename Equal = ::std::equal_to<Key>, typename Allocator = ::std::allocator<::std::pair<Key, Value>>,
+		  typename = ::std::enable_if_t<(K >= 1)>>
+struct point_kd_tree_map
+: public point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
+                            false, Comparator, Equal, Allocator>
+{
+	private:
+	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
+	                                 false, Comparator, Equal, Allocator>;
+	public: using _Base::_Base; using _Base::operator=;
+	using mapped_type = Value;
+	using value_compare = typename _Base::Info_Comparator;
+	using value_equal   = typename _Base::Info_Equal;
+};
 
-// template <size_t K, typename Key, typename Value, typename Comparator, bool Balanced = false,
-// 		  typename Equal = ::std::equal_to<Key>, typename Allocator = ::std::allocator<::std::pair<Key, Value>>,
-// 		  typename = ::std::enable_if_t<(K >= 1)>>
-// struct point_kd_tree_multimap
-// : public point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
-//                             true, Comparator, Equal, Allocator>
-// {
-// 	private:
-// 	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
-// 	                                 true, Comparator, Equal, Allocator>;
-// 	using mapped_type = Value;
-// 	using value_compare = typename _Base::Info_Comparator;
-// 	using value_equal   = typename _Base::Info_Equal;
-// 	public: using _Base::_Base; using _Base::operator=;
-// };
+template <size_t K, typename Key, typename Value, typename Comparator, bool Balanced = false,
+		  typename Equal = ::std::equal_to<Key>, typename Allocator = ::std::allocator<::std::pair<Key, Value>>,
+		  typename = ::std::enable_if_t<(K >= 1)>>
+struct point_kd_tree_multimap
+: public point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
+                            true, Comparator, Equal, Allocator>
+{
+	private:
+	using _Base = point_kd_tree_base<K, point_kd_tree_node<Key, Value, ::std::pair<Key, Value>, 1, Balanced>,
+	                                 true, Comparator, Equal, Allocator>;
+	public: using _Base::_Base; using _Base::operator=;
+	using mapped_type = Value;
+	using value_compare = typename _Base::Info_Comparator;
+	using value_equal   = typename _Base::Info_Equal;
+};
 
 // #include "kd_tree/region_kd_tree.hpp"
 /* ############################### K-D Tree ################################ */
