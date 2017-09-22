@@ -1897,11 +1897,10 @@ struct binary_tree_base
 	void
 	_clear_routine (_Node *node)
 	{
-		for(_Node *save; ; node = save) {
+		for(_Node *save; node != nullptr; node = save) {
 			if(node->_down[0] != nullptr) _clear_routine(node->_down[0]);
 			save = node->_down[1];
-			_del_node(node);
-			if(save == nullptr) return; }
+			_del_node(node); }
 	}
 
 	protected:

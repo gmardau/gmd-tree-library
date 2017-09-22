@@ -31,7 +31,7 @@ The `Threaded` parameter specifies whether the binary tree elements should have 
 | *`const_reference`* | <code>const <i>value_type</i> &</code> |
 | *`pointer`* | <code><i>value_type</i> *</code> |
 | *`const_pointer`* | <code>const <i>value_type</i> *</code> |
-| *`interator`*<br>*`traversor`*<br>*`reverse_iterator`*<br>*`reverse_traversor`* | [Binary tree traversor](traversor.md) |
+| *`iterator`*<br>*`traversor`*<br>*`reverse_iterator`*<br>*`reverse_traversor`* | [Binary tree traversor](traversor.md) |
 | *`const_iterator`*<br>*`const_traversor`*<br>*`const_reverse_iterator`*<br>*`const_reverse_traversor`* | Constant [Binary tree traversor](traversor.md) |
 
 ---
