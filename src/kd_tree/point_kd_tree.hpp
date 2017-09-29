@@ -165,6 +165,7 @@ struct point_kd_tree_base
 	template <typename T> static constexpr bool _is_traversor_v = ::std::is_same_v<T, _Traversor> ||
 	                                                              ::std::is_same_v<T, _CTraversor>;
 	template <typename T> static constexpr bool _is_non_const_traversor_v = ::std::is_same_v<T, _Traversor>;
+	template <typename T> static constexpr bool _is_const_traversor_v = ::std::is_same_v<T, _CTraversor>;
 
 	public:
 	using        key_type = typename Node::_Key;
@@ -181,6 +182,7 @@ struct point_kd_tree_base
 
 	using       traversor =  _Traversor; using       iterator =  _Traversor;
 	using const_traversor = _CTraversor; using const_iterator = _CTraversor;
+
 	using       range =  _Range;
 	using const_range = _CRange;
 
@@ -364,7 +366,7 @@ struct point_kd_tree_base
 
 
 	/* === Destructor === */
-	protected:
+	public:
 	~point_kd_tree_base () { if(_size > 0) _clear(); }
 	/* === Destructor === */
 	/* ##################### Constructor & Destructor ###################### */
@@ -749,32 +751,6 @@ struct point_kd_tree_base
 
 	/* === Transfer === */
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, ushort K_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename TIn>
-	inline ::std::enable_if_t<!Multi && _is_traversor_v<TOut> &&
-		point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator>::
-		template _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	transfer (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other, const TIn &tr)
-	{
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 return _transfer_move<Replace>(other, tr.node());
-		else return _transfer_copy<Replace>(other, tr.node());
-	}
-
-	public:
-	template <typename TOut = _Traversor, ushort K_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> &&
-		point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator>::
-		template _is_non_const_traversor_v<TIn>, TOut>
-	transfer (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other, const TIn &tr)
-	{
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 return TOut(_transfer_move(other, tr.node()));
-		else return TOut(_transfer_copy(other, tr.node()));
-	}
-
-	public:
 	template <bool Replace = false, typename TOut = _Traversor, ushort K_Other, typename Node_Other, bool Multi_Other,
 	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename TIn>
 	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
@@ -783,7 +759,12 @@ struct point_kd_tree_base
 		template _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
 	transfer (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other,
 		      const TIn &tr)
-	{ return _transfer_copy<Replace>(other, tr.node()); }
+	{
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				return _transfer_move<Replace>(other, tr._node);
+		return _transfer_copy<Replace>(other, tr._node);
+	}
 
 	public:
 	template <typename TOut = _Traversor, ushort K_Other, typename Node_Other, bool Multi_Other,
@@ -794,68 +775,41 @@ struct point_kd_tree_base
 		template _is_non_const_traversor_v<TIn>, TOut>
 	transfer (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other,
 		      const TIn &tr)
-	{ return TOut(_transfer_copy(other, tr.node())); }
+	{
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				return TOut(_transfer_move(other, tr._node));
+		return TOut(_transfer_copy(other, tr._node));
+	}
 	/* === Transfer === */
 
 
 	/* === Merge === */
 	public:
-	template <bool Replace = false>
-	inline ::std::enable_if_t<!Multi && Replace == Replace, size_t>
-	merge (point_kd_tree_base &other)
-	{
-		if(this == &other || other._size == 0) return 0;
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 return _merge_move<Replace>(other);
-		else return _merge_copy<Replace>(other);
-	}
-
-	public:
-	template <int _ = 0>
-	inline ::std::enable_if_t<Multi && _ == _, void>
-	merge (point_kd_tree_base &other)
-	{
-		if(this == &other || other._size == 0) return;
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 _merge_move(other);
-		else _merge_copy(other);
-	}
-
-	public:
-	template <bool Replace = false, ushort K_Other, bool Multi_Other, typename Comparator_Other, typename Equal_Other>
-	inline ::std::enable_if_t<!Multi && Replace == Replace, size_t>
-	merge (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other)
-	{
-		if(other._size == 0) return 0;
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 return _merge_move<Replace>(other);
-		else return _merge_copy<Replace>(other);
-	}
-
-	public:
-	template <ushort K_Other, bool Multi_Other, typename Comparator_Other, typename Equal_Other>
-	inline ::std::enable_if_t<Multi && Multi_Other == Multi_Other, void>
-	merge (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other)
-	{
-		if(other._size == 0) return;
-		if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-			 _merge_move(other);
-		else _merge_copy(other);
-	}
-
-	public:
 	template <bool Replace = false, ushort K_Other, typename Node_Other, bool Multi_Other,
 	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
 	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, size_t>
 	merge (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{ if(other._size == 0) return 0; return _merge_copy<Replace>(other); }
+	{
+		if(this == &other || other._size == 0) return 0;
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				return _merge_move<Replace>(other);
+		return _merge_copy<Replace>(other);
+	}
 
 	public:
 	template <ushort K_Other, typename Node_Other, bool Multi_Other,
 	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
 	merge (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{ if(other._size > 0) _merge_copy(other); }
+	{
+		if(this == &other || other._size == 0) return 0;
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				{ _merge_move(other); return; }
+		_merge_copy(other);
+	}
 	/* === Merge === */
 
 
@@ -1027,9 +981,9 @@ struct point_kd_tree_base
 	{ return T(_find(key)); }
 
 	public:
-	template <typename T =  _Traversor, typename Key>
+	template <typename T =  _CTraversor, typename Key>
 	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	                          && _is_const_traversor_v<T>, T>
 	find (const Key &key)
 	const
 	{ return T(_find(key)); }
@@ -1066,9 +1020,9 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
+	template <typename Measure, typename T = _CTraversor, typename Key>
 	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_traversor_v<T>, ::std::pair<T, double>>
+					   && _is_const_traversor_v<T>, ::std::pair<T, double>>
 	nearest_neighbour (const Key &key, Measure &measure)
 	const
 	{
@@ -1091,9 +1045,9 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
+	template <typename Measure, typename T = _CTraversor, typename Key>
 	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_traversor_v<T>, ::std::pair<T, double>>
+					   && _is_const_traversor_v<T>, ::std::pair<T, double>>
 	nearest_neighbour (const Key &key, const Measure &measure = Measure())
 	const
 	{
@@ -1713,11 +1667,10 @@ struct point_kd_tree_base
 	void
 	_clear_routine (_Node *node)
 	{
-		for(_Node *save; ; node = save) {
+		for(_Node *save; node != nullptr; node = save) {
 			if(node->_down[0] != nullptr) _clear_routine(node->_down[0]);
 			save = node->_down[1];
-			_del_node(node);
-			if(save == nullptr) return; }
+			_del_node(node); }
 	}
 	/* === Clear === */
 
@@ -1753,23 +1706,15 @@ struct point_kd_tree_base
 
 
 	/* === Insert === */
-	private:
-	template <typename Arg, typename = ::std::enable_if_t<!Node::_Balanced>>
-	::std::pair<_Node *, bool>
-	_insert (Arg &&info)
-	{
-		int side; _Node *place = _place(side, _Node::key(::std::forward<Arg>(info)));
-		if(!Multi && side == -1) return {place, false};
-		else                     return {_insert_place(side, place, ::std::forward<Arg>(info)), true};
-	}
 
 	private:
-	template <typename Arg, typename = ::std::enable_if_t<Node::_Balanced>, typename = void>
+	template <typename Arg>
 	::std::pair<_Node *, bool>
 	_insert (Arg &&info)
 	{
 		int side; _Node *node = _place(side, _Node::key(::std::forward<Arg>(info)));
 		if(!Multi && side == -1) return {node, false};
+		if constexpr (!Node::_Balanced) return {_insert_place(side, node, ::std::forward<Arg>(info)), true};
 		else { node = _insert_place(side, node, ::std::forward<Arg>(info)); _balance_insert(node); return {node, true}; }
 	}
 
@@ -2209,82 +2154,86 @@ struct point_kd_tree_base
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, Measure &measure,
-		                        double &distance, _Node *&nearest, ushort d, _Node *node)
+		                double &distance, _Node *&nearest, ushort d, const _Node *node)
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(!_comparator(d, key, **node)) {
-			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
-			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
-		else {
+		if(node->_down[0] == node->_down[1]) return;
+		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+		else {
+			if(node->_down[1] != nullptr)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, Measure &measure,
-		                        double &distance, const _Node *&nearest, ushort d, const _Node *node)
+		                double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(!_comparator(d, key, **node)) {
-			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
-			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
-		else {
+		if(node->_down[0] == node->_down[1]) return;
+		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+		else {
+			if(node->_down[1] != nullptr)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, const Measure &measure,
-		                        double &distance, _Node *&nearest, ushort d, _Node *node)
+		                double &distance, _Node *&nearest, ushort d, const _Node *node)
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(!_comparator(d, key, **node)) {
-			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
-			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
-		else {
+		if(node->_down[0] == node->_down[1]) return;
+		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+		else {
+			if(node->_down[1] != nullptr)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, const Measure &measure,
-		                        double &distance, const _Node *&nearest, ushort d, const _Node *node)
+		                double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
 		double tmp = measure(**node, key);
 		if(tmp < distance) { distance = tmp, nearest = node; }
-		if(!_comparator(d, key, **node)) {
-			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
-			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
-		else {
+		if(node->_down[0] == node->_down[1]) return;
+		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
 				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+		else {
+			if(node->_down[1] != nullptr)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
+				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 	/* === Nearest neighbour === */
 
@@ -2299,7 +2248,7 @@ struct point_kd_tree_base
 		if(!_comparator(d, **node, min)) {
 			if(!_comparator(d, max, **node)) {
 				if(_range_inside(min, max, d, node)) range._push(node);
-			     if(node->_down[0] != nullptr)
+			    if(node->_down[0] != nullptr)
 				 	_range_search(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
 			else if(node->_down[0] != nullptr)
 				_range_search(range, min, max, bounds, (d + 1) % K, node->_down[0]);
@@ -2319,7 +2268,7 @@ struct point_kd_tree_base
 		if(!_comparator(d, **node, min)) {
 			if(!_comparator(d, max, **node)) {
 				if(_range_inside(min, max, d, node)) range._push(node);
-			     if(node->_down[0] != nullptr)
+			    if(node->_down[0] != nullptr)
 				 	_range_search(range, min, max, bounds | (1 << (d * 2 + 1)), (d + 1) % K, node->_down[0]); }
 			else if(node->_down[0] != nullptr)
 				_range_search(range, min, max, bounds, (d + 1) % K, node->_down[0]);
@@ -2384,7 +2333,7 @@ struct point_kd_tree_base
 	private:
 	template <bool Verbose, typename Printer>
 	void
-	_print (Printer &printer, long long int branches, ushort depth, bool side, const _Node *node, ushort d)
+	_print (Printer &printer, int_fast64_t branches, ushort depth, bool side, const _Node *node, ushort d)
 	const
 	{
 		if(node->_down[1] != nullptr)
@@ -2409,7 +2358,7 @@ struct point_kd_tree_base
 	private:
 	template <bool Verbose, typename Printer>
 	void
-	_print (const Printer &printer, long long int branches, ushort depth, bool side, const _Node *node, ushort d)
+	_print (const Printer &printer, int_fast64_t branches, ushort depth, bool side, const _Node *node, ushort d)
 	const
 	{
 		if(node->_down[1] != nullptr)
