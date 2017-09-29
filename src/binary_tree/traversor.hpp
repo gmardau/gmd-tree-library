@@ -80,6 +80,8 @@ struct binary_tree_traversor
 	binary_tree_traversor (_Node *node = nullptr) : _node(node) {}
 	template <bool Direction_Other>
 	binary_tree_traversor (const binary_tree_traversor<false, Node, Direction_Other> &other) : _node(other._node) {}
+	template <bool Direction_Other, typename = ::std::enable_if_t<Const && Direction_Other == Direction_Other>>
+	binary_tree_traversor (const binary_tree_traversor<true, Node, Direction_Other> &other) : _node(other._node) {}
 	/* === Constructor & Destructor === */
 
 	/* === Reverse === */

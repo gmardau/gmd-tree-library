@@ -513,8 +513,8 @@ struct binary_tree_base
 
 	/* === Insert === */
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (const typename Node::_Info &info)
 	{
 		if(!Replace) return _insert_(info);
@@ -525,8 +525,8 @@ struct binary_tree_base
 	}
 
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (typename Node::_Info &&info)
 	{
 		if(!Replace) return _insert_(::std::move(info));
@@ -537,14 +537,14 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (const typename Node::_Info &info)
 	{ return _insert_(info).first; }
 
 	public:
-	template <typename T = _Traversor>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (typename Node::_Info &&info)
 	{ return _insert_(::std::move(info)).first; }
 
@@ -581,33 +581,33 @@ struct binary_tree_base
 	{ return insert(il.begin(), il.end()); }
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<!Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	insert (const TIn &hint, const typename Node::_Info &info)
-	{ return insert_hint<Replace, TOut>(hint, info); }
+	template <bool Replace = false, typename T>
+	inline ::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	insert (const T &hint, const typename Node::_Info &info)
+	{ return insert_hint<Replace>(hint, info); }
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<!Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	insert (const TIn &hint, typename Node::_Info &&info)
-	{ return insert_hint<Replace, TOut>(hint, ::std::move(info)); }
+	template <bool Replace = false, typename T>
+	inline ::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	insert (const T &hint, typename Node::_Info &&info)
+	{ return insert_hint<Replace>(hint, ::std::move(info)); }
 
 	public:
-	template <typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, TOut>
-	insert (const TIn &hint, const typename Node::_Info &info)
-	{ return insert_hint<TOut>(hint, info); }
+	template <typename T>
+	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
+	insert (const T &hint, const typename Node::_Info &info)
+	{ return insert_hint(hint, info); }
 
 	public:
-	template <typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, TOut>
-	insert (const TIn &hint, typename Node::_Info &&info)
-	{ return insert_hint<TOut>(hint, ::std::move(info)); }
+	template <typename T>
+	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
+	insert (const T &hint, typename Node::_Info &&info)
+	{ return insert_hint(hint, ::std::move(info)); }
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn>
-	::std::enable_if_t<!Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	insert_hint (const TIn &hint, const typename Node::_Info &info)
+	template <bool Replace = false, typename T>
+	::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	insert_hint (const T &hint, const typename Node::_Info &info)
 	{
 		if(!Replace) return _insert_hint_(hint._node, info);
 		else {
@@ -617,9 +617,9 @@ struct binary_tree_base
 	}
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn>
-	::std::enable_if_t<!Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	insert_hint (const TIn &hint, typename Node::_Info &&info)
+	template <bool Replace = false, typename T>
+	::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	insert_hint (const T &hint, typename Node::_Info &&info)
 	{
 		if(!Replace) return _insert_hint_(hint._node, ::std::move(info));
 		else {
@@ -629,23 +629,23 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, TOut>
-	insert_hint (const TIn &hint, const typename Node::_Info &info)
+	template <typename T>
+	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
+	insert_hint (const T &hint, const typename Node::_Info &info)
 	{ return _insert_hint_(hint._node, info).first; }
 
 	public:
-	template <typename TOut = _Traversor, typename TIn>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, TOut>
-	insert_hint (const TIn &hint, typename Node::_Info &&info)
+	template <typename T>
+	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
+	insert_hint (const T &hint, typename Node::_Info &&info)
 	{ return _insert_hint_(hint._node, ::std::move(info)).first; }
 	/* === Insert === */
 
 
 	/* === Emplace === */
 	public:
-	template <bool Replace = false, typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false, typename... Args>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	emplace (Args&&... info)
 	{
 		_Node *node = _new_node_threadless(nullptr, ::std::forward<Args>(info)...);
@@ -656,15 +656,15 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0, typename... Args>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	emplace (Args&&... info)
 	{ return _emplace_(_new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename TIn, typename... Args>
-	::std::enable_if_t<!Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	emplace_hint (const TIn &hint, Args&&... info)
+	template <bool Replace = false, typename T, typename... Args>
+	::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	emplace_hint (const T &hint, Args&&... info)
 	{
 		_Node *node = _new_node_threadless(nullptr, ::std::forward<Args>(info)...);
 		::std::pair<_Node *, bool> result = _emplace_hint_(hint._node, node);
@@ -674,14 +674,14 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, typename TIn, typename... Args>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>, TOut>
-	emplace_hint (const TIn &hint, Args&&... info)
+	template <typename T, typename... Args>
+	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
+	emplace_hint (const T &hint, Args&&... info)
 	{ return _emplace_hint_(hint._node, _new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, key);
@@ -691,8 +691,8 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
@@ -702,24 +702,24 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, typename TIn, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>,
-		::std::pair<TOut, bool>>
-	try_emplace (const TIn &hint, const typename Node::_Key &key, Args&&... value)
-	{ return try_emplace_hint<TOut>(hint, key, ::std::forward<Args>(value)...); }
+	template <typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
+		::std::pair<_Traversor, bool>>
+	try_emplace (const T &hint, const typename Node::_Key &key, Args&&... value)
+	{ return try_emplace_hint(hint, key, ::std::forward<Args>(value)...); }
 
 	public:
-	template <typename TOut = _Traversor, typename TIn, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>,
-		::std::pair<TOut, bool>>
-	try_emplace (const TIn &hint, typename Node::_Key &&key, Args&&... value)
-	{ return try_emplace_hint<TOut>(hint, ::std::move(key), ::std::forward<Args>(value)...); }
+	template <typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
+		::std::pair<_Traversor, bool>>
+	try_emplace (const T &hint, typename Node::_Key &&key, Args&&... value)
+	{ return try_emplace_hint(hint, ::std::move(key), ::std::forward<Args>(value)...); }
 
 	public:
-	template <typename TOut = _Traversor, typename TIn, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>,
-		::std::pair<TOut, bool>>
-	try_emplace_hint (const TIn &hint, const typename Node::_Key &key, Args&&... value)
+	template <typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
+		::std::pair<_Traversor, bool>>
+	try_emplace_hint (const T &hint, const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place_hint(hint._node, side, key);
 		if(side == -1) return {place, false};
@@ -728,10 +728,10 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, typename TIn, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<TOut> && _is_non_const_traversor_v<TIn>,
-		::std::pair<TOut, bool>>
-	try_emplace_hint (const TIn &hint, typename Node::_Key &&key, Args&&... value)
+	template <typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
+		::std::pair<_Traversor, bool>>
+	try_emplace_hint (const T &hint, typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place_hint(hint._node, side, ::std::move(key));
 		if(side == -1) return {place, false};
@@ -790,12 +790,12 @@ struct binary_tree_base
 
 	/* === Transfer === */
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Allocator_Other, typename TIn>
+	template <bool Replace = false, typename Node_Other, bool Multi_Other,
+	          typename Comparator_Other, typename Allocator_Other, typename T>
 	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
-		_is_traversor_v<TOut> && binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other>::
-		template _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
-	transfer (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other, const TIn &tr)
+		binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other>::template _is_non_const_traversor_v<T>,
+		::std::pair<_Traversor, bool>>
+	transfer (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other, const T &tr)
 	{
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
@@ -804,17 +804,16 @@ struct binary_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Allocator_Other, typename TIn>
+	template <typename Node_Other, bool Multi_Other, typename Comparator_Other, typename Allocator_Other, typename T>
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
-		_is_traversor_v<TOut> && binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other>::
-		template _is_non_const_traversor_v<TIn>, TOut>
-	transfer (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other, const TIn &tr)
+		binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other>::template _is_non_const_traversor_v<T>,
+		_Traversor>
+	transfer (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other, const T &tr)
 	{
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-				return TOut(_transfer_move(other, tr._node));
-		return TOut(_transfer_copy(other, tr._node));
+				return _Traversor(_transfer_move(other, tr._node));
+		return _Traversor(_transfer_copy(other, tr._node));
 	}
 	/* === Transfer === */
 
@@ -825,7 +824,7 @@ struct binary_tree_base
 	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, size_t>
 	merge (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other)
 	{
-		if(this == &other || other._size == 0) return 0;
+		if(this == reinterpret_cast<binary_tree_base *>(&other) || other._size == 0) return 0;
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
 				return _merge_move<Replace>(other);
@@ -837,7 +836,7 @@ struct binary_tree_base
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
 	merge (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other)
 	{
-		if(this == &other || other._size == 0) return 0;
+		if(this == reinterpret_cast<binary_tree_base *>(&other) || other._size == 0) return 0;
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
 				{ _merge_move(other); return; }
@@ -1004,100 +1003,92 @@ struct binary_tree_base
 
 	/* === Find === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	find (const Key &key)
-	{ return T(_find(key)); }
+	{ return _Traversor(_find(key)); }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	find (const Key &key)
 	const
-	{ return T(_find(key)); }
+	{ return _CTraversor(_find(key)); }
 	/* === Find === */
 
 
 	/* === Find (short) === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	find_short (const Key &key)
-	{ return T(_find_short(key)); }
+	{ return _Traversor(_find_short(key)); }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	find_short (const Key &key)
 	const
-	{ return T(_find_short(key)); }
+	{ return _CTraversor(_find_short(key)); }
 	/* === Find (short) === */
 
 
 	/* === Lower bound === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	lower_bound (const Key &key)
-	{ return T(_lower_bound(key)); }
+	{ return _Traversor(_lower_bound(key)); }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	lower_bound (const Key &key)
 	const
-	{ return T(_lower_bound(key)); }
+	{ return _CTraversor(_lower_bound(key)); }
 	/* === Lower bound === */
 
 
 	/* === Upper bound === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	upper_bound (const Key &key)
-	{ return T(_upper_bound(key)); }
+	{ return _Traversor(_upper_bound(key)); }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	upper_bound (const Key &key)
 	const
-	{ return T(_upper_bound(key)); }
+	{ return _CTraversor(_upper_bound(key)); }
 	/* === Upper bound === */
 
 
 	/* === Equal range === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, ::std::pair<T, T>>
+	template <typename Key>
+	::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, _Traversor>>
 	equal_range (const Key &key)
 	{
 		_Node* lower = _lower_bound(key);
 		if(lower == &_head || _comparator(key, **lower))
-			 return ::std::pair<T, T>(T(lower), T(lower));
-		else return ::std::pair<T, T>(T(lower), T(!Multi ? _Iteration::_<1>(lower) : _upper_bound(key)));
+			 return {_Traversor(lower), _Traversor(lower)};
+		else return {_Traversor(lower), _Traversor(!Multi ? _Iteration::_<1>(lower) : _upper_bound(key))};
 	}
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, ::std::pair<T, T>>
+	template <typename Key>
+	::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, _CTraversor>>
 	equal_range (const Key &key)
 	const
 	{
 		const _Node* lower = _lower_bound(key);
 		if(lower == &_head || _comparator(key, **lower))
-			 return ::std::pair<T, T>(T(lower), T(lower));
-		else return ::std::pair<T, T>(T(lower), T(!Multi ? _Iteration::_<1>(lower) : _upper_bound(key)));
+			 return {_CTraversor(lower), _CTraversor(lower)};
+		else return {_CTraversor(lower), _CTraversor(!Multi ? _Iteration::_<1>(lower) : _upper_bound(key))};
 	}
 	/* === Equal range === */
 	/* ############################## Lookup ############################### */
@@ -1465,8 +1456,12 @@ struct binary_tree_base
 	}
 
 	private:
-	inline void _swap_copy_clear (_Node *root, _Node *begin)
-	{ if constexpr(!Node::_Threaded) _clear_routine(root); else _clear_routine(begin, &_head); }
+	template <typename = ::std::enable_if_t<!Node::_Threaded>>
+	inline void _swap_copy_clear (_Node *root, _Node *)  { _clear_routine(root); }
+
+	template <typename = ::std::enable_if_t<Node::_Threaded>, typename = void>
+	inline void _swap_copy_clear (_Node *, _Node *begin) { _clear_routine(begin, &_head); }
+
 
 	private:
 	template <bool Multi_Other>

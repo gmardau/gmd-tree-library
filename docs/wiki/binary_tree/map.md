@@ -31,8 +31,8 @@ The `Threaded` parameter specifies whether the binary tree elements should have 
 | *`const_reference`* | <code>const <i>value_type</i> &</code> |
 | *`pointer`* | <code><i>value_type</i> *</code> |
 | *`const_pointer`* | <code>const <i>value_type</i> *</code> |
-| *`iterator`*<br>*`traversor`*<br>*`reverse_iterator`*<br>*`reverse_traversor`* | [Binary tree traversor](traversor.md) |
-| *`const_iterator`*<br>*`const_traversor`*<br>*`const_reverse_iterator`*<br>*`const_reverse_traversor`* | Constant [Binary tree traversor](traversor.md) |
+| *`iterator`*<br>*`traversor`*<br>*`reverse_iterator`*<br>*`reverse_traversor`* | [Binary tree traversor](traversal.md) |
+| *`const_iterator`*<br>*`const_traversor`*<br>*`const_reverse_iterator`*<br>*`const_reverse_traversor`* | Constant [Binary tree traversor](traversal.md) |
 
 ---
 
@@ -451,10 +451,10 @@ size: 0
 
 ### Insert
 
-<sub>template <<code>bool Replace = false, typename T = <i>traversor</i></code>></sub><br>
-<a name="insert1" href="#insert1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><T, bool></code> **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>bool Replace = false, typename T = <i>traversor</i></code>></sub><br>
-<a name="insert2" href="#insert2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><T, bool></code> **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false</code>></sub><br>
+<a name="insert1" href="#insert1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>bool Replace = false</code>></sub><br>
+<a name="insert2" href="#insert2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts `info` in the container.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place.
@@ -471,10 +471,10 @@ Even though `first` and `last` can be of different types, `last` must be reachab
 
 Inserts elements from the initializer list `il`. Returns the number of elements inserted.
 
-<sub>template <<code>bool Replace = false, typename TOut = <i>traversor</i>, typename TIn</code>></sub><br>
-<a name="inserthint1" href="#inserthint1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **insert_hint** (<code>const TIn &<b>hint</b>, const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>bool Replace = false, typename TOut = <i>traversor</i>, typename TIn</code>></sub><br>
-<a name="inserthint2" href="#inserthint2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **insert_hint** (<code>const TIn &<b>hint</b>, <i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false, typename T</code>></sub><br>
+<a name="inserthint1" href="#inserthint1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert_hint** (<code>const T &<b>hint</b>, const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>bool Replace = false, typename T</code>></sub><br>
+<a name="inserthint2" href="#inserthint2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert_hint** (<code>const T &<b>hint</b>, <i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts `info` in the container, taking `hint` as a possible location for the new element.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor. This function can also be called as [`insert(hint, info)`](#inserthint1).
@@ -530,32 +530,32 @@ b: 2,1 3,0 4,0 5,0
 
 ### Emplace
 
-<sub>template <<code>bool Replace = false, typename T = <i>traversor</i>, typename... Args</code>></sub><br>
-<a name="emplace1" href="#emplace1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
+<a name="emplace1" href="#emplace1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `info`.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place.
 
-<sub>template <<code>bool Replace = false, typename T = <i>traversor</i>, typename TIn, typename... Args</code>></sub><br>
-<a name="emplace2" href="#emplace2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **emplace_hint** (<code>const TIn &<b>hint</b>, Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false, typename T, typename... Args</code>></sub><br>
+<a name="emplace2" href="#emplace2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **emplace_hint** (<code>const T &<b>hint</b>, Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `info`, taking `hint` as a possible location for the new element.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor.
 
-<sub>template <<code>typename T = <i>traversor</i>, typename... Args</code>></sub><br>
-<a name="tryemplace1" href="#tryemplace1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **try_emplace** (<code>const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename... Args</code>></sub><br>
+<a name="tryemplace1" href="#tryemplace1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code>const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
-<sub>template <<code>typename T = <i>traversor</i>, typename... Args</code>></sub><br>
-<a name="tryemplace2" href="#tryemplace2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **try_emplace** (<code><i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename... Args</code>></sub><br>
+<a name="tryemplace2" href="#tryemplace2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code><i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `{key, value}` if there exists no element with the same key in container.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. This function differs from [`emplace()`](#emplace1) by avoiding the creation and subsequent deletion of `value` and an internal tree structure node if an element with the same key already exists in the container.
 
-<sub>template <<code>typename TOut = <i>traversor</i>, typename TIn, typename... Args</code>></sub><br>
-<a name="tryemplacehint1" href="#tryemplacehint1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **try_emplace_hint** (<code>const TIn &<b>hint</b>, const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename T, typename... Args</code>></sub><br>
+<a name="tryemplacehint1" href="#tryemplacehint1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace_hint** (<code>const T &<b>hint</b>, const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
-<sub>template <<code>typename TOut = <i>traversor</i>, typename TIn, typename... Args</code>></sub><br>
-<a name="tryemplacehint2" href="#tryemplacehint2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **try_emplace_hint** (<code>const TIn &<b>hint</b>, <i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename T, typename... Args</code>></sub><br>
+<a name="tryemplacehint2" href="#tryemplacehint2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace_hint** (<code>const T &<b>hint</b>, <i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `{key, value}` if there exists no element with the same key in container, taking `hint` as a possible location for the new element.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor. This function differs from [`emplace_hint()`](#emplacehint1) by avoiding the creation and subsequent deletion of an internal tree structure node if an element with the same key already exists in the container. `hint` must be a non const traversor. This function can also be called as [`try_emplace(hint, key, value)`](#tryemplacehint1).
@@ -662,8 +662,8 @@ a: 2,0
 
 ### Transfer
 
-<sub>template<<code>bool Replace = false, typename TOut = <i>traversor</i>, typename TIn</code>></sub><br>
-<a name="transfer0" href="#transfer0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><TOut, bool></code> **transfer** (<code><i>binary_tree</i> &<b>other</b>, const TIn &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template<<code>bool Replace = false, typename T</code>></sub><br>
+<a name="transfer0" href="#transfer0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **transfer** (<code><i>binary_tree</i> &<b>other</b>, const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Transfers an element from `other` into the container, if it does not exist.
 Returns a pair consisting of a traversor to the transferred element (or to the element that prevented the transferral) and a boolean value set to `true` if the transferral took place.
@@ -972,16 +972,16 @@ contains 2: false
 
 ### Find
 
-<sub>template <<code>typename T = <i>traversor</i>, typename Key</code>></sub><br>
-<a name="find1" href="#find1">#</a> `T` **find** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename T = <i>const_traversor</i>, typename Key</code>></sub><br>
-<a name="find2" href="#find2">#</a> `T` **find** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="find1" href="#find1">#</a> *`traversor`* **find** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="find2" href="#find2">#</a> *`const_traversor`* **find** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 
-<sub>template <<code>typename T = <i>traversor</i>, typename Key</code>></sub><br>
-<a name="findshort1" href="#findshort1">#</a> `T` **find_short** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename T = <i>const_traversor</i>, typename Key</code>></sub><br>
-<a name="findshort2" href="#findshort2">#</a> `T` **find_short** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="findshort1" href="#findshort1">#</a> *`traversor`* **find_short** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="findshort2" href="#findshort2">#</a> *`const_traversor`* **find_short** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor of an element with a key equivalent to `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned. The function [`find_short()`](#findshort1) is more efficient than [`find()`](#find1) when the element to be found is more likely to be close to the root, such as in a Splay-like tree.
 
@@ -1008,12 +1008,12 @@ int main(const int, const char **)
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "find 2.0: ";
-	btmap::reverse_traversor y = a.find<btmap::reverse_traversor>(2.0);
+	btmap::reverse_traversor y = a.find(2.0);
 	if(y != a.rend()) std::cout << "true - " << *y << "\n";
 	else              std::cout << "false\n";
 
 	std::cout << "find 4: ";
-	btmap::const_traversor z = a.find_short<btmap::traversor>(4);
+	btmap::const_traversor z = a.find_short(4);
 	if(z != a.rend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 }
@@ -1029,10 +1029,10 @@ find 4: true - 4,0
 
 ### Lower bound
 
-<sub>template <<code>typename T = <i>traversor</i>, typename Key</code>></sub><br>
-<a name="lowerbound1" href="#lowerbound1">#</a> `T` **lower_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename T = <i>const_traversor</i>, typename Key</code>></sub><br>
-<a name="lowerbound2" href="#lowerbound2">#</a> `T` **lower_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="lowerbound1" href="#lowerbound1">#</a> *`traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="lowerbound2" href="#lowerbound2">#</a> *`const_traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor to the first element that is ***not lesser*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned.
 
@@ -1076,10 +1076,10 @@ lower_bound 2: 2,0
 
 ### Upper bound
 
-<sub>template <<code>typename T = <i>traversor</i>, typename Key</code>></sub><br>
-<a name="upperbound1" href="#upperbound1">#</a> `T` **upper_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename T = <i>const_traversor</i>, typename Key</code>></sub><br>
-<a name="upperbound2" href="#upperbound2">#</a> `T` **upper_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="upperbound1" href="#upperbound1">#</a> *`traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="upperbound2" href="#upperbound2">#</a> *`const_traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor to the first element that is ***greater*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned.
 
@@ -1113,10 +1113,10 @@ upper_bound 2: 3,0
 
 ### Equal range
 
-<sub>template <<code>typename T = <i>traversor</i>, typename Key</code>></sub><br>
-<a name="equalrange1" href="#equalrange1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><T, T></code> **equal_range** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<sub>template <<code>typename T = <i>const_traversor</i>, typename Key</code>></sub><br>
-<a name="equalrange2" href="#equalrange2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><T, T></code> **equal_range** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="equalrange1" href="#equalrange1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, <i>traversor</i>></code> **equal_range** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<sub>template <<code>typename Key</code>></sub><br>
+<a name="equalrange2" href="#equalrange2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>const_traversor</i>, <i>const_traversor</i>></code> **equal_range** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a range containing all the elements with a key equivalent to `key`. Because this container does not allow duplicates, the range will have at most size 1.
 Alternatively, the first traversor may be obtained with [`lower_bound(key)`](#lowerbound1), and the second with [`upper_bound(key)`](#upperbound1).

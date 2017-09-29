@@ -19,12 +19,12 @@ int main(const int, const char **)
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "find 2.0: ";
-	btmap::reverse_traversor y = a.find<btmap::reverse_traversor>(2.0);
+	btmap::reverse_traversor y = a.find(2.0);
 	if(y != a.rend()) std::cout << "true - " << *y << "\n";
 	else              std::cout << "false\n";
 
 	std::cout << "find 4: ";
-	btmap::const_traversor z = a.find_short<btmap::traversor>(4);
+	btmap::const_traversor z = a.find_short(4);
 	if(z != a.rend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 
