@@ -165,7 +165,6 @@ struct point_kd_tree_base
 	template <typename T> static constexpr bool _is_traversor_v = ::std::is_same_v<T, _Traversor> ||
 	                                                              ::std::is_same_v<T, _CTraversor>;
 	template <typename T> static constexpr bool _is_non_const_traversor_v = ::std::is_same_v<T, _Traversor>;
-	template <typename T> static constexpr bool _is_const_traversor_v = ::std::is_same_v<T, _CTraversor>;
 
 	public:
 	using        key_type = typename Node::_Key;
@@ -602,8 +601,8 @@ struct point_kd_tree_base
 
 	/* === Insert === */
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (const typename Node::_Info &info)
 	{
 		if(!Replace) return _insert(info);
@@ -614,8 +613,8 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (typename Node::_Info &&info)
 	{
 		if(!Replace) return _insert(::std::move(info));
@@ -626,14 +625,14 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (const typename Node::_Info &info)
 	{ return _insert(info).first; }
 
 	public:
-	template <typename T = _Traversor>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (typename Node::_Info &&info)
 	{ return _insert(::std::move(info)).first; }
 
@@ -674,8 +673,8 @@ struct point_kd_tree_base
 
 	/* === Emplace === */
 	public:
-	template <bool Replace = false, typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false, typename... Args>
+	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	emplace (Args&&... info)
 	{
 		_Node *node = _new_node(nullptr, ::std::forward<Args>(info)...);
@@ -686,14 +685,14 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	inline ::std::enable_if_t<Multi && _is_traversor_v<T>, T>
+	template <int _ = 0, typename... Args>
+	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	emplace (Args&&... info)
 	{ return _emplace(_new_node(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, key);
@@ -703,8 +702,8 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _is_traversor_v<T>, ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
@@ -751,14 +750,13 @@ struct point_kd_tree_base
 
 	/* === Transfer === */
 	public:
-	template <bool Replace = false, typename TOut = _Traversor, ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename TIn>
+	template <bool Replace = false, ushort K_Other, typename Node_Other, bool Multi_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename T>
 	inline ::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
-	                          _is_traversor_v<TOut> &&
 		point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>::
-		template _is_non_const_traversor_v<TIn>, ::std::pair<TOut, bool>>
+		template _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	transfer (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other,
-		      const TIn &tr)
+		      const T &tr)
 	{
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
@@ -767,19 +765,18 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename TOut = _Traversor, ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename TIn>
+	template <ushort K_Other, typename Node_Other, bool Multi_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename T>
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
-	                          _is_traversor_v<TOut> &&
 		point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>::
-		template _is_non_const_traversor_v<TIn>, TOut>
+		template _is_non_const_traversor_v<T>, _Traversor>
 	transfer (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other,
-		      const TIn &tr)
+		      const T &tr)
 	{
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
-				return TOut(_transfer_move(other, tr._node));
-		return TOut(_transfer_copy(other, tr._node));
+				return _Traversor(_transfer_move(other, tr._node));
+		return _Traversor(_transfer_copy(other, tr._node));
 	}
 	/* === Transfer === */
 
@@ -804,7 +801,7 @@ struct point_kd_tree_base
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
 	merge (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
-		if(this == &other || other._size == 0) return 0;
+		if(this == reinterpret_cast<point_kd_tree_base *>(&other) || other._size == 0) return 0;
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
 				{ _merge_move(other); return; }
@@ -974,19 +971,17 @@ struct point_kd_tree_base
 
 	/* === Find === */
 	public:
-	template <typename T =  _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	find (const Key &key)
-	{ return T(_find(key)); }
+	{ return _Traversor(_find(key)); }
 
 	public:
-	template <typename T =  _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && _is_const_traversor_v<T>, T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	find (const Key &key)
 	const
-	{ return T(_find(key)); }
+	{ return _CTraversor(_find(key)); }
 	/* === Find === */
 
 
@@ -1008,9 +1003,9 @@ struct point_kd_tree_base
 
 	/* === Nearest neighbour === */
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_traversor_v<T>, ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, double>>
 	nearest_neighbour (const Key &key, Measure &measure)
 	{
 		if(size == 0) return {&_head, 0};
@@ -1020,9 +1015,9 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_const_traversor_v<T>, ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, double>>
 	nearest_neighbour (const Key &key, Measure &measure)
 	const
 	{
@@ -1033,9 +1028,9 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_traversor_v<T>, ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, double>>
 	nearest_neighbour (const Key &key, const Measure &measure = Measure())
 	{
 		if(size == 0) return {&_head, 0};
@@ -1045,9 +1040,9 @@ struct point_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && _is_const_traversor_v<T>, ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, double>>
 	nearest_neighbour (const Key &key, const Measure &measure = Measure())
 	const
 	{
@@ -1172,7 +1167,7 @@ struct point_kd_tree_base
 	private:
 	void
 	_reset_node (_Node *node)
-	{ node->_down[0] = nullptr; node->_down[1] = nullptr; node->cast()->reset(); }
+	{ node->_down[0] = nullptr; node->_down[1] = nullptr; }
 	/* === Node === */
 
 
@@ -1294,7 +1289,7 @@ struct point_kd_tree_base
 	private:
 	template <typename _Node_Other>
 	void
-	_copy_structure_routine (_Node *node, _Node_Other *node_other)
+	_copy_structure_routine (_Node *node, const _Node_Other *node_other)
 	{
 		for( ; ; node = node->_down[1], node_other = node_other->_down[1]) {
 			if(node_other->_down[0] != nullptr) { node->_down[0] = _new_node_copy(node, node_other->_down[0]);
@@ -1366,7 +1361,7 @@ struct point_kd_tree_base
 		typename Node_Other::_Base *root_other = other._head._up; other._reset_head();
 		      _copy_structure_routine(root_other);
 		other._copy_structure_routine(root);
-		_clear(root); other._clear(root_other);
+		_clear_routine(root); other._clear_routine(root_other);
 	}
 
 	private:
@@ -1381,7 +1376,7 @@ struct point_kd_tree_base
 		typename Node_Other::_Base *root_other = other._head._up; other._reset_head();
 		      _copy_structure_routine(root_other);
 		other._copy_nodes_routine(root, size);
-		_clear(root); other._clear(root_other);
+		_clear_routine(root); other._clear_routine(root_other);
 	}
 
 	private:
@@ -1398,7 +1393,7 @@ struct point_kd_tree_base
 		typename Node_Other::_Base *root_other = other._head._up; other._reset_head();
 		      _copy_nodes_routine(root_other, other._size);
 		other._copy_nodes_routine(root, size);
-		_clear(root); other._clear(root_other);
+		_clear_routine(root); other._clear_routine(root_other);
 	}
 
 	private:
@@ -1442,6 +1437,28 @@ struct point_kd_tree_base
 
 	/* === Transfer === */
 	private:
+	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other, typename Comparator_Other,
+			  typename Equal_Other, typename Allocator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	::std::pair<_Node *, bool>
+	_transfer_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>
+		            &other, typename Node_Other::_Base *node_other)
+	{
+		::std::pair<_Node *, bool> result = _insert(node_other->info());
+		if(result.second) other._erase(node_other, true);
+		else if(Replace) {
+			_del_info(result.first); _new_info(result.first, node_other->info()); other._erase_(node_other, true); }
+		return result;
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, bool Multi_Other, typename Comparator_Other,
+			  typename Equal_Other, typename Allocator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
+	_Node *
+	_transfer_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>
+					&other, typename Node_Other::_Base *node_other)
+	{ _Node *node = _insert(node_other->info()).first; other._erase(node_other, true); return node; }
+
+	private:
 	template <bool Replace, ushort K_Other, bool Multi_Other, typename Comparator_Other, typename Equal_Other,
 	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
 	::std::pair<_Node *, bool>
@@ -1458,55 +1475,70 @@ struct point_kd_tree_base
 
 	private:
 	template <ushort K_Other, bool Multi_Other, typename Comparator_Other, typename Equal_Other,
-	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	          bool _ = Multi, typename = ::std::enable_if_t<_>>
 	_Node *
 	_transfer_move (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other,
 		            _Node *node_other)
 	{ other._erase(node_other, false); --other._size; _reset_node(node_other); return _emplace(node_other).first; }
+	/* === Transfer === */
 
+
+	/* === Merge === */
 	private:
-	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
-	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	::std::pair<_Node *, bool>
-	_transfer_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>
-		            &other, typename Node_Other::_Base *node_other)
+	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other, typename Comparator_Other,
+			  typename Equal_Other, typename Allocator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	size_t
+	_merge_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
+		                            Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
-		::std::pair<_Node *, bool> result = _insert(node_other->info());
-		if(result.second) other._erase(node_other, true);
-		else if(Replace) {
-			_del_info(result.first); _new_info(result.first, node_other->info()); other._erase_(node_other, true); }
-		return result;
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other> && ::std::is_same_v<Equal, Equal_Other>)
+				 _copy_structure(other);
+			else _copy_nodes    (other);
+			other.clear(); return _size; }
+		return _merge_copy_routine<Replace>(other);
 	}
 
 	private:
 	template <ushort K_Other, typename Node_Other, bool Multi_Other,
 	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
 	          bool _ = Multi, typename = ::std::enable_if_t<_>>
-	_Node *
-	_transfer_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other>
-					&other, typename Node_Other::_Base *node_other)
-	{ _Node *node = _insert(node_other->info()).first; other._erase(node_other, true); return node; }
-	/* === Transfer === */
-
-
-	/* === Merge === */
-	private:
-	template <bool Replace, bool Multi_Other, typename = ::std::enable_if_t<!Multi && !Multi_Other>>
-	size_t
-	_merge_move (point_kd_tree_base<K, Node, Multi_Other, Comparator, Equal, Allocator> &other)
+	void
+	_merge_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
+		                            Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
-		if(_size == 0) { _move_structure(::std::move(other)); other._reset(); return _size; }
-		size_t count = 0; return _merge_move_routine<Replace>(other, other._head._up, count); return count;
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other> && ::std::is_same_v<Equal, Equal_Other>)
+				 _copy_structure(other);
+			else _copy_nodes    (other);
+			other.clear(); }
+		else _merge_copy_routine(other);
 	}
 
 	private:
-	template <bool Multi_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
-	void
-	_merge_move (point_kd_tree_base<K, Node, Multi_Other, Comparator, Equal, Allocator> &other)
+	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
+	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	size_t
+	_merge_copy_routine (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
+		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
-		if(_size == 0) { _move_structure(::std::move(other)); other._reset(); }
-		else _merge_move_routine(other, other._head._up);
+		size_t count = 0;
+		for(typename Node_Other::_Base *node1 = other._head._down[1], *node2; node1 != &other._head; node1 = node2) {
+			node2 = _Iteration::_<1>(node1); count += _transfer_copy<Replace>(other, node1).second; }
+		return count;
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, bool Multi_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
+	          bool _ = Multi, typename = ::std::enable_if_t<_>>
+	void
+	_merge_copy_routine (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
+		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		for(typename Node_Other::_Base *node1 = other._head._down[1], *node2; node1 != &other._head; node1 = node2) {
+			node2 = _Iteration::_<1>(node1); _transfer_copy(other, node1).second; }
 	}
 
 	private:
@@ -1515,8 +1547,12 @@ struct point_kd_tree_base
 	size_t
 	_merge_move (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other)
 	{
-		if(_size == 0) { _move_nodes(::std::move(other)); other._reset(); return _size; }
-		size_t count = 0; return _merge_move_routine<Replace>(other, other._head._up, count); return count;
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other> && ::std::is_same_v<Equal, Equal_Other>)
+				 _move_structure(::std::move(other));
+			else _move_nodes    (::std::move(other));
+			other._reset(); return _size; }
+		size_t count = 0; _merge_move_routine<Replace>(other, count); return count;
 	}
 
 	private:
@@ -1525,8 +1561,13 @@ struct point_kd_tree_base
 	void
 	_merge_move (point_kd_tree_base<K_Other, Node, Multi_Other, Comparator_Other, Equal_Other, Allocator> &other)
 	{
-		if(_size == 0) { _move_nodes(::std::move(other)); other._reset(); }
-		else _merge_move_routine(other, other._head._up);
+
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other> && ::std::is_same_v<Equal, Equal_Other>)
+				 _move_structure(::std::move(other));
+			else _move_nodes    (::std::move(other));
+			other._reset(); }
+		else _merge_move_routine(other);
 	}
 
 	private:
@@ -1552,70 +1593,6 @@ struct point_kd_tree_base
 		if(node_other->_down[0] != nullptr) _merge_move_routine(other, node_other->_down[0]);
 		if(node_other->_down[1] != nullptr) _merge_move_routine(other, node_other->_down[1]);
 		_transfer_move(other, node_other);
-	}
-
-	private:
-	template <bool Replace, typename Node_Other, bool Multi_Other, typename Allocator_Other, typename =
-	          ::std::enable_if_t<!Multi && !Multi_Other && (!Node::_Balanced || Node_Other::_Balanced)>>
-	size_t
-	_merge_copy (point_kd_tree_base<K, Node_Other, Multi_Other, Comparator, Equal, Allocator_Other> &other)
-	{
-		if(_size == 0) { _copy_structure(other); other.renew(); return _size; }
-		return _merge_copy_routine<Replace>(other);
-	}
-
-	private:
-	template <typename Node_Other, bool Multi_Other, typename Allocator_Other, typename =
-	          ::std::enable_if_t<Multi && (!Node::_Balanced || Node_Other::_Balanced)>>
-	void
-	_merge_copy (point_kd_tree_base<K, Node_Other, Multi_Other, Comparator, Equal, Allocator_Other> &other)
-	{ if(_size == 0) { _copy_structure(other); other.renew(); } else _merge_copy_routine(other); }
-
-	private:
-	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
-	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	size_t
-	_merge_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
-		                            Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{
-		if(_size == 0) { _copy_nodes(other); other.renew(); return _size; }
-		return _merge_copy_routine<Replace>(other);
-	}
-
-	private:
-	template <ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
-	          bool _ = Multi, typename = ::std::enable_if_t<_>>
-	void
-	_merge_copy (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
-		                            Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{ if(_size == 0) { _copy_nodes(other); other.renew(); } else _merge_copy_routine(other); }
-
-	private:
-	template <bool Replace, ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
-	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	size_t
-	_merge_copy_routine (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
-		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{
-		size_t count = 0;
-		for(typename Node_Other::_Base *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); count += _transfer_copy<Replace>(other, node1).second; }
-		return count;
-	}
-
-	private:
-	template <ushort K_Other, typename Node_Other, bool Multi_Other,
-	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other,
-	          bool _ = Multi, typename = ::std::enable_if_t<_>>
-	void
-	_merge_copy_routine (point_kd_tree_base<K_Other, Node_Other, Multi_Other,
-		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
-	{
-		for(typename Node_Other::_Base *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); _transfer_copy(other, node1).second; }
 	}
 	/* === Merge === */
 	/* ##################### External Tree Management ###################### */

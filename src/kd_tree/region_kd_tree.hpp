@@ -99,6 +99,7 @@ struct region_kd_tree_node
 
 	/* === Constructor & Destructor === */
 	private:
+	region_kd_tree_node (_Base *up) : _Base(up) {}
 	region_kd_tree_node (_Base *up, ushort depth) : _Base(up), _depth(depth) {}
 	region_kd_tree_node (_Base *up, _Base *prev, _Base *next) : _Base(up, prev, next) {}
 	/* === Constructor & Destructor === */
@@ -127,12 +128,10 @@ struct region_kd_tree_base
 	template <typename T> static constexpr bool _is_traversor_v = ::std::is_same_v<T, _Traversor> ||
 	                                                              ::std::is_same_v<T, _CTraversor>;
 	template <typename T> static constexpr bool _is_non_const_traversor_v = ::std::is_same_v<T, _Traversor>;
-	template <typename T> static constexpr bool _is_const_traversor_v = ::std::is_same_v<T, _CTraversor>;
 
 	template <typename T> static constexpr bool _is_iterator_v = ::std::is_same_v<T, _Iterator> ||
 	                                                             ::std::is_same_v<T, _CIterator>;
 	template <typename T> static constexpr bool _is_non_const_iterator_v = ::std::is_same_v<T, _Iterator>;
-	template <typename T> static constexpr bool _is_const_iterator_v = ::std::is_same_v<T, _CIterator>;
 
 	public:
 	using        key_type = typename Node::_Key;
@@ -199,11 +198,345 @@ struct region_kd_tree_base
 	/* === Default === */
 
 
+	/* === Range === */
+	public:
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Divider &d = Divider(), const Comparator &c = Comparator(),
+	                     const Equal &e = Equal(), const Allocator &a = Allocator())
+		: _divider(d),         _comparator(c),            _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Divider &d, const Comparator &c, const Allocator &a)
+		: _divider(d),         _comparator(c),            _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Divider &d, const Equal &e, const Allocator &a = Allocator())
+		: _divider(d),         _comparator(Comparator()), _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Divider &d, const Allocator &a)
+		: _divider(d),         _comparator(Comparator()), _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Comparator &c,
+		                 const Equal &e = Equal(), const Allocator &a = Allocator())
+		: _divider(Divider()), _comparator(c),            _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Comparator &c, const Allocator &a)
+		: _divider(Divider()), _comparator(c),            _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Equal &e, const Allocator &a = Allocator())
+		: _divider(Divider()), _comparator(Comparator()), _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+
+	template <typename T1, typename T2>
+	region_kd_tree_base (const T1 &first, const T2 &last, const Allocator &a)
+		: _divider(Divider()), _comparator(Comparator()), _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(first, last); }
+	/* === Range === */
+
+
+	/* === Copy === */
+	region_kd_tree_base (const region_kd_tree_base &other)
+		: _divider(other._divider), _comparator(other._comparator), _equal(other._equal),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d)
+		: _divider(d),              _comparator(other._comparator), _equal(other._equal),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Comparator &c)
+		: _divider(other._divider), _comparator(c),                 _equal(other._equal),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Equal &e)
+		: _divider(other._divider), _comparator(other._comparator), _equal(e),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Allocator &a)
+		: _divider(other._divider), _comparator(other._comparator), _equal(other._equal), _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Comparator &c)
+		: _divider(d),              _comparator(c),                 _equal(other._equal),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Equal &e)
+		: _divider(d),              _comparator(other._comparator), _equal(e),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Allocator &a)
+		: _divider(d),              _comparator(other._comparator), _equal(other._equal), _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Comparator &c, const Equal &e)
+		: _divider(other._divider), _comparator(c),                 _equal(e),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Comparator &c, const Allocator &a)
+		: _divider(other._divider), _comparator(c),                 _equal(other._equal), _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Equal &e, const Allocator &a)
+		: _divider(other._divider), _comparator(other._comparator), _equal(e),            _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Comparator &c, const Equal &e)
+		: _divider(d),              _comparator(c),                 _equal(e),
+		  _allocator(_ATraits::select_on_container_copy_construction(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Comparator &c, const Allocator &a)
+		: _divider(d),              _comparator(c),                 _equal(other._equal), _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Equal &e, const Allocator &a)
+		: _divider(d),              _comparator(other._comparator), _equal(e),            _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Comparator &c, const Equal &e, const Allocator &a)
+		: _divider(other._divider), _comparator(c),                 _equal(e),            _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (const region_kd_tree_base &other, const Divider &d, const Comparator &c,
+		                 const Equal &e, const Allocator &a)
+		: _divider(d),              _comparator(c),                 _equal(e),            _allocator(_Allocator(a))
+	{ _reset_head(); _copy_structure(other); }
+	/* === Copy === */
+
+
+	/* === Move === */
+	region_kd_tree_base (region_kd_tree_base &&other)
+		: _divider(::std::move(other._divider)), _comparator(::std::move(other._comparator)),
+		  _equal(::std::move(other._equal)), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d)
+		: _divider(d),                           _comparator(::std::move(other._comparator)),
+		  _equal(::std::move(other._equal)), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Comparator &c)
+		: _divider(::std::move(other._divider)), _comparator(c),
+		  _equal(::std::move(other._equal)),  _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Equal &e)
+		: _divider(::std::move(other._divider)), _comparator(::std::move(other._comparator)),
+		  _equal(e), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Allocator &a)
+		: _divider(::std::move(other._divider)), _comparator(::std::move(other._comparator)),
+		  _equal(::std::move(other._equal)), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Comparator &c)
+		: _divider(d), _comparator(c), _equal(::std::move(other._equal)), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Equal &e)
+		: _divider(d), _comparator(::std::move(other._comparator)), _equal(e), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Allocator &a)
+		: _divider(d),                           _comparator(::std::move(other._comparator)),
+		  _equal(::std::move(other._equal)), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Comparator &c, const Equal &e)
+		: _divider(::std::move(other._divider)), _comparator(c), _equal(e), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Comparator &c, const Allocator &a)
+		: _divider(::std::move(other._divider)), _comparator(c), _equal(::std::move(other._equal)), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Equal &e, const Allocator &a)
+		: _divider(::std::move(other._divider)), _comparator(::std::move(other._comparator)),
+		  _equal(e), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Comparator &c, const Equal &e)
+		: _divider(d), _comparator(c), _equal(e), _allocator(::std::move(other._allocator))
+	{ _reset_head(); _copy_structure(other); }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Comparator &c, const Allocator &a)
+		: _divider(d), _comparator(c), _equal(::std::move(other._equal)), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Equal &e, const Allocator &a)
+		: _divider(d), _comparator(::std::move(other._comparator)), _equal(e), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Comparator &c, const Equal &e, const Allocator &a)
+		: _divider(::std::move(other._divider)), _comparator(c), _equal(e), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+
+	region_kd_tree_base (region_kd_tree_base &&other, const Divider &d, const Comparator &c,
+		                 const Equal &e, const Allocator &a)
+		: _divider(d), _comparator(c), _equal(e), _allocator(_Allocator(a))
+	{ _reset_head();
+		if(_ATraits::is_always_equal::value || _allocator == other._allocator) {
+			_move_structure(::std::move(other)); other._reset(); }
+	    else { _copy_structure(other); other.clear(); } }
+	/* === Move === */
+
+
+	/* === Initializer List === */
+	public:
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Divider &d = Divider(),
+	                     const Comparator &c = Comparator(), const Equal &e = Equal(), const Allocator &a = Allocator())
+		: _divider(d),         _comparator(c),            _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Divider &d,
+		                 const Comparator &c, const Allocator &a)
+		: _divider(d),         _comparator(c),            _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Divider &d,
+		                 const Equal &e, const Allocator &a = Allocator())
+		: _divider(d),         _comparator(Comparator()), _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Divider &d, const Allocator &a)
+		: _divider(d),         _comparator(Comparator()), _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Comparator &c,
+		                 const Equal &e = Equal(), const Allocator &a = Allocator())
+		: _divider(Divider()), _comparator(c),            _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Comparator &c, const Allocator &a)
+		: _divider(Divider()), _comparator(c),            _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il,
+		                 const Equal &e, const Allocator &a = Allocator())
+		: _divider(Divider()), _comparator(Comparator()), _equal(e),       _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+
+	region_kd_tree_base (const ::std::initializer_list<typename Node::_Info> &il, const Allocator &a)
+		: _divider(Divider()), _comparator(Comparator()), _equal(Equal()), _allocator(_Allocator(a))
+	{ _reset_head(); insert(il); }
+	/* === Initializer List === */
+
+
 	/* === Destructor === */
 	public:
 	~region_kd_tree_base () { if(_size > 0) _clear(); }
 	/* === Destructor === */
 	/* ##################### Constructor & Destructor ###################### */
+	/* ##################################################################### */
+
+
+	/* ##################################################################### */
+	/* ########################## Assign operator ########################## */
+	/* === Copy === */
+	public:
+	region_kd_tree_base &
+	operator =(const region_kd_tree_base &other)
+	{ if(this != &other) { _prepare_copy(other); if(other._size > 0) _copy_structure(other); } return *this; }
+
+	public:
+	template <typename Node_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, region_kd_tree_base &>
+	operator= (const region_kd_tree_base<K, Node_Other, Divider, Comparator, Equal, Allocator_Other> &other)
+	{ _prepare_copy(other); if(other._size > 0) _copy_structure(other); return *this; }
+
+	public:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, region_kd_tree_base &>
+	operator= (const region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                                Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{ _prepare_copy(other); if(other._size > 0) _copy_nodes(other); return *this; }
+	/* === Copy === */
+
+
+	/* === Move === */
+	public:
+	region_kd_tree_base &
+	operator= (region_kd_tree_base &&other)
+	{
+		if(this != &other) {
+			if(_prepare_move(::std::move(other))) {
+				 if(other._size > 0) { _move_structure(::std::move(other)); other._reset(); } }
+			else if(other._size > 0) { _copy_structure(other);              other.clear();  } }
+		return *this;
+	}
+
+	public:
+	template <ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	region_kd_tree_base &
+	operator= (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &&other)
+	{
+		if(_prepare_move(::std::move(other))) {
+			 if(other._size > 0) { _move_nodes(::std::move(other)); other._reset(); } }
+		else if(other._size > 0) { _copy_nodes(other);              other.clear();  }
+		return *this;
+	}
+
+	public:
+	template <typename Node_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, region_kd_tree_base &>
+	operator= (region_kd_tree_base<K, Node_Other, Divider, Comparator, Equal, Allocator_Other> &&other)
+	{ _prepare_move(::std::move(other)); if(other._size > 0) { _copy_structure(other); other.clear(); } return *this; }
+
+	public:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, region_kd_tree_base &>
+	operator= (region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other> &&other)
+	{ _prepare_move(::std::move(other)); if(other._size > 0) { _copy_nodes(other); other.clear(); } return *this; }
+	/* === Move === */
+
+
+	/* === Initializer List === */
+	public:
+	region_kd_tree_base &
+	operator= (const ::std::initializer_list<typename Node::_Info> &il)
+	{ clear(); insert(il); return *this; }
+	/* === Initializer List === */
+	/* ########################## Assign operator ########################## */
 	/* ##################################################################### */
 
 
@@ -222,7 +555,7 @@ struct region_kd_tree_base
 
 	public:
 	struct Info_Comparator {
-		template <ushort, typename, bool, typename, typename, typename> friend struct point_kd_tree_base;
+		template <ushort, typename, bool, typename, typename, typename> friend struct region_kd_tree_base;
 		private: Comparator _comparator; Info_Comparator (Comparator c) : _comparator(c) {}
 		public: bool operator() (const typename Node::_Info &v1, const typename Node::_Info &v2) const {
 			return _comparator(v1.first, v2.first); } };
@@ -246,7 +579,7 @@ struct region_kd_tree_base
 
 	public:
 	struct Info_Equal {
-		template <ushort, typename, bool, typename, typename, typename> friend struct point_kd_tree_base;
+		template <ushort, typename, bool, typename, typename, typename> friend struct region_kd_tree_base;
 		private: Equal _equal; Info_Equal (Equal c) : _equal(c) {}
 		public: bool operator() (const typename Node::_Info &v1, const typename Node::_Info &v2) const {
 			return _equal(v1.first, v2.first); } };
@@ -312,8 +645,8 @@ struct region_kd_tree_base
 
 	/* === Insert === */
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<_is_traversor_v<T> || _is_iterator_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::pair<_Traversor, bool>
 	insert (const typename Node::_Info &info)
 	{
 		if(!Replace) return _insert(info);
@@ -324,8 +657,8 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <bool Replace = false, typename T = _Traversor>
-	::std::enable_if_t<_is_traversor_v<T> || _is_iterator_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false>
+	::std::pair<_Traversor, bool>
 	insert (typename Node::_Info &&info)
 	{
 		if(!Replace) return _insert(::std::move(info));
@@ -360,11 +693,11 @@ struct region_kd_tree_base
 
 	/* === Emplace === */
 	public:
-	template <bool Replace = false, typename T = _Traversor, typename... Args>
-	::std::enable_if_t<_is_traversor_v<T> || _is_iterator_v<T>, ::std::pair<T, bool>>
+	template <bool Replace = false, typename... Args>
+	::std::pair<_Traversor, bool>
 	emplace (Args&&... info)
 	{
-		_Node *node = _new_node_leaf(nullptr, _head._down[0], &_head, ::std::forward<Args>(info)...);
+		_Node *node = _new_node_leaf(nullptr, ::std::forward<Args>(info)...);
 		::std::pair<_Node *, bool> result = _emplace(node);
 		if(!result.second) { if(Replace) { _del_info(result.first); _new_info(result.first, node->info()); }
 		                     _del_node_leaf(node); }
@@ -372,8 +705,8 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<Node::_SetMap && (_is_traversor_v<T> || _is_iterator_v<T>), ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, key);
@@ -383,8 +716,8 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <typename T = _Traversor, typename... Args>
-	::std::enable_if_t<Node::_SetMap && (_is_traversor_v<T> || _is_iterator_v<T>), ::std::pair<T, bool>>
+	template <int _ = 0, typename... Args>
+	::std::enable_if_t<Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
 	try_emplace (typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
@@ -416,6 +749,67 @@ struct region_kd_tree_base
 		return count;
 	}
 	/* === Erase === */
+
+
+	/* === Transfer === */
+	public:
+	template <bool Replace = false, ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other, typename T>
+	inline ::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info> &&
+		region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other>::
+		template _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
+	transfer (region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other> &other,
+		      const T &tr)
+	{
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				return _transfer_move<Replace>(other, tr._node);
+		return _transfer_copy<Replace>(other, tr._node);
+	}
+	/* === Transfer === */
+
+
+	/* === Merge === */
+	public:
+	template <bool Replace = false, ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	inline ::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, size_t>
+	merge (region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		if(this == reinterpret_cast<region_kd_tree_base *>(&other) || other._size == 0) return 0;
+		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
+			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
+				return _merge_move<Replace>(other);
+		return _merge_copy<Replace>(other);
+	}
+	/* === Merge === */
+
+
+	/* === Swap === */
+	public:
+	void
+	swap (region_kd_tree_base &other)
+	{ if(this != &other) { if(_prepare_swap(other)) _swap_move_structure(other); else _swap_copy_structure(other); } }
+
+	public:
+	template <ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	void
+	swap (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &other)
+	{ if(_prepare_swap(other)) _swap_move_nodes(other); else _swap_copy_nodes(other); }
+
+	public:
+	template <typename Node_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
+	swap (region_kd_tree_base<K, Node_Other, Divider, Comparator, Equal, Allocator_Other> &other)
+	{ _prepare_swap(other); _swap_copy_structure(other); }
+
+	public:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
+	swap (region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{ _prepare_swap(other); _swap_copy_nodes(other); }
+	/* === Swap === */
 	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
@@ -511,45 +905,43 @@ struct region_kd_tree_base
 
 	/* === Find === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && (_is_traversor_v<T> || _is_iterator_v<T>), T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _Traversor>
 	find (const Key &key)
-	{ return T(_find(key)); }
+	{ return _Traversor(_find(key)); }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && (_is_const_traversor_v<T> || _is_const_iterator_v<T>), T>
+	template <typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, _CTraversor>
 	find (const Key &key)
 	const
-	{ return T(_find(key)); }
+	{ return _CTraversor(_find(key)); }
 	/* === Find === */
 
 
 	/* === Equal range === */
 	public:
-	template <typename T = _Traversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && (_is_traversor_v<T> || _is_iterator_v<T>), ::std::pair<T, T>>
+	template <typename Key>
+	::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, _Traversor>>
 	equal_range (const Key &key)
-	{ _Node* node = _find(key); return ::std::pair<T, T>(T(node), T(node == &_head ? node : node->_down[1])); }
+	{ _Node* node = _find(key); return {_Traversor(node), _Traversor(node == &_head ? node : node->_down[1])}; }
 
 	public:
-	template <typename T = _CTraversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-	                          && (_is_const_traversor_v<T> || _is_const_iterator_v<T>), ::std::pair<T, T>>
+	template <typename Key>
+	::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, _CTraversor>>
 	equal_range (const Key &key)
 	const
-	{ const _Node* node = _find(key); return ::std::pair<T, T>(T(node), T(node == &_head ? node : node->_down[1])); }
+	{ const _Node* node = _find(key); return {_CTraversor(node), _CTraversor(node == &_head ? node : node->_down[1])}; }
 	/* === Equal range === */
 
 
 	/* === Nearest neighbour === */
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && (_is_traversor_v<T> || _is_iterator_v<T>), ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, double>>
 	nearest_neighbour (const Key &key, Measure &measure)
 	{
 		if(size == 0) return {&_head, 0};
@@ -559,9 +951,9 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && (_is_const_traversor_v<T> || _is_const_iterator_v<T>), ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, double>>
 	nearest_neighbour (const Key &key, Measure &measure)
 	const
 	{
@@ -572,9 +964,9 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && (_is_traversor_v<T> || _is_iterator_v<T>), ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_Traversor, double>>
 	nearest_neighbour (const Key &key, const Measure &measure = Measure())
 	{
 		if(size == 0) return {&_head, 0};
@@ -584,9 +976,9 @@ struct region_kd_tree_base
 	}
 
 	public:
-	template <typename Measure, typename T = _CTraversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
-					   && (_is_const_traversor_v<T> || _is_const_iterator_v<T>), ::std::pair<T, double>>
+	template <typename Measure, typename Key>
+	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
+		::std::pair<_CTraversor, double>>
 	nearest_neighbour (const Key &key, const Measure &measure = Measure())
 	const
 	{
@@ -687,10 +1079,22 @@ struct region_kd_tree_base
 	private:
 	template <typename... Args>
 	_Node *
-	_new_node_leaf (_Node *up, _Node *prev, _Node *next, Args&&... info)
+	_new_node_leaf (_Node *up, Args&&... info)
 	{
 		++_size; Node *node = _ATraits::allocate(_allocator, 1);
-		:: new(node) Node(up, prev, next); _new_info(node, ::std::forward<Args>(info)...);
+		:: new(node) Node(up, _head._down[0], &_head); _new_info(node, ::std::forward<Args>(info)...);
+		return node;
+	}
+
+	private:
+	template <typename _Node_Other>
+	_Node *
+	_new_node_copy (_Node *up, _Node_Other *node_other)
+	{
+		Node *node = _ATraits::allocate(_allocator, 1);
+		if(!node_other->is_leaf()) ::new(node) Node(up, node_other->depth());
+		else            { ++_size; ::new(node) Node(up); }
+		_new_info(node, node_other->info());
 		return node;
 	}
 
@@ -706,8 +1110,8 @@ struct region_kd_tree_base
 
 	private:
 	void
-	_reset_node (_Node *node)
-	{ node->_down[0] = nullptr; node->_down[1] = nullptr; node->cast()->reset(); }
+	_reset_node_leaf (_Node *node)
+	{ node->_down[0] = _head._down[0]; node->_down[1] = &_head; }
 	/* === Node === */
 
 
@@ -724,6 +1128,332 @@ struct region_kd_tree_base
 	{ node->info().Node::_Info::~_Info(); }
 	/* === Info === */
 	/* ########################## Node Management ########################## */
+	/* ##################################################################### */
+
+
+	/* ##################################################################### */
+	/* ##################### External Tree Management ###################### */
+	/* === Preprocessing === */
+	private:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	void
+	_prepare_copy (const region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		clear(); _copy_divider(other._divider); _copy_comparator(other._comparator);
+		_copy_equal(other._equal); _copy_allocator(other._allocator);
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	bool
+	_prepare_move (region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                              Comparator_Other, Equal_Other, Allocator_Other> &&other)
+	{
+		clear(); _move_divider(::std::move(other._divider)); _move_comparator(::std::move(other._comparator));
+		_move_equal(::std::move(other._equal)); return _move_allocator(::std::move(other._allocator));
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	bool
+	_prepare_swap (region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                              Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		_swap_divider(other._divider); _swap_comparator(other._comparator);
+		_swap_equal(other._equal); return _swap_allocator(other._allocator);
+	}
+	/* === Preprocessing === */
+
+
+	/* === Divider === */
+	private:
+	inline void _copy_divider (const Divider  &divider_other) { _divider = divider_other;              }
+	inline void _move_divider (      Divider &&divider_other) { _divider = ::std::move(divider_other); }
+	inline void _swap_divider (      Divider  &divider_other) { ::std::swap(_divider, divider_other);  }
+
+	template <typename Divider_Other> constexpr void _copy_divider (const Divider_Other  &) {}
+	template <typename Divider_Other> constexpr void _move_divider (      Divider_Other &&) {}
+	template <typename Divider_Other> constexpr void _swap_divider (      Divider_Other  &) {}
+	/* === Divider === */
+
+
+	/* === Comparator === */
+	private:
+	inline void _copy_comparator (const Comparator  &comparator_other) { _comparator = comparator_other;              }
+	inline void _move_comparator (      Comparator &&comparator_other) { _comparator = ::std::move(comparator_other); }
+	inline void _swap_comparator (      Comparator  &comparator_other) { ::std::swap(_comparator, comparator_other);  }
+
+	template <typename Comparator_Other> constexpr void _copy_comparator (const Comparator_Other  &) {}
+	template <typename Comparator_Other> constexpr void _move_comparator (      Comparator_Other &&) {}
+	template <typename Comparator_Other> constexpr void _swap_comparator (      Comparator_Other  &) {}
+	/* === Comparator === */
+
+
+	/* === Equal === */
+	private:
+	inline void _copy_equal (const Equal  &equal_other) { _equal = equal_other;              }
+	inline void _move_equal (      Equal &&equal_other) { _equal = ::std::move(equal_other); }
+	inline void _swap_equal (      Equal  &equal_other) { ::std::swap(_equal, equal_other);  }
+
+	template <typename Equal_Other> constexpr void _copy_equal (const Equal_Other  &) {}
+	template <typename Equal_Other> constexpr void _move_equal (      Equal_Other &&) {}
+	template <typename Equal_Other> constexpr void _swap_equal (      Equal_Other  &) {}
+	/* === Equal === */
+
+
+	/* === Allocator === */
+	private:
+	inline void
+	_copy_allocator (const Allocator &other)
+	{ if(_ATraits::propagate_on_container_copy_assignment::value) _allocator = other._allocator; }
+
+	private:
+	inline bool
+	_move_allocator (Allocator &&other)
+	{
+		if(_ATraits::propagate_on_container_move_assignment::value) {
+			_allocator = ::std::move(other._allocator); return true; }
+		else return _ATraits::is_always_equal::value || _allocator == other._allocator;
+	}
+
+	private:
+	inline bool
+	_swap_allocator (Allocator &other)
+	{
+		if(_ATraits::propagate_on_container_swap::value) { ::std::swap(_allocator, other._allocator); return true; }
+		else return _ATraits::is_always_equal::value || _allocator == other._allocator;
+	}
+
+	private:
+	template <typename Allocator_Other> constexpr void _copy_allocator (const Allocator_Other  &) {}
+	template <typename Allocator_Other> constexpr bool _move_allocator (      Allocator_Other &&) { return false; }
+	template <typename Allocator_Other> constexpr bool _swap_allocator (      Allocator_Other  &) { return false; }
+	/* === Allocator === */
+
+
+	/* === Copy === */
+	private:
+	template <typename Node_Other, typename Allocator_Other>
+	inline void
+	_copy_structure (const region_kd_tree_base<K, Node_Other, Divider, Comparator, Equal, Allocator_Other> &other)
+	{ _copy_structure_routine(other._head._up); }
+
+	private:
+	template <typename _Node_Other>
+	void
+	_copy_structure_routine (const _Node_Other *root_other)
+	{
+		_head._up = _new_node_copy(&_head, root_other);
+		_Node *thread = &_head;
+		_copy_structure_routine(_head._up, root_other, thread);
+		thread->_down[1] = &_head; _head._down[0] = thread;
+	}
+
+	private:
+	template <typename _Node_Other>
+	void
+	_copy_structure_routine (_Node *node, const _Node_Other *node_other, _Node *&thread)
+	{
+		for( ; !node->is_leaf(); node = node->_down[1], node_other = node_other->_down[1]) {
+			if(node_other->_down[0] != nullptr) { node->_down[0] = _new_node_copy(node, node_other->_down[0]);
+				_copy_structure_routine(node->_down[0], node_other->_down[0], thread); }
+			if(node_other->_down[1] != nullptr)   node->_down[1] = _new_node_copy(node, node_other->_down[1]);
+			else return; }
+		thread->_down[1] = node; node->_down[0] = thread; thread = node;
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	inline void
+	_copy_nodes (const region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                                  Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{ _copy_nodes_routine(other._begin(), &other._head); }
+
+	private:
+	template <typename _Node_Other>
+	void
+	_copy_nodes_routine (const _Node_Other *begin_other, const _Node_Other *end_other)
+	{ for(; begin_other != end_other; begin_other = begin_other->_down[1]) _insert(begin_other->info()); }
+	/* === Copy === */
+
+
+	/* === Move === */
+	private:
+	void
+	_move_structure (region_kd_tree_base<K, Node, Divider, Comparator, Equal, Allocator> &&other)
+	{
+		_size = other._size; other._head._up->_up = &_head;
+		other._head._down[0]->_down[1] = &_head;
+		other._head._down[1]->_down[0] = &_head;
+		_head = ::std::move(other._head); }
+
+	private:
+	template <ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	inline void
+	_move_nodes (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &&other)
+	{ _size = other._size; _move_nodes_routine(other._head._down[1], &other._head); }
+
+	private:
+	void
+	_move_nodes_routine (_Node *begin_other, _Node *end_other)
+	{
+		for(_Node *node_other; begin_other != end_other; begin_other = node_other) {
+			node_other = begin_other->_down[1]; _reset_node_leaf(begin_other); _emplace(begin_other); }
+	}
+	/* === Move === */
+
+
+	/* === Swap === */
+	private:
+	template <typename Node_Other, typename Allocator_Other>
+	void
+	_swap_copy_structure (region_kd_tree_base<K, Node_Other, Divider, Comparator, Equal, Allocator_Other> &other)
+	{
+		if(_size == 0) { if(other._size > 0) { _copy_structure(other); other.clear(); } return; }
+		else      if(other._size == 0) { other._copy_structure(*this);       clear();   return; }
+
+		_Node                      *root       =       _head._up;       _reset_head();
+		typename Node_Other::_Base *root_other = other._head._up; other._reset_head();
+		      _copy_structure_routine(root_other);
+		other._copy_structure_routine(root);
+		_clear(root); other._clear(root_other);
+	}
+
+	private:
+	template <ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	void
+	_swap_copy_nodes (region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                                 Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		if(_size == 0) { if(other._size > 0) { _copy_nodes(other); other.clear(); } return; }
+		else      if(other._size == 0) { other._copy_nodes(*this);       clear();   return; }
+
+		_Node                      *root       =       _head._up, *begin       =       _head._down[1];       _reset_head();
+		typename Node_Other::_Base *root_other = other._head._up, *begin_other = other._head._down[1]; other._reset_head();
+		      _copy_nodes_routine(begin_other, &other._head);
+		other._copy_nodes_routine(begin,             &_head);
+		_clear_routine(root); other._clear_routine(root_other);
+	}
+
+	private:
+	void
+	_swap_move_structure (region_kd_tree_base<K, Node, Divider, Comparator, Equal, Allocator> &other)
+	{
+		:: std::swap(_size, other._size);
+		:: std::swap(_head._up->_up, other._head._up->_up);
+		:: std::swap(_head._down[0]->_down[1], other._head._down[0]->_down[1]);
+		:: std::swap(_head._down[1]->_down[0], other._head._down[1]->_down[0]);
+		:: std::swap(_head, other._head);
+	}
+
+	private:
+	template <ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	void
+	_swap_move_nodes (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &other)
+	{
+		if(_size == 0) { if(other._size > 0) { _move_nodes(::std::move(other)); other._reset(); } return; }
+		else      if(other._size == 0) { other._move_nodes(::std::move(*this));       _reset();   return; }
+
+		_Node *begin = &_head._down[1], *begin_other = other._head._down[1]; _reset_head(); other._reset_head();
+		:: std::swap(_size, other._size);
+		      _move_nodes_routine(begin_other, &other._head);
+		other._move_nodes_routine(begin,             &_head);
+	}
+	/* === Swap === */
+
+
+	/* === Transfer === */
+	private:
+	template <bool Replace, ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	::std::pair<_Node *, bool>
+	_transfer_copy (region_kd_tree_base<K_Other, Node_Other, Divider_Other, Comparator_Other, Equal_Other, Allocator_Other>
+		            &other, typename Node_Other::_Base *node_other)
+	{
+		::std::pair<_Node *, bool> result = _insert(node_other->info());
+		if(result.second) other._erase(node_other, true);
+		else if(Replace) {
+			_del_info(result.first); _new_info(result.first, node_other->info()); other._erase_(node_other, true); }
+		return result;
+	}
+
+	private:
+	template <bool Replace, ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	::std::pair<_Node *, bool>
+	_transfer_move (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &other,
+		            _Node *node_other)
+	{
+		int side; _Node *place = _place(side, **node_other);
+		if(side == -1) {
+			if(Replace) { _del_info(place); _new_info(place, node_other->info()); other._erase(node_other, true); }
+		    return {place, false}; }
+		other._erase(node_other, false); --other._size;
+		_reset_node(node_other); return _emplace_place(side, place, node_other);
+	}
+	/* === Transfer === */
+
+
+	/* === Merge === */
+	private:
+	template <bool Replace, ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	size_t
+	_merge_copy (region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                            Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Divider, Divider_Other> && ::std::is_same_v<Comparator, Comparator_Other> &&
+				         ::std::is_same_v<Equal,     Equal_Other>) _copy_structure(other);
+			else                                                   _copy_nodes    (other);
+			other.clear(); return _size; }
+		return _merge_copy_routine<Replace>(other);
+	}
+
+	private:
+	template <bool Replace, ushort K_Other, typename Node_Other, typename Divider_Other,
+	          typename Comparator_Other, typename Equal_Other, typename Allocator_Other>
+	size_t
+	_merge_copy_routine (region_kd_tree_base<K_Other, Node_Other, Divider_Other,
+		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
+	{
+		size_t count = 0;
+		for(typename Node_Other::_Base *node1 = other._head._down[1], *node2; node1 != &other._head; node1 = node2) {
+			node2 = node1->_down[1]; count += _transfer_copy<Replace>(other, node1).second; }
+		return count;
+	}
+
+	private:
+	template <bool Replace, ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	size_t
+	_merge_move (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &other)
+	{
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Divider, Divider_Other> && ::std::is_same_v<Comparator, Comparator_Other> &&
+				         ::std::is_same_v<Equal,     Equal_Other>) _move_structure(::std::move(other));
+			else                                                   _move_nodes    (::std::move(other));
+			other._reset(); return _size; }
+		return _merge_move_routine<Replace>(other);
+	}
+
+	private:
+	template <bool Replace, ushort K_Other, typename Divider_Other, typename Comparator_Other, typename Equal_Other>
+	size_t
+	_merge_move_routine (region_kd_tree_base<K_Other, Node, Divider_Other, Comparator_Other, Equal_Other, Allocator> &other,
+	                     _Node *node_other)
+	{
+		size_t count = 0;
+		for(_Node *node1 = other._head._down[1], *node2; node1 != &other._head; node1 = node2) {
+			node2 = node1->_down[1]; count += _transfer_move<Replace>(other, node1).second; }
+		return count;
+	}
+	/* === Merge === */
+	/* ##################### External Tree Management ###################### */
 	/* ##################################################################### */
 
 
@@ -816,11 +1546,11 @@ struct region_kd_tree_base
 	{
 		_place_dividers(side, place, _Node::key(::std::forward<Arg>(info)));
 		if(place == &_head) {
-			_head._up = _new_node_leaf(&_head, &_head, &_head, ::std::forward<Arg>(info));
+			_head._up = _new_node_leaf(&_head, ::std::forward<Arg>(info));
 			_head._down[0] = _head._up; _head._down[1] = _head._up;
 			return _head._up; }
 		else {
-			_Node *node = _new_node_leaf(place, _head._down[0], &_head, ::std::forward<Arg>(info)); place->_down[side] = node;
+			_Node *node = _new_node_leaf(place, ::std::forward<Arg>(info)); place->_down[side] = node;
 			_head._down[0]->_down[1] = node; _head._down[0] = node;
 			return node; }
 	}
@@ -928,7 +1658,7 @@ struct region_kd_tree_base
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, Measure &measure,
-		                double &distance, _Node *&nearest, ushort d, const _Node *node)
+		                double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
 		if(node->is_leaf()) {
@@ -973,7 +1703,7 @@ struct region_kd_tree_base
 	template <typename Measure, typename Key>
 	void
 	_nearest_neighbour (const Key &key, const Measure &measure,
-						double &distance, _Node *&nearest, ushort d, const _Node *node)
+						double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
 		if(node->is_leaf()) {
@@ -1015,7 +1745,7 @@ struct region_kd_tree_base
 	private:
 	template <typename Key1, typename Key2>
 	void
-	_range_search (_CRange &range, const Key1 &min, const Key2 &max, ushort bounds, ushort d, _Node *node)
+	_range_search (_CRange &range, const Key1 &min, const Key2 &max, ushort bounds, ushort d, const _Node *node)
 	const
 	{
 		if(node->is_leaf()) { if(_range_inside(min, max, d, node)) range._push(node); return; }
@@ -1058,12 +1788,22 @@ struct region_kd_tree_base
 	}
 
 	private:
-	template <typename Range>
 	void
-	_report_subtree (Range &range, const _Node *node)
-	const
+	_report_subtree (_Range &range, _Node *node)
 	{
 		_Node *first = node, *last = node;
+		while(!first->is_leaf()) first = first->_down[first->_down[0] == nullptr];
+		while(! last->is_leaf())  last =  last->_down[ last->_down[1] != nullptr];
+		for( ; first != last; first = first->_down[1]) range._push(first);
+		range._push(last);
+	}
+
+	private:
+	void
+	_report_subtree (_CRange &range, const _Node *node)
+	const
+	{
+		const _Node *first = node, *last = node;
 		while(!first->is_leaf()) first = first->_down[first->_down[0] == nullptr];
 		while(! last->is_leaf())  last =  last->_down[ last->_down[1] != nullptr];
 		for( ; first != last; first = first->_down[1]) range._push(first);

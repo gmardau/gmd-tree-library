@@ -1501,25 +1501,6 @@ struct binary_tree_base
 
 	/* === Transfer === */
 	private:
-	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	::std::pair<_Node *, bool>
-	_transfer_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other, _Node *node_other)
-	{
-		int side; _Node *place = _place(side, **node_other);
-		if(side == -1) {
-			if(Replace) { _del_info(place); _new_info(place, node_other->info()); other.cast()._erase_(node_other, true); }
-		    return {place, false}; }
-		other.cast()._erase_(node_other, false); --other._size; ++_size;
-		_reset_node(node_other); return cast()._emplace_hint_(place, node_other);
-	}
-
-	private:
-	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
-	_Node *
-	_transfer_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other, _Node *node_other)
-	{ other.cast()._erase_(node_other, false); --other._size; ++_size; _reset_node(node_other); return cast()._emplace_(node_other).first; }
-
-	private:
 	template <bool Replace, typename Node_Other, bool Multi_Other, typename Comparator_Other, typename Allocator_Other,
 	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
 	::std::pair<_Node *, bool>
@@ -1540,54 +1521,33 @@ struct binary_tree_base
 	_transfer_copy (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other,
 		            typename Node_Other::_Base *node_other)
 	{ _Node *node = cast()._insert_(node_other->info()).first; other.cast()._erase_(node_other, true); return node; }
+
+	private:
+	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	::std::pair<_Node *, bool>
+	_transfer_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other, _Node *node_other)
+	{
+		int side; _Node *place = _place(side, **node_other);
+		if(side == -1) {
+			if(Replace) { _del_info(place); _new_info(place, node_other->info()); other.cast()._erase_(node_other, true); }
+		    return {place, false}; }
+		other.cast()._erase_(node_other, false); --other._size; ++_size;
+		_reset_node(node_other); return cast()._emplace_hint_(place, node_other);
+	}
+
+	private:
+	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
+	_Node *
+	_transfer_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other, _Node *node_other)
+	{
+		other.cast()._erase_(node_other, false);
+		--other._size; ++_size;
+		_reset_node(node_other); return cast()._emplace_(node_other).first;
+	}
 	/* === Transfer === */
 
 
 	/* === Merge === */
-	private:
-	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	size_t
-	_merge_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
-	{
-		if(_size == 0) {
-			if constexpr(::std::is_same_v<Comparator, Comparator_Other>) _move_structure(::std::move(other));
-			else                                                         _move_nodes    (::std::move(other));
-			other._reset(); return _size; }
-		return _merge_move_routine<Replace>(other);
-	}
-
-	private:
-	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
-	void
-	_merge_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
-	{
-		if(_size == 0) {
-			if constexpr(::std::is_same_v<Comparator, Comparator_Other>) _move_structure(::std::move(other));
-			else                                                         _move_nodes    (::std::move(other));
-			other._reset(); }
-		else _merge_move_routine(other);
-	}
-
-	private:
-	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
-	size_t
-	_merge_move_routine (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
-	{
-		size_t count = 0;
-		for(_Node *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); count += _transfer_move<Replace>(other, node1).second; }
-		return count;
-	}
-
-	private:
-	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
-	void
-	_merge_move_routine (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
-	{
-		for(_Node *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); _transfer_move(other, node1); }
-	}
-
 	private:
 	template <bool Replace, typename Node_Other, bool Multi_Other, typename Comparator_Other, typename Allocator_Other,
 	          bool _ = !Multi, typename = ::std::enable_if_t<_>>
@@ -1634,6 +1594,50 @@ struct binary_tree_base
 	{
 		for(typename Node_Other::_Base *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
 			node2 = _Iteration::_<1>(node1); _transfer_copy(other, node1); }
+	}
+
+	private:
+	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	size_t
+	_merge_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
+	{
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other>) _move_structure(::std::move(other));
+			else                                                         _move_nodes    (::std::move(other));
+			other._reset(); return _size; }
+		return _merge_move_routine<Replace>(other);
+	}
+
+	private:
+	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
+	void
+	_merge_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
+	{
+		if(_size == 0) {
+			if constexpr(::std::is_same_v<Comparator, Comparator_Other>) _move_structure(::std::move(other));
+			else                                                         _move_nodes    (::std::move(other));
+			other._reset(); }
+		else _merge_move_routine(other);
+	}
+
+	private:
+	template <bool Replace, bool Multi_Other, typename Comparator_Other, bool _ = !Multi, typename = ::std::enable_if_t<_>>
+	size_t
+	_merge_move_routine (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
+	{
+		size_t count = 0;
+		for(_Node *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
+			node2 = _Iteration::_<1>(node1); count += _transfer_move<Replace>(other, node1).second; }
+		return count;
+	}
+
+	private:
+	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
+	void
+	_merge_move_routine (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other)
+	{
+		for(_Node *node1 = other._begin(), *node2; node1 != &other._head; node1 = node2) {
+			node2 = _Iteration::_<1>(node1); _transfer_move(other, node1); }
 	}
 	/* === Merge === */
 	/* ##################### External Tree Management ###################### */
