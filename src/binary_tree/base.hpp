@@ -104,6 +104,7 @@ struct binary_tree_base
 
 	private:
 	using _Node = typename Node::_Base;
+	using _SubBase = binary_tree_subbase<Node::_Tree, Node, Multi, Comparator, Allocator>;
 
 	using _Allocator = typename ::std::allocator_traits<Allocator>::template rebind_alloc<Node>;
 	using _ATraits   = typename ::std::allocator_traits<_Allocator>;
@@ -120,8 +121,6 @@ struct binary_tree_base
 		::std::is_same_v<T, _RTraversor> || ::std::is_same_v<T, _CTraversor> || ::std::is_same_v<T, _CRTraversor>;
 	template <typename T> static constexpr bool _is_non_const_traversor_v =
 		::std::is_same_v<T, _Traversor> || ::std::is_same_v<T, _RTraversor>;
-	template <typename T> static constexpr bool _is_const_traversor_v =
-		::std::is_same_v<T, _CTraversor> || ::std::is_same_v<T, _CRTraversor>;
 
 	public:
 	using        key_type = typename Node::_Key;
@@ -150,6 +149,13 @@ struct binary_tree_base
 	size_t _size = 0;
 	_Node _head = _Node(nullptr);
 	/* === Variables === */
+
+
+	/* === Cast === */
+	private:
+	constexpr       _SubBase &cast ()       { return reinterpret_cast<      _SubBase &>(*this); }
+	constexpr const _SubBase &cast () const { return reinterpret_cast<const _SubBase &>(*this); }
+	/* === Cast === */
 
 
 	/* ##################################################################### */
@@ -517,9 +523,9 @@ struct binary_tree_base
 	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (const typename Node::_Info &info)
 	{
-		if(!Replace) return _insert_(info);
+		if(!Replace) return cast()._insert_(info);
 		else {
-			::std::pair<_Node *, bool> result = _insert_(info);
+			::std::pair<_Node *, bool> result = cast()._insert_(info);
 			if(!result.second) { _del_info(result.first); _new_info(result.first, info); }
 			return result; }
 	}
@@ -529,9 +535,9 @@ struct binary_tree_base
 	::std::enable_if_t<!Multi && Replace == Replace, ::std::pair<_Traversor, bool>>
 	insert (typename Node::_Info &&info)
 	{
-		if(!Replace) return _insert_(::std::move(info));
+		if(!Replace) return cast()._insert_(::std::move(info));
 		else {
-			::std::pair<_Node *, bool> result = _insert_(::std::move(info));
+			::std::pair<_Node *, bool> result = cast()._insert_(::std::move(info));
 			if(!result.second) { _del_info(result.first); _new_info(result.first, ::std::move(info)); }
 			return result; }
 	}
@@ -540,13 +546,13 @@ struct binary_tree_base
 	template <int _ = 0>
 	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (const typename Node::_Info &info)
-	{ return _insert_(info).first; }
+	{ return cast()._insert_(info).first; }
 
 	public:
 	template <int _ = 0>
 	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	insert (typename Node::_Info &&info)
-	{ return _insert_(::std::move(info)).first; }
+	{ return cast()._insert_(::std::move(info)).first; }
 
 	public:
 	template <bool Replace = false, typename T1, typename T2>
@@ -554,10 +560,10 @@ struct binary_tree_base
 	insert (const T1 &first, const T2 &last)
 	{
 		size_t count = 0;
-		if(!Replace) for(T1 tr = first; tr != last; ++tr) count += _insert_(*tr).second;
+		if(!Replace) for(T1 tr = first; tr != last; ++tr) count += cast()._insert_(*tr).second;
 		else {
 			for(T1 tr = first; tr != last; ++tr) {
-				::std::pair<_Node *, bool> result = _insert_(*tr); count += result.second;
+				::std::pair<_Node *, bool> result = cast()._insert_(*tr); count += result.second;
 				if(!result.second) { _del_info(result.first); _new_info(result.first, *tr); } } }
 		return count;
 	}
@@ -566,7 +572,7 @@ struct binary_tree_base
 	template <typename T1, typename T2>
 	::std::enable_if_t<Multi && ::std::is_same_v<T1, T1>, void>
 	insert (const T1 &first, const T2 &last)
-	{ for(T1 tr = first; tr != last; ++tr) _insert_(*tr); }
+	{ for(T1 tr = first; tr != last; ++tr) cast()._insert_(*tr); }
 
 	public:
 	template <bool Replace = false>
@@ -609,9 +615,9 @@ struct binary_tree_base
 	::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	insert_hint (const T &hint, const typename Node::_Info &info)
 	{
-		if(!Replace) return _insert_hint_(hint._node, info);
+		if(!Replace) return cast()._insert_hint_(hint._node, info);
 		else {
-			::std::pair<_Node *, bool> result = _insert_hint_(hint._node, info);
+			::std::pair<_Node *, bool> result = cast()._insert_hint_(hint._node, info);
 			if(!result.second) { _del_info(result.first); _new_info(result.first, info); }
 			return result; }
 	}
@@ -621,9 +627,9 @@ struct binary_tree_base
 	::std::enable_if_t<!Multi && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	insert_hint (const T &hint, typename Node::_Info &&info)
 	{
-		if(!Replace) return _insert_hint_(hint._node, ::std::move(info));
+		if(!Replace) return cast()._insert_hint_(hint._node, ::std::move(info));
 		else {
-			::std::pair<_Node *, bool> result = _insert_hint_(hint._node, ::std::move(info));
+			::std::pair<_Node *, bool> result = cast()._insert_hint_(hint._node, ::std::move(info));
 			if(!result.second) { _del_info(result.first); _new_info(result.first, ::std::move(info)); }
 			return result; }
 	}
@@ -632,13 +638,13 @@ struct binary_tree_base
 	template <typename T>
 	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
 	insert_hint (const T &hint, const typename Node::_Info &info)
-	{ return _insert_hint_(hint._node, info).first; }
+	{ return cast()._insert_hint_(hint._node, info).first; }
 
 	public:
 	template <typename T>
 	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
 	insert_hint (const T &hint, typename Node::_Info &&info)
-	{ return _insert_hint_(hint._node, ::std::move(info)).first; }
+	{ return cast()._insert_hint_(hint._node, ::std::move(info)).first; }
 	/* === Insert === */
 
 
@@ -649,7 +655,7 @@ struct binary_tree_base
 	emplace (Args&&... info)
 	{
 		_Node *node = _new_node_threadless(nullptr, ::std::forward<Args>(info)...);
-		::std::pair<_Node *, bool> result = _emplace_(node);
+		::std::pair<_Node *, bool> result = cast()._emplace_(node);
 		if(!result.second) { if(Replace) { _del_info(result.first); _new_info(result.first, node->info()); }
 		                     _del_node(node); }
 		return result;
@@ -659,7 +665,7 @@ struct binary_tree_base
 	template <int _ = 0, typename... Args>
 	inline ::std::enable_if_t<Multi && _ == _, _Traversor>
 	emplace (Args&&... info)
-	{ return _emplace_(_new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
+	{ return cast()._emplace_(_new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
 	template <bool Replace = false, typename T, typename... Args>
@@ -667,7 +673,7 @@ struct binary_tree_base
 	emplace_hint (const T &hint, Args&&... info)
 	{
 		_Node *node = _new_node_threadless(nullptr, ::std::forward<Args>(info)...);
-		::std::pair<_Node *, bool> result = _emplace_hint_(hint._node, node);
+		::std::pair<_Node *, bool> result = cast()._emplace_hint_(hint._node, node);
 		if(!result.second) { if(Replace) { _del_info(result.first); _new_info(result.first, node->info()); }
 		                     _del_node(node); }
 		return result;
@@ -677,7 +683,7 @@ struct binary_tree_base
 	template <typename T, typename... Args>
 	inline ::std::enable_if_t<Multi && _is_non_const_traversor_v<T>, _Traversor>
 	emplace_hint (const T &hint, Args&&... info)
-	{ return _emplace_hint_(hint._node, _new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
+	{ return cast()._emplace_hint_(hint._node, _new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
 	template <int _ = 0, typename... Args>
@@ -686,7 +692,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place(side, key);
 		if(side == -1) return {place, false};
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
@@ -697,7 +703,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
 		if(side == -1) return {place, false};
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
@@ -723,7 +729,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place_hint(hint._node, side, key);
 		if(side == -1) return {place, false};
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
@@ -735,7 +741,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place_hint(hint._node, side, ::std::move(key));
 		if(side == -1) return {place, false};
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 	/* === Emplace === */
@@ -746,7 +752,7 @@ struct binary_tree_base
 	template <bool _ = 0>
 	::std::enable_if_t<!Multi && _ == _, bool>
 	erase (const typename Node::_Key &key)
-	{ _Node *node = _find(key); if(node == &_head) return false; _erase_(node, true); return true; }
+	{ _Node *node = _find(key); if(node == &_head) return false; cast()._erase_(node, true); return true; }
 
 	public:
 	template <bool _ = 0>
@@ -757,7 +763,7 @@ struct binary_tree_base
 		_Node *node, *end = _upper_bound(key);
 		size_t count = 0;
 		if(begin == _begin() && end == &_head) { count = _size; clear(); return count; }
-		for( ; begin != end; begin = node, ++count) { node = _Iteration::_<1>(begin); _erase_(begin, true); }
+		for( ; begin != end; begin = node, ++count) { node = _Iteration::_<1>(begin); cast()._erase_(begin, true); }
 		return count;
 	}
 
@@ -765,7 +771,7 @@ struct binary_tree_base
 	template <typename T>
 	inline ::std::enable_if_t<_is_non_const_traversor_v<T>, void>
 	erase (const T &tr)
-	{ _erase_(tr._node, true); }
+	{ cast()._erase_(tr._node, true); }
 
 	public:
 	template <typename T1, typename T2>
@@ -774,7 +780,7 @@ struct binary_tree_base
 	{
 		if(first._node == _begin() && last._node == &_head && _size > 0) { clear(); return; }
 		for(_Node *node1 = first._node, *node2; node1 != last._node; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); _erase_(node1, true); }
+			node2 = _Iteration::_<1>(node1); cast()._erase_(node1, true); }
 	}
 
 	public:
@@ -908,7 +914,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place(side, key);
 		if(side == -1) return place->value();
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(key), ::std::tuple<>())).first->value();
 	}
 
@@ -919,7 +925,7 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
 		if(side == -1) return place->value();
-		return _emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
+		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(::std::move(key)), ::std::tuple<>())).first->value();
 	}
 	/* === Array subscript === */
@@ -1130,18 +1136,6 @@ struct binary_tree_base
 	/* ##################################################################### */
 	/* ######################## Internal functions ######################### */
 	/* ##################################################################### */
-
-
-	/* === Virtual functions === */
-	private:
-	virtual std::pair<_Node *, bool>  _insert_      (             const typename Node::_Info  &info) = 0;
-	virtual std::pair<_Node *, bool>  _insert_      (                   typename Node::_Info &&info) = 0;
-	virtual std::pair<_Node *, bool>  _insert_hint_ (_Node *hint, const typename Node::_Info  &info) = 0;
-	virtual std::pair<_Node *, bool>  _insert_hint_ (_Node *hint,       typename Node::_Info &&info) = 0;
-	virtual std::pair<_Node *, bool> _emplace_      (                  _Node *node)                  = 0;
-	virtual std::pair<_Node *, bool> _emplace_hint_ (_Node *hint, _Node *node)                       = 0;
-	virtual void                            _erase_ (_Node *node, const bool del)                    = 0;
-	/* === Virtual functions === */
 
 
 	/* ##################################################################### */
@@ -1372,7 +1366,7 @@ struct binary_tree_base
 	_copy_nodes_routine (const _Node_Other *begin_other, const _Node_Other *end_other)
 	{
 		for(; begin_other != end_other; begin_other = _Iteration::_<1>(begin_other))
-			_insert_hint_(&_head, begin_other->info());
+			cast()._insert_hint_(&_head, begin_other->info());
 	}
 	/* === Copy === */
 
@@ -1401,7 +1395,7 @@ struct binary_tree_base
 	_move_nodes_routine (_Node *begin_other, _Node *end_other)
 	{
 		for(_Node *node_other; begin_other != end_other; begin_other = node_other) {
-			node_other = _Iteration::_<1>(begin_other); _reset_node(begin_other); _emplace_hint_(&_head, begin_other); }
+			node_other = _Iteration::_<1>(begin_other); _reset_node(begin_other); cast()._emplace_hint_(&_head, begin_other); }
 	}
 	/* === Move === */
 
@@ -1513,17 +1507,17 @@ struct binary_tree_base
 	{
 		int side; _Node *place = _place(side, **node_other);
 		if(side == -1) {
-			if(Replace) { _del_info(place); _new_info(place, node_other->info()); other._erase_(node_other, true); }
+			if(Replace) { _del_info(place); _new_info(place, node_other->info()); other.cast()._erase_(node_other, true); }
 		    return {place, false}; }
-		other._erase_(node_other, false); --other._size; ++_size;
-		_reset_node(node_other); return _emplace_hint_(place, node_other);
+		other.cast()._erase_(node_other, false); --other._size; ++_size;
+		_reset_node(node_other); return cast()._emplace_hint_(place, node_other);
 	}
 
 	private:
 	template <bool Multi_Other, typename Comparator_Other, bool _ = Multi, typename = ::std::enable_if_t<_>>
 	_Node *
 	_transfer_move (binary_tree_base<Node, Multi_Other, Comparator_Other, Allocator> &other, _Node *node_other)
-	{ other._erase_(node_other, false); --other._size; ++_size; _reset_node(node_other); return _emplace_(node_other).first; }
+	{ other.cast()._erase_(node_other, false); --other._size; ++_size; _reset_node(node_other); return cast()._emplace_(node_other).first; }
 
 	private:
 	template <bool Replace, typename Node_Other, bool Multi_Other, typename Comparator_Other, typename Allocator_Other,
@@ -1532,10 +1526,10 @@ struct binary_tree_base
 	_transfer_copy (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other,
 		            typename Node_Other::_Base *node_other)
 	{
-		::std::pair<_Node *, bool> result = _insert_(node_other->info());
-		if(result.second) other._erase_(node_other, true);
+		::std::pair<_Node *, bool> result = cast()._insert_(node_other->info());
+		if(result.second) other.cast()._erase_(node_other, true);
 		else if(Replace) {
-			_del_info(result.first); _new_info(result.first, node_other->info()); other._erase_(node_other, true); }
+			_del_info(result.first); _new_info(result.first, node_other->info()); other.cast()._erase_(node_other, true); }
 		return result;
 	}
 
@@ -1545,7 +1539,7 @@ struct binary_tree_base
 	_Node *
 	_transfer_copy (binary_tree_base<Node_Other, Multi_Other, Comparator_Other, Allocator_Other> &other,
 		            typename Node_Other::_Base *node_other)
-	{ _Node *node = _insert_(node_other->info()).first; other._erase_(node_other, true); return node; }
+	{ _Node *node = cast()._insert_(node_other->info()).first; other.cast()._erase_(node_other, true); return node; }
 	/* === Transfer === */
 
 

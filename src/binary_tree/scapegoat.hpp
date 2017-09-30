@@ -52,6 +52,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_scapegoat, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -148,43 +150,27 @@ struct binary_tree_subbase<tree_scapegoat, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
+	_insert_ (Arg &&info)
 	{
 		int side = 0; size_t depth, size;
-		_Node *node = _place(side, _Node::key(info), depth);
+		_Node *node = _place(side, _Node::key(::std::forward<Arg>(info)), depth);
 		if(!Multi && side == -1) { if(_Base::_size > _max_size) _max_size = _Base::_size; return {node, false}; }
-		node = _Base::_insert_place_bottom(side, node, info);
+		node = _Base::_insert_place_bottom(side, node, ::std::forward<Arg>(info));
 		if(depth > (::std::log(_Base::_size) * _factor_opt) + 1) {
 			_Node *scapegoat = _scapegoat(node, size); _rebalance(scapegoat, size); }
 		return {node, true};
 	}
 
 	private:
-	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
-	{
-		int side = 0; size_t depth, size;
-		_Node *node = _place(side, _Node::key(::std::move(info)), depth);
-		if(!Multi && side == -1) { if(_Base::_size > _max_size) _max_size = _Base::_size; return {node, false}; }
-		node = _Base::_insert_place_bottom(side, node, ::std::move(info));
-		if(depth > (::std::log(_Base::_size) * _factor_opt) + 1) {
-			_Node *scapegoat = _scapegoat(node, size); _rebalance(scapegoat, size); }
-		return {node, true};
-	}
-
-	private:
+	template <typename Arg>
 	inline ::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *, const typename Node::_Info &info)
-	{ return _insert_(info); }
-
-	private:
-	inline ::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *, typename Node::_Info &&info)
-	{ return _insert_(::std::move(info)); }
+	_insert_hint_ (_Node *, Arg &&info)
+	{ return _insert_(::std::forward<Arg>(info)); }
 	/* === Insert === */
 
 
@@ -229,7 +215,7 @@ struct binary_tree_subbase<tree_scapegoat, Node, Multi, Comparator, Allocator>
 			_rebalance(_Base::_head._up, _Base::_size);
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
 

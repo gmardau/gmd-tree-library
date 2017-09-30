@@ -52,6 +52,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -176,37 +178,23 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
+	_insert_ (Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(info);
+		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::forward<Arg>(info));
 		_gsplay(result.first); return result;
 	}
 
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
+	_insert_hint_ (_Node *hint, Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::move(info));
-		_gsplay(result.first); return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, const typename Node::_Info &info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, info);
-		_gsplay(result.first); return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, typename Node::_Info &&info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::move(info));
+		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::forward<Arg>(info));
 		_gsplay(result.first); return result;
 	}
 	/* === Insert === */
@@ -240,7 +228,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 		else                          _Base::_remove_node(node, node->_down[1], del);
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
 

@@ -22,14 +22,14 @@ enum binary_tree_type {
 template <binary_tree_type T> constexpr bool _binary_tree_use_structure_v =
 	T == tree_bs || T == tree_splay || T == tree_gsplay || T == tree_streap;
 
-#include "binary_tree/traversor.hpp"
-#include "binary_tree/base.hpp"
-
 template <binary_tree_type Tree, typename Key, typename Value, typename Info, bool SetMap, bool Threaded>
 struct binary_tree_node;
 
 template <binary_tree_type Tree, typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase;
+
+#include "binary_tree/traversor.hpp"
+#include "binary_tree/base.hpp"
 
 #include "binary_tree/bs.hpp"
 #include "binary_tree/splay.hpp"
