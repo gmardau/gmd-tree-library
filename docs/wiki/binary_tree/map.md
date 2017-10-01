@@ -542,23 +542,23 @@ Returns a pair consisting of a traversor to the inserted element (or to the elem
 Inserts a new element in the container constructed *in-place* with `info`, taking `hint` as a possible location for the new element.
 Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor.
 
-<sub>template <<code>typename... Args</code>></sub><br>
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
 <a name="tryemplace1" href="#tryemplace1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code>const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
-<sub>template <<code>typename... Args</code>></sub><br>
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
 <a name="tryemplace2" href="#tryemplace2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code><i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `{key, value}` if there exists no element with the same key in container.
-Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. This function differs from [`emplace()`](#emplace1) by avoiding the creation and subsequent deletion of `value` and an internal tree structure node if an element with the same key already exists in the container.
+Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. This function differs from [`emplace()`](#emplace1) by avoiding the creation and subsequent deletion of an internal tree structure node (and potentially the construction of `value`) if an element with the same key already exists in the container.
 
-<sub>template <<code>typename T, typename... Args</code>></sub><br>
+<sub>template <<code>bool Replace = false, typename T, typename... Args</code>></sub><br>
 <a name="tryemplacehint1" href="#tryemplacehint1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace_hint** (<code>const T &<b>hint</b>, const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
-<sub>template <<code>typename T, typename... Args</code>></sub><br>
+<sub>template <<code>bool Replace = false, typename T, typename... Args</code>></sub><br>
 <a name="tryemplacehint2" href="#tryemplacehint2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace_hint** (<code>const T &<b>hint</b>, <i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `{key, value}` if there exists no element with the same key in container, taking `hint` as a possible location for the new element.
-Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor. This function differs from [`emplace_hint()`](#emplacehint1) by avoiding the creation and subsequent deletion of an internal tree structure node if an element with the same key already exists in the container. `hint` must be a non const traversor. This function can also be called as [`try_emplace(hint, key, value)`](#tryemplacehint1).
+Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. `hint` must be a non const traversor. This function differs from [`emplace_hint()`](#emplacehint1) by avoiding the creation and subsequent deletion of an internal tree structure node (and potentialyl the construction of `value`) if an element with the same key already exists in the container. `hint` must be a non const traversor. This function can also be called as [`try_emplace(hint, key, value)`](#tryemplacehint1).
 
 **Note:** If `Replace` is set to `true` and an element the compares equivalent already exists in the container, its *`value_type`* value is replaced. Also, the return value (`bool`) is set to `true` only if the element was inserted ***without*** need for replacement.
 

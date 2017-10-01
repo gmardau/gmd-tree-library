@@ -686,61 +686,69 @@ struct binary_tree_base
 	{ return cast()._emplace_hint_(hint._node, _new_node_threadless(nullptr, ::std::forward<Args>(info)...)).first; }
 
 	public:
-	template <int _ = 0, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && Replace == Replace, ::std::pair<_Traversor, bool>>
 	try_emplace (const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, key);
-		if(side == -1) return {place, false};
+		if(side == -1) {
+			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
+				:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
+			return {place, false}; }
 		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
 	public:
-	template <int _ = 0, typename... Args>
-	::std::enable_if_t<!Multi && Node::_SetMap && _ == _, ::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename... Args>
+	::std::enable_if_t<!Multi && Node::_SetMap && Replace == Replace, ::std::pair<_Traversor, bool>>
 	try_emplace (typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
-		if(side == -1) return {place, false};
+		if(side == -1) {
+			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
+				:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
+			return {place, false}; }
 		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
 	public:
-	template <typename T, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
-		::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	try_emplace (const T &hint, const typename Node::_Key &key, Args&&... value)
-	{ return try_emplace_hint(hint, key, ::std::forward<Args>(value)...); }
+	{ return try_emplace_hint<Replace>(hint, key, ::std::forward<Args>(value)...); }
 
 	public:
-	template <typename T, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
-		::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	try_emplace (const T &hint, typename Node::_Key &&key, Args&&... value)
-	{ return try_emplace_hint(hint, ::std::move(key), ::std::forward<Args>(value)...); }
+	{ return try_emplace_hint<Replace>(hint, ::std::move(key), ::std::forward<Args>(value)...); }
 
 	public:
-	template <typename T, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
-		::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	try_emplace_hint (const T &hint, const typename Node::_Key &key, Args&&... value)
 	{
 		int side; _Node *place = _place_hint(hint._node, side, key);
-		if(side == -1) return {place, false};
+		if(side == -1) {
+			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
+				:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
+			return {place, false}; }
 		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
 
 	public:
-	template <typename T, typename... Args>
-	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>,
-		::std::pair<_Traversor, bool>>
+	template <bool Replace = false, typename T, typename... Args>
+	inline ::std::enable_if_t<!Multi && Node::_SetMap && _is_non_const_traversor_v<T>, ::std::pair<_Traversor, bool>>
 	try_emplace_hint (const T &hint, typename Node::_Key &&key, Args&&... value)
 	{
 		int side; _Node *place = _place_hint(hint._node, side, ::std::move(key));
-		if(side == -1) return {place, false};
+		if(side == -1) {
+			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
+				:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
+			return {place, false}; }
 		return cast()._emplace_hint_(place, _new_node_threadless(nullptr, ::std::piecewise_construct,
 			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)));
 	}
