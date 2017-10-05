@@ -11,7 +11,7 @@ template <
 > struct binary_tree_multimap;
 ```
 
-`gmd::binary_tree_multimap` is a container that stores a sorted collection of key-value elements of type `Key`-`Value` in a binary tree structure. The type of tree is defined by the template parameter `Tree`, while the sorting is done using a key comparison function/object of type `Comparator`, which gets defaulted to [`std::less`](http://en.cppreference.com/w/cpp/utility/functional/less). The comparison mechanism follows the *strict weak ordering* formalization. As such, and because this container allows duplicates, the adopted definition is <code><i>left</i> < node <= <i>right</i></code>, meaning that in the case of duplicate elements, these appear by order of insertion when iterating through the container. The template parameter `Allocator` defines the type of allocator that will be used to allocate the elements in the container, and it is defaulted to [`std::allocator`](http://en.cppreference.com/w/cpp/memory/allocator).
+`gmd::binary_tree_multimap` is a container that stores a sorted collection of key-value elements of type `Key`-`Value` in a binary tree structure. The type of tree is defined by the template parameter `Tree`, while the sorting is done by using a key comparison function/object of type `Comparator`, which gets defaulted to [`std::less`](http://en.cppreference.com/w/cpp/utility/functional/less). The comparison mechanism follows the *strict weak ordering* formalization. As such, and because this container allows duplicates, the adopted definition is <code><i>left</i> < node <= <i>right</i></code>, meaning that in the case of duplicate elements, these appear by order of insertion when iterating through the container. The template parameter `Allocator` defines the type of allocator that will be used to allocate the elements in the container, and it is defaulted to [`std::allocator`](http://en.cppreference.com/w/cpp/memory/allocator).
 
 The `Threaded` parameter specifies whether the binary tree elements should have pointers to their in-order predecessors and successors. This allows for a faster iteration through the elements of the container (guaranteed *O*(1) time complexity), but it comes at the expense of additional memory and a slight time overhead whenever element insertion or removal is performed. This parameter gets defaulted to `false`, as in the STL/C++ Standard Library's [`std::map`](http://en.cppreference.com/w/cpp/container/multimap) implementation.
 
@@ -38,31 +38,31 @@ The `Threaded` parameter specifies whether the binary tree elements should have 
 
 ### Constructor
 
-<a name="constructor1" href="#constructor1">#</a> **binary_tree_multimap** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="constructor-0" href="#constructor-0">#</a> **binary_tree_multimap** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Default constructor*&emsp;Constructs an empty container.
 
 <sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="constructor2" href="#constructor2">#</a> **binary_tree_multimap** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="constructor-1" href="#constructor-1">#</a> **binary_tree_multimap** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
 
-*Range constructor*&emsp;Constructs the container with the contents of the range [`first`, `last`). If multiple elements in the range have keys that compare equivalent, only the first element (closest to `first`) is inserted. It is equivalent to call the *default constructor* followed by [`insert(first, last)`](#insert3).
+*Range constructor*&emsp;Constructs the container with the contents of the range [`first`, `last`). It is equivalent to call the *default constructor* followed by [`insert(first, last)`](#insert-2).
 
-<a name="constructor3" href="#constructor3">#</a> **binary_tree_multimap** (<code>const <i>binary_tree_multimap</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="constructor-2" href="#constructor-2">#</a> **binary_tree_multimap** (<code>const <i>binary_tree_multimap</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Copy constructor*&emsp;Constructs the container with the copy of the contents of `other`. If a comparator or an allocator are not provided, they are obtained by copy from the ones in `other`. In the case of the allocator, the following is used: <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::select_on_container_copy_construction()</code>.
 
-<a name="constructor4" href="#constructor4">#</a> **binary_tree_multimap** (<code><i>binary_tree_multimap</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="constructor-3" href="#constructor-3">#</a> **binary_tree_multimap** (<code><i>binary_tree_multimap</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Move constructor*&emsp;Constructs the container with the contents of `other`, using move semantics. If a comparator or an allocator are not provided, they are obtained by move-construction from the ones in `other`.
 
-<a name="constructor5" href="#constructor5">#</a> **binary_tree_multimap** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="constructor-4" href="#constructor-4">#</a> **binary_tree_multimap** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/binary_tree/base.hpp#L)
 
-*Initializer list constructor*&emsp;Constructs the container with the contents of the initializer list `il`. If multiple elements in the range have keys that compare equivalent, only the first element is inserted. It is equivalent to call the *default constructor* followed by [`insert(il)`](#insert4).
+*Initializer list constructor*&emsp;Constructs the container with the contents of the initializer list `il`. It is equivalent to call the *default constructor* followed by [`insert(il)`](#insert-3).
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -106,7 +106,7 @@ e: 4,0 4,1 5,0 6,0
 
 ### Destructor
 
-<a name="destructor0" href="#destructor0">#</a> **~binary_tree_multimap** () [<>](../../../src/binary_tree/base.hpp#L)
+<a name="destructor-" href="#destructor-">#</a> **~binary_tree_multimap** () [<>](../../../src/binary_tree/base.hpp#L)
 
 Destructs and deallocates the container and all its elements.
 
@@ -114,15 +114,15 @@ Destructs and deallocates the container and all its elements.
 
 ### Assign operator
 
-<a name="assign1" href="#assign1">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code>const <i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="assign-0" href="#assign-0">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code>const <i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Copy assignment*&emsp;Replaces the contents of the containers with a copy of the contents of `other`. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_copy_assignment::value</code> is set to `true`.
 
-<a name="assign2" href="#assign2">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code><i>binary_tree</i> &&<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="assign-1" href="#assign-1">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code><i>binary_tree</i> &&<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Move assignment*&emsp;Replaces the contents with those of `other` using move semantics. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_move_assignment::value</code> is set to `true`. If not, and neither <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::is_always_equal::value</code> is set `true` nor the allocators compare equal, then the elements are copied instead.
 
-<a name="assign3" href="#assign3">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="assign-2" href="#assign-2">#</a> <code><i>binary_tree_multimap</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
@@ -131,7 +131,7 @@ Destructs and deallocates the container and all its elements.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -169,20 +169,20 @@ a: 4,0 7,0 7,1
 
 ### Comparison operators
 
-<a name="equal1" href="#equal1">#</a> `bool` **operator==** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="equal2" href="#equal2">#</a> `bool` **operator==** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="notequal1" href="#notequal1">#</a> `bool` **operator!=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="notequal2" href="#notequal2">#</a> `bool` **operator!=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="lesser1" href="#lesser1">#</a> `bool` **operator<** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="lesser2" href="#lesser2">#</a> `bool` **operator<** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="greater1" href="#greater1">#</a> `bool` **operator>** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="greater2" href="#greater2">#</a> `bool` **operator>** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="lesserequal1" href="#lesserequal1">#</a> `bool` **operator<=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="lesserequal2" href="#lesserequal2">#</a> `bool` **operator<=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="greaterequal1" href="#greaterequal1">#</a> `bool` **operator>=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="greaterequal2" href="#greaterequal2">#</a> `bool` **operator>=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="spaceship1" href="#spaceship1">#</a> `int` **spaceship** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="spaceship2" href="#spaceship2">#</a> `int` **spaceship** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="equal-0" href="#equal-0">#</a> `bool` **operator==** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="equal-1" href="#equal-1">#</a> `bool` **operator==** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="not_equal-0" href="#not_equal-0">#</a> `bool` **operator!=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="not_equal-1" href="#not_equal-1">#</a> `bool` **operator!=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="lesser-0" href="#lesser-0">#</a> `bool` **operator<** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="lesser-1" href="#lesser-1">#</a> `bool` **operator<** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="greater-0" href="#greater-0">#</a> `bool` **operator>** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="greater-1" href="#greater-1">#</a> `bool` **operator>** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="lesser_or_equal-0" href="#lesser_or_equal-0">#</a> `bool` **operator<=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="lesser_or_equal-1" href="#lesser_or_equal-1">#</a> `bool` **operator<=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="greater_or_equal-0" href="#greater_or_equal-0">#</a> `bool` **operator>=** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="greater_or_equal-1" href="#greater_or_equal-1">#</a> `bool` **operator>=** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="spaceship-0" href="#spaceship-0">#</a> `int` **spaceship** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="spaceship-1" href="#spaceship-1">#</a> `int` **spaceship** (<code>const <i>binary_tree</i> &<b>other</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Compares the contents of `*this` and `other` lexicographically.
 The `spaceship` function returns `-1` if the contents of the `*this` are lexicographically ***lesser*** than the contents of `other`; `0` if ***equal***; `1` if ***greater***.
@@ -192,7 +192,7 @@ The `spaceship` function returns `-1` if the contents of the `*this` are lexicog
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -248,7 +248,7 @@ Returns a copy of the allocator associated with the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -289,42 +289,42 @@ i[1]: 1,3
 
 ## Traversors
 
-<a name="root1" href="#root1">#</a> *`traversor`* **root** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="root2" href="#root2">#</a> *`const_traversor`* **root** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="root-0" href="#root-0">#</a> *`traversor`* **root** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="root-1" href="#root-1">#</a> *`const_traversor`* **root** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="croot" href="#croot">#</a> *`const_traversor`* **croot** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor to the root element of the container.
 If the container is empty, the returned traversor will be empty (***invalid***) and cannot be dereferenced.
 
-<a name="rroot1" href="#rroot1">#</a> *`reverse_traversor`* **rroot** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="rroot2" href="#rroot2">#</a> *`const_reverse_traversor`* **rroot** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rroot-0" href="#rroot-0">#</a> *`reverse_traversor`* **rroot** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rroot-1" href="#rroot-1">#</a> *`const_reverse_traversor`* **rroot** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="crroot" href="#crroot">#</a> *`const_reverse_traversor`* **crroot** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a reverse traversor to the root element of the container.
 If the container is empty, the returned traversor will be empty (***invalid***) and cannot be dereferenced.
 
-<a name="begin1" href="#begin1">#</a> *`traversor`* **begin** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="begin2" href="#begin2">#</a> *`const_traversor`* **begin** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="begin-0" href="#begin-0">#</a> *`traversor`* **begin** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="begin-1" href="#begin-1">#</a> *`const_traversor`* **begin** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="cbegin" href="#cbegin">#</a> *`const_traversor`* **cbegin** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor to the first element of the container.
-If the container is empty, the returned traversor will be equivalent to [`end()`](#end1).
+If the container is empty, the returned traversor will be equivalent to [`end()`](#end-0).
 
-<a name="rbegin1" href="#rbegin1">#</a> *`reverse_traversor`* **rbegin** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="rbegin2" href="#rbegin2">#</a> *`const_reverse_traversor`* **rbegin** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rbegin-0" href="#rbegin-0">#</a> *`reverse_traversor`* **rbegin** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rbegin-1" href="#rbegin-1">#</a> *`const_reverse_traversor`* **rbegin** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="crbegin" href="#crbegin">#</a> *`const_reverse_traversor`* **crbegin** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a reverse traversor to the first element of the container.
-If the container is empty, the returned traversor will be equivalent to [`rend()`](#rend1).
+If the container is empty, the returned traversor will be equivalent to [`rend()`](#rend-0).
 
-<a name="end1" href="#end1">#</a> *`traversor`* **end** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="end2" href="#end2">#</a> *`const_traversor`* **end** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="end-0" href="#end-0">#</a> *`traversor`* **end** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="end-1" href="#end-1">#</a> *`const_traversor`* **end** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="cend" href="#cend">#</a> *`const_traversor`* **cend** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a traversor to the element following the last element of the container (***past-the-end***). As such, it cannot be dereferenced.
 
-<a name="rend1" href="#rend1">#</a> *`reverse_traversor`* **rend** () [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="rend2" href="#rend2">#</a> *`const_reverse_traversor`* **rend** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rend-0" href="#rend-0">#</a> *`reverse_traversor`* **rend** () [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="rend-1" href="#rend-1">#</a> *`const_reverse_traversor`* **rend** () `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <a name="crend" href="#crend">#</a> *`const_reverse_traversor`* **crend** () `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a reverse traversor to the element following the last element of the container (***past-the-end***). As such, it cannot be dereferenced.
@@ -333,7 +333,7 @@ Returns a reverse traversor to the element following the last element of the con
 
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -385,7 +385,7 @@ Returns the maximum number of elements the container is able to hold due to syst
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -426,7 +426,7 @@ Removes all elements from the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -451,34 +451,34 @@ size: 0
 
 ### Insert
 
-<a name="insert1" href="#insert1">#</a> *`traversor`* **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
-<a name="insert2" href="#insert2">#</a> *`traversor`* **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="insert-0" href="#insert-0">#</a> *`traversor`* **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="insert-1" href="#insert-1">#</a> *`traversor`* **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts `info` in the container.
 Returns a traversor to the inserted element.
 
 <sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="insert3" href="#insert3">#</a> `void` **insert** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="insert-2" href="#insert-2">#</a> `void` **insert** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts elements from range [`first`, `last`).
 Even though `first` and `last` can be of different types, `last` must be reachable from `first` and `T1` needs to satisfy [EqualityComparable](http://en.cppreference.com/w/cpp/concept/EqualityComparable) towards `T2`.
 
-<a name="insert4" href="#insert4">#</a> `void` **insert** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="insert-3" href="#insert-3">#</a> `void` **insert** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts elements from the initializer list `il`.
 
 <sub>template <<code>typename T</code>></sub><br>
-<a name="inserthint1" href="#inserthint1">#</a> *`traversor`* **insert_hint** (<code>const T &<b>hint</b>, const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="insert_hint-0" href="#insert_hint-0">#</a> *`traversor`* **insert_hint** (<code>const T &<b>hint</b>, const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename T</code>></sub><br>
-<a name="inserthint2" href="#inserthint2">#</a> *`traversor`* **insert_hint** (<code>const T &<b>hint</b>, <i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="insert_hint-1" href="#insert_hint-1">#</a> *`traversor`* **insert_hint** (<code>const T &<b>hint</b>, <i>value_type</i> &&<b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts `info` in the container, taking `hint` as a possible location for the new element.
-Returns a traversor to the inserted element. `hint` must be a non const traversor. This function can also be called as [`insert(hint, info)`](#inserthint1).
+Returns a traversor to the inserted element. `hint` must be a non const traversor. This function can also be called as [`insert(hint, info)`](#insert_hint-0).
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -519,13 +519,13 @@ b: 2,1 2,1 3,0 4,0 5,0
 ### Emplace
 
 <sub>template <<code>typename... Args</code>></sub><br>
-<a name="emplace1" href="#emplace1">#</a> *`traversor`* **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="emplace-" href="#emplace-">#</a> *`traversor`* **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `info`.
 Returns a traversor to the inserted element.
 
 <sub>template <<code>typename T, typename... Args</code>></sub><br>
-<a name="emplace2" href="#emplace2">#</a> *`traversor`* **emplace_hint** (<code>const T &<b>hint</b>, Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="emplace_hint" href="#emplace_hint">#</a> *`traversor`* **emplace_hint** (<code>const T &<b>hint</b>, Args&&... <b>info</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `info`, taking `hint` as a possible location for the new element.
 Returns a traversor to the inserted element. `hint` must be a non const traversor.
@@ -533,7 +533,7 @@ Returns a traversor to the inserted element. `hint` must be a non const traverso
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -564,22 +564,22 @@ a: 1,0 2,0 2,1
 
 ### Erase
 
-<a name="erase1" href="#erase1">#</a> *`size_type`* **erase** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="erase-0" href="#erase-0">#</a> *`size_type`* **erase** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Removes the elements that compare equivalent to `key`, if existent.
 Returns the number of elements removed.
 
 <sub>template <<code>typename T</code>></sub><br>
-<a name="erase2" href="#erase2">#</a> `void` **erase** (<code>const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="erase-1" href="#erase-1">#</a> `void` **erase** (<code>const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Removes the element referenced by `tr`, which must be a non const traversor.
 
 <sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="erase3" href="#erase3">#</a> `void` **erase** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="erase-2" href="#erase-2">#</a> `void` **erase** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Removes the elements in the range [`first`, `last`), which must be valid within the container. Both `first` and `last` must be non const traversors.
 
-<a name="erase4" href="#erase4">#</a> *`size_type`* **erase** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>key_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="erase-3" href="#erase-3">#</a> *`size_type`* **erase** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>key_type</i>> &<b>il</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Removes the elements that compare equivalent to the keys in the initializer list `il`.
 Returns the amount of elements removed.
@@ -587,7 +587,7 @@ Returns the amount of elements removed.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -621,7 +621,7 @@ a: 2,0
 ### Transfer
 
 <sub>template<<code>typename T</code>></sub><br>
-<a name="transfer0" href="#transfer0">#</a> *`traversor`* **transfer** (<code><i>binary_tree</i> &<b>other</b>, const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="transfer-" href="#transfer-">#</a> *`traversor`* **transfer** (<code><i>binary_tree</i> &<b>other</b>, const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Transfers an element from `other` into the container, if it does not exist.
 Returns a traversor to the transferred element.
@@ -632,7 +632,7 @@ Returns a traversor to the transferred element.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -666,7 +666,7 @@ c: 1,0
 
 ### Merge
 
-<a name="merge0" href="#merge0">#</a> `void` **merge** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="merge-" href="#merge-">#</a> `void` **merge** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Merges the values of both containers into `*this`. This is achieved by attempting to transfer the elements of `other` one by one using `transfer`.
 
@@ -675,7 +675,7 @@ Merges the values of both containers into `*this`. This is achieved by attemptin
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -712,7 +712,7 @@ c: 1,0 2,2 2,1 2,0 3,0
 
 ### Swap
 
-<a name="swap0" href="#swap0">#</a> `void` **swap** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
+<a name="swap-" href="#swap-">#</a> `void` **swap** (<code><i>binary_tree</i> &<b>other</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Exchanges the contents of the container with those of `other`.
 
@@ -721,7 +721,7 @@ Exchanges the contents of the container with those of `other`.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -757,9 +757,9 @@ b: 5,0 4,0 3,0 1,0
 ### Count
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="count1" href="#count1">#</a> *`size_type`* **count** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="count-0" href="#count-0">#</a> *`size_type`* **count** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="count2" href="#count2">#</a> *`size_type`* **count** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="count-1" href="#count-1">#</a> *`size_type`* **count** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns the number of elements with a key that compares equivalent to `key`.
 
@@ -768,7 +768,7 @@ Returns the number of elements with a key that compares equivalent to `key`.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -793,21 +793,21 @@ count 2: 0
 ### Contains
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="contains1" href="#contains1">#</a> `bool` **contains** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="contains-0" href="#contains-0">#</a> `bool` **contains** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="contains2" href="#contains2">#</a> `bool` **contains** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="contains-1" href="#contains-1">#</a> `bool` **contains** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Checks if there exists at least one element with a key that compares equivalent to `key`.
 Returns `true` if such element exists; `false` otherwise.
 
-It is equivalent to <code><a href="#find1">find(key)</a> != <a href="#end1">end()</a></code>.
+It is equivalent to <code><a href="#find-0">find(key)</a> != <a href="#end-0">end()</a></code>.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -832,24 +832,24 @@ contains 2: false
 ### Find
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="find1" href="#find1">#</a> *`traversor`* **find** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="find-0" href="#find-0">#</a> *`traversor`* **find** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="find2" href="#find2">#</a> *`const_traversor`* **find** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="find-1" href="#find-1">#</a> *`const_traversor`* **find** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="findshort1" href="#findshort1">#</a> *`traversor`* **find_short** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="find_short-0" href="#find_short-0">#</a> *`traversor`* **find_short** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="findshort2" href="#findshort2">#</a> *`const_traversor`* **find_short** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="find_short-1" href="#find_short-1">#</a> *`const_traversor`* **find_short** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
-Returns a traversor of the first element with a key equivalent to `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned. The function [`find_short()`](#findshort1) is more efficient than [`find()`](#find1) when the element to be found is more likely to be close to the root, such as in a Splay-like tree.
+Returns a traversor of the first element with a key equivalent to `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end-0)) is returned. The function [`find_short()`](#find_short-0) is more efficient than [`find()`](#find-0) when the element to be found is more likely to be close to the root, such as in a Splay-like tree.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -873,7 +873,7 @@ int main(const int, const char **)
 
 	std::cout << "find 4: ";
 	btmmap::const_traversor z = a.find_short(4);
-	if(z != a.rend()) std::cout << "true - " << *z << "\n";
+	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 }
 ```
@@ -889,18 +889,18 @@ find 4: true - 4,0
 ### Lower bound
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="lowerbound1" href="#lowerbound1">#</a> *`traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="lower_bound-0" href="#lower_bound-0">#</a> *`traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="lowerbound2" href="#lowerbound2">#</a> *`const_traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="lower_bound-1" href="#lower_bound-1">#</a> *`const_traversor`* **lower_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
-Returns a traversor to the first element that is ***not lesser*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned.
+Returns a traversor to the first element that is ***not lesser*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end-0)) is returned.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -936,18 +936,18 @@ lower_bound 2: 2,0
 ### Upper bound
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="upperbound1" href="#upperbound1">#</a> *`traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="upper_bound-0" href="#upper_bound-0">#</a> *`traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="upperbound2" href="#upperbound2">#</a> *`const_traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="upper_bound-1" href="#upper_bound-1">#</a> *`const_traversor`* **upper_bound** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
-Returns a traversor to the first element that is ***greater*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end1)) is returned.
+Returns a traversor to the first element that is ***greater*** than `key`. If no such element exists, a past-the-end traversor (e.g. [`end()`](#end-0)) is returned.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -973,19 +973,19 @@ upper_bound 2: 3,0
 ### Equal range
 
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="equalrange1" href="#equalrange1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><*`traversor`*, *`traversor`*></code> **equal_range** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="equal_range-0" href="#equal_range-0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><*`traversor`*, *`traversor`*></code> **equal_range** (<code>const Key &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key</code>></sub><br>
-<a name="equalrange2" href="#equalrange2">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><*`const_traversor`*, *`const_traversor`*></code> **equal_range** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="equal_range-1" href="#equal_range-1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><*`const_traversor`*, *`const_traversor`*></code> **equal_range** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Returns a range containing all the elements with a key equivalent to `key`.
-Alternatively, the first traversor may be obtained with [`lower_bound(key)`](#lowerbound1), and the second with [`upper_bound(key)`](#upperbound1).
+Alternatively, the first traversor may be obtained with [`lower_bound(key)`](#lower_bound-0), and the second with [`upper_bound(key)`](#upper_bound-0).
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -1018,13 +1018,13 @@ equal_range 3: 3,0 3,1
 ## Print
 
 <sub>template <<code>bool Verbose = false, typename Printer</code>></sub><br>
-<a name="print1" href="#print1">#</a> `void` **print** (<code>Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="print-0" href="#print-0">#</a> `void` **print** (<code>Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>bool Verbose = false, typename Printer</code>></sub><br>
-<a name="print2" href="#print2">#</a> `void` **print** ([<code>const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="print-1" href="#print-1">#</a> `void` **print** ([<code>const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>bool Verbose = false, typename Printer, typename T</code>></sub><br>
-<a name="print3" href="#print3">#</a> `void` **print** (<code>const T &<b>tr</b>, Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
+<a name="print-2" href="#print-2">#</a> `void` **print** (<code>const T &<b>tr</b>, Printer &<b>printer</b></code>) `const` [<>](../../../src/binary_tree/base.hpp#L)<br>
 <sub>template <<code>bool Verbose = false, typename Printer, typename T</code>></sub><br>
-<a name="print4" href="#print4">#</a> `void` **print** (<code>const T &<b>tr</b></code> [<code>, const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)
+<a name="print-3" href="#print-3">#</a> `void` **print** (<code>const T &<b>tr</b></code> [<code>, const Printer &<b>printer</b></code>]) `const` [<>](../../../src/binary_tree/base.hpp#L)
 
 Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, aditional internal tree information is also displayed.
 
@@ -1033,7 +1033,7 @@ Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, a
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 

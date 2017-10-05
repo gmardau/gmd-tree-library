@@ -1,5 +1,5 @@
-#ifndef _GMD_BINARY_TREE_TRAVERSOR_
-#define _GMD_BINARY_TREE_TRAVERSOR_
+#ifndef _GMD_BINARY_TREE_TRAVERSAL_
+#define _GMD_BINARY_TREE_TRAVERSAL_
 
 struct binary_tree_iteration
 {
@@ -92,9 +92,6 @@ struct binary_tree_traversor
 	/* === Comparison === */
 	public:
 	inline bool operator() () const { return _node != nullptr; }
-
-	template <typename T> inline ::std::enable_if_t<_is_traversor_v<T>, bool>
-	same       (const T &tr) const { return (*this)() && tr() && node() == tr.node(); }
 
 	template <typename T> inline ::std::enable_if_t<_is_traversor_v<T>, bool>
 	operator== (const T &tr) const { return _node == tr._node; }

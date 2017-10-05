@@ -28,7 +28,7 @@ struct binary_tree_node;
 template <binary_tree_type Tree, typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase;
 
-#include "binary_tree/traversor.hpp"
+#include "binary_tree/traversal.hpp"
 #include "binary_tree/base.hpp"
 
 #include "binary_tree/bs.hpp"
@@ -120,8 +120,8 @@ template <binary_tree_type Tree, typename Key, typename Comparator = ::std::less
 
 /* ######################################################################### */
 /* ############################### K-D Tree ################################ */
-#include "kd_tree/point_traversor.hpp"
-#include "kd_tree/point_kd_tree.hpp"
+#include "point_kd_tree/traversal.hpp"
+#include "point_kd_tree/base.hpp"
 
 template <ushort K, typename Key, typename Comparator, bool Balanced = false, typename Equal = ::std::equal_to<Key>,
 		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>
@@ -183,8 +183,8 @@ template <ushort K, typename Key, typename Comparator, typename Equal = ::std::e
 		  typename Allocator = ::std::allocator<Key>>
 	using kd_tree = point_kd_tree_set<K, Key, Comparator, false, Equal, Allocator>;
 
-#include "kd_tree/region_traversor.hpp"
-#include "kd_tree/region_kd_tree.hpp"
+#include "region_kd_tree/traversal.hpp"
+#include "region_kd_tree/base.hpp"
 
 template <ushort K, typename Key, typename Divider, typename Comparator, typename Equal = ::std::equal_to<Key>,
 		  typename Allocator = ::std::allocator<Key>, typename = ::std::enable_if_t<(K >= 1)>>

@@ -26,7 +26,7 @@ int main(const int, const char **)
 
 	std::cout << "find 4.0: ";
 	btmset::const_traversor z = a.find_short(4.0);
-	if(z != a.rend()) std::cout << "true - " << z->v[0] << ',' << z->v[1] << "\n";
+	if(z != a.cend()) std::cout << "true - " << z->v[0] << ',' << z->v[1] << "\n";
 	else              std::cout << "false\n";
 
 	return 0;

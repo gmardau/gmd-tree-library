@@ -1,5 +1,5 @@
-#ifndef _GMD_REGION_KD_TREE_
-#define _GMD_REGION_KD_TREE_
+#ifndef _GMD_REGION_KD_TREE_BASE_
+#define _GMD_REGION_KD_TREE_BASE_
 
 template <typename Node, typename Key, typename Value, typename Info, bool SetMap>
 struct region_kd_tree_node_base
@@ -937,16 +937,16 @@ struct region_kd_tree_base
 	/* === Equal range === */
 
 
-	/* === Nearest neighbour === */
+	/* === Nearest neighbor === */
 	public:
 	template <typename Measure, typename Key>
 	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
 		::std::pair<_Traversor, double>>
-	nearest_neighbour (const Key &key, Measure &measure)
+	nearest_neighbor (const Key &key, Measure &measure)
 	{
 		if(size == 0) return {&_head, 0};
 		double distance = ::std::numeric_limits<double>::max(); _Node *node;
-		_nearest_neighbour(key, measure, distance, node, 0, _head._up);
+		_nearest_neighbor(key, measure, distance, node, 0, _head._up);
 		return {node, distance};
 	}
 
@@ -954,12 +954,12 @@ struct region_kd_tree_base
 	template <typename Measure, typename Key>
 	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
 		::std::pair<_CTraversor, double>>
-	nearest_neighbour (const Key &key, Measure &measure)
+	nearest_neighbor (const Key &key, Measure &measure)
 	const
 	{
 		if(size == 0) return {&_head, 0};
 		double distance = ::std::numeric_limits<double>::max(); const _Node *node;
-		_nearest_neighbour(key, measure, distance, node, 0, _head._up);
+		_nearest_neighbor(key, measure, distance, node, 0, _head._up);
 		return {node, distance};
 	}
 
@@ -967,11 +967,11 @@ struct region_kd_tree_base
 	template <typename Measure, typename Key>
 	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
 		::std::pair<_Traversor, double>>
-	nearest_neighbour (const Key &key, const Measure &measure = Measure())
+	nearest_neighbor (const Key &key, const Measure &measure = Measure())
 	{
 		if(size == 0) return {&_head, 0};
 		double distance = ::std::numeric_limits<double>::max(); _Node *node;
-		_nearest_neighbour(key, measure, distance, node, 0, _head._up);
+		_nearest_neighbor(key, measure, distance, node, 0, _head._up);
 		return {node, distance};
 	}
 
@@ -979,15 +979,15 @@ struct region_kd_tree_base
 	template <typename Measure, typename Key>
 	inline ::std::enable_if_t<std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>,
 		::std::pair<_CTraversor, double>>
-	nearest_neighbour (const Key &key, const Measure &measure = Measure())
+	nearest_neighbor (const Key &key, const Measure &measure = Measure())
 	const
 	{
 		if(size == 0) return {&_head, 0};
 		double distance = ::std::numeric_limits<double>::max(); const _Node *node;
-		_nearest_neighbour(key, measure, distance, node, 0, _head._up);
+		_nearest_neighbor(key, measure, distance, node, 0, _head._up);
 		return {node, distance};
 	}
-	/* === Nearest neighbour === */
+	/* === Nearest neighbor === */
 
 
 	/* === Range search === */
@@ -1631,11 +1631,11 @@ struct region_kd_tree_base
 	/* === Find === */
 
 
-	/* === Nearest neighbour === */
+	/* === Nearest neighbor === */
 	private:
 	template <typename Measure, typename Key>
 	void
-	_nearest_neighbour (const Key &key, Measure &measure,
+	_nearest_neighbor (const Key &key, Measure &measure,
 		                double &distance, _Node *&nearest, ushort d, const _Node *node)
 	{
 		if(node->is_leaf()) {
@@ -1644,20 +1644,20 @@ struct region_kd_tree_base
 			return; }
 		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
 		else {
 			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
-	_nearest_neighbour (const Key &key, Measure &measure,
+	_nearest_neighbor (const Key &key, Measure &measure,
 		                double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
@@ -1667,20 +1667,20 @@ struct region_kd_tree_base
 			return; }
 		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
 		else {
 			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
-	_nearest_neighbour (const Key &key, const Measure &measure,
+	_nearest_neighbor (const Key &key, const Measure &measure,
 		                double &distance, _Node *&nearest, ushort d, const _Node *node)
 	{
 		if(node->is_leaf()) {
@@ -1689,20 +1689,20 @@ struct region_kd_tree_base
 			return; }
 		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
 		else {
 			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
 
 	private:
 	template <typename Measure, typename Key>
 	void
-	_nearest_neighbour (const Key &key, const Measure &measure,
+	_nearest_neighbor (const Key &key, const Measure &measure,
 						double &distance, const _Node *&nearest, ushort d, const _Node *node)
 	const
 	{
@@ -1712,16 +1712,16 @@ struct region_kd_tree_base
 			return; }
 		if(_comparator(d, key, **node)) {
 			if(node->_down[0] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]);
 			if(node->_down[1] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]); }
 		else {
 			if(node->_down[1] != nullptr)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[1]);
 			if(node->_down[0] != nullptr && measure(d, **node, key) < distance)
-				_nearest_neighbour(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
+				_nearest_neighbor(key, measure, distance, nearest, (d + 1) % K, node->_down[0]); }
 	}
-	/* === Nearest neighbour === */
+	/* === Nearest neighbor === */
 
 
 	/* === Range search === */

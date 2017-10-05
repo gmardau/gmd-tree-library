@@ -1,8 +1,9 @@
-#ifndef _GMD_POINT_KD_TREE_TRAVERSOR_
-#define _GMD_POINT_KD_TREE_TRAVERSOR_
+#ifndef _GMD_POINT_KD_TREE_TRAVERSAL_
+#define _GMD_POINT_KD_TREE_TRAVERSAL_
 
 struct point_kd_tree_iteration
 {
+	template <ushort, typename, bool, typename, typename, typename> friend struct point_kd_tree_base;
 	template <bool, typename> friend struct point_kd_tree_traversor;
 
 	private:
@@ -78,13 +79,8 @@ struct point_kd_tree_traversor
 	public:
 	inline bool operator() () const { return _node != nullptr; }
 
-	template <bool Const_Other>
-	inline bool same (const point_kd_tree_range_iterator<Const_Other, Node> &it)
-	const
-	{ return (*this)() && it() && node() == it.node(); }
-
-	template <typename T> inline ::std::enable_if_t<_is_traversor_v<T>, bool>
-	same       (const T &tr) const { return (*this)() && tr() && node() == tr.node(); }
+	template <bool Const_Other> inline bool
+	operator== (const point_kd_tree_range_iterator<Const_Other, Node> &it) const { return node() == it.node(); }
 
 	template <typename T> inline ::std::enable_if_t<_is_traversor_v<T>, bool>
 	operator== (const T &tr) const { return _node == tr._node; }
@@ -118,6 +114,19 @@ struct point_kd_tree_traversor
 	inline _Traversor prev    () const { return _Traversor(_Iteration::_<0>(_node)); }
 	inline _Traversor next    () const { return _Traversor(_Iteration::_<1>(_node)); }
 	/* === Traversal === */
+
+	/* === Range === */
+	public:
+	::std::pair<_Traversor, _Traversor>
+	range ()
+	const
+	{
+		_Node *first = _node, *last = _node;
+		while(first->_down[0] != nullptr) first = first->_down[0];
+		while( last->_down[1] != nullptr)  last =  last->_down[1];
+		return {_Traversor(first), _Traversor(last->_down[1])};
+	}
+	/* === Range === */
 };
 
 template <bool Const, typename Node>
@@ -129,8 +138,8 @@ struct point_kd_tree_range_iterator
 
 	private:
 	using _Node       = ::std::conditional_t<Const, const typename Node::_Base, typename Node::_Base>;
-	using _Handle     = _Node *;
 	using _Info       = ::std::conditional_t<Const, const typename Node::_Info, typename Node::_Info>;
+	using _Handle     = ::std::conditional_t<Const, _Node * const *, _Node **>;
 	using _R_Iterator = point_kd_tree_range_iterator<Const, Node>;
 
 	template <typename T> constexpr static bool _is_iterator_v = ::std::is_same_v<T, _R_Iterator> ||
@@ -145,27 +154,27 @@ struct point_kd_tree_range_iterator
 
 	/* === Variables === */
 	private:
-	_Handle *_handle;
+	_Handle _handle;
 	inline _Node *node () const { return *_handle; }
 	/* === Variables === */
 
 	/* === Constructor & Destructor === */
 	public:
-	point_kd_tree_range_iterator (_Handle *handle = nullptr) : _handle(handle) {}
+	point_kd_tree_range_iterator (_Handle handle = nullptr) : _handle(handle) {}
 	point_kd_tree_range_iterator (const point_kd_tree_range_iterator<false, Node> &other) : _handle(other._handle) {}
 	/* === Constructor & Destructor === */
+
+	/* === Traversor === */
+	public:
+	inline point_kd_tree_traversor<Const, Node> traversor () const { return point_kd_tree_traversor<Const, Node>(this); }
+	/* === Traversor === */
 
 	/* === Comparison === */
 	public:
 	inline bool operator() () const { return _handle != nullptr; }
 
-	template <bool Const_Other>
-	inline bool same (const point_kd_tree_traversor<Const_Other, Node> &tr)
-	const
-	{ return (*this)() && tr() && node() == tr.node(); }
-
-	template <typename T> inline ::std::enable_if_t<_is_iterator_v<T>, bool>
-	same       (const T &it) const { return (*this)() && it() && node() == it.node(); }
+	template <bool Const_Other> inline bool
+	operator== (const point_kd_tree_traversor<Const_Other, Node> &tr) const { return node() == tr.node(); }
 
 	template <typename T> inline ::std::enable_if_t<_is_iterator_v<T>, bool>
 	operator== (const T &it) const { return _handle == it._handle; }
@@ -184,10 +193,12 @@ struct point_kd_tree_range_iterator
 
 	template <typename T> inline ::std::enable_if_t<_is_iterator_v<T>, bool>
 	operator>= (const T &it) const { return _handle >= it._handle; }
+	/* === Comparison === */
 
+	/* === Difference === */
 	template <typename T> inline ::std::enable_if_t<_is_iterator_v<T>, ::std::ptrdiff_t>
 	operator-  (const T &it) const { return _handle -  it._handle; }
-	/* === Comparison === */
+	/* === Difference === */
 
 	/* === Info === */
 	public:
@@ -225,11 +236,19 @@ struct point_kd_tree_range
 
 	private:
 	using _Node = ::std::conditional_t<Const, const typename Node::_Base, typename Node::_Base>;
+	using _Info = ::std::conditional_t<Const, const typename Node::_Info, typename Node::_Info>;
 
 	using  _R_Iterator = point_kd_tree_range_iterator<false, Node>;
 	using _R_CIterator = point_kd_tree_range_iterator<true,  Node>;
 
 	public:
+	using      value_type = _Info;
+	using difference_type = ::std::ptrdiff_t;
+	using       reference = value_type &;
+	using const_reference = const typename Node::_Info &;
+	using         pointer = value_type *;
+	using   const_pointer = const typename Node::_Info *;
+
 	using       iterator =  _R_Iterator;
 	using const_iterator = _R_CIterator;
 
@@ -241,8 +260,10 @@ struct point_kd_tree_range
 	/* === Constructor & Destructor === */
 	public:
 	point_kd_tree_range (size_t size = 0) { _nodes.reserve(size); }
+	template <int _ = 0, typename = ::std::enable_if_t<Const && _ == _>>
 	point_kd_tree_range (const point_kd_tree_range<false, Node, Allocator> &other)
 		: _nodes(other._nodes.begin(), other._nodes.end()) {}
+	template <int _ = 0, typename = ::std::enable_if_t<Const && _ == _>>
 	point_kd_tree_range (point_kd_tree_range<false, Node, Allocator> &&other)
 		: _nodes(other._nodes.begin(), other._nodes.end()) { other._nodes.clear(); }
 	/* === Constructor & Destructor === */

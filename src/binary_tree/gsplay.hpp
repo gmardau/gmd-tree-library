@@ -121,7 +121,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 	/* === Find (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	find (const Key &key)
 	{ _Node *node = _Base::_find(key); if(node != &(_Base::_head)) _gsplay(node); return T(node); }
@@ -131,7 +131,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 	/* === Find short (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	find_short (const Key &key)
 	{ _Node *node = _Base::_find_short(key); if(node != &(_Base::_head)) _gsplay(node); return T(node); }
@@ -141,7 +141,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 	/* === Lower bound (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	lower_bound (const Key &key)
 	{ _Node *node = _Base::_lower_bound(key); if(node != &(_Base::_head)) _gsplay(node); return T(node); }
@@ -151,7 +151,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 	/* === Upper bound (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	upper_bound (const Key &key)
 	{ _Node *node = _Base::_upper_bound(key); if(node != &(_Base::_head)) _gsplay(node); return T(node); }
@@ -161,7 +161,7 @@ struct binary_tree_subbase<tree_gsplay, Node, Multi, Comparator, Allocator>
 	/* === Equal range (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, ::std::pair<T, T>>
 	equal_range (const Key &key)
 	{

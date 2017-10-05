@@ -1,7 +1,7 @@
 #include <iostream>
 
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -25,7 +25,7 @@ int main(const int, const char **)
 
 	std::cout << "find 4: ";
 	btmap::const_traversor z = a.find_short(4);
-	if(z != a.rend()) std::cout << "true - " << *z << "\n";
+	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 
 	return 0;

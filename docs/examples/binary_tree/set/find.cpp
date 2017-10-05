@@ -20,7 +20,7 @@ int main(const int, const char **)
 
 	std::cout << "find 4: ";
 	btset::const_traversor z = a.find_short(4);
-	if(z != a.rend()) std::cout << "true - " << *z << "\n";
+	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 
 	return 0;

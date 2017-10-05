@@ -1,5 +1,5 @@
-#ifndef _GMD_REGION_KD_TREE_TRAVERSOR_
-#define _GMD_REGION_KD_TREE_TRAVERSOR_
+#ifndef _GMD_REGION_KD_TREE_TRAVERSAL_
+#define _GMD_REGION_KD_TREE_TRAVERSAL_
 
 template <bool Const, typename Node> struct region_kd_tree_iterator;
 template <bool Const, typename Node> struct region_kd_tree_range_iterator;

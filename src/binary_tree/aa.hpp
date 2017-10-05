@@ -34,9 +34,9 @@ struct binary_tree_node<tree_aa, Key, Value, Info, SetMap, Threaded>
 	binary_tree_node (_Base *up) : _Base(up) {}
 	template <bool _ = Threaded, typename = ::std::enable_if_t<_>>
 	binary_tree_node (_Base *up, _Base *prev, _Base *next) : _Base(up, prev, next) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree == Node_Other::_Tree>>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree == Node_Other::_Tree>>
 	binary_tree_node (_Base *up, Node_Other *other) : _Base(up), _level(other->_level) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
 	binary_tree_node (_Base *up, Node_Other *) : _Base(up) {}
 	/* === Constructor & Destructor === */
 
