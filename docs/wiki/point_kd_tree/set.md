@@ -72,7 +72,7 @@ Being a **Point** k-d tree implies that the inserted elements also act as space 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -140,12 +140,12 @@ Destructs and deallocates the container and all its elements.
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
-**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
+**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion-1).
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -200,7 +200,7 @@ The `spaceship` function returns `-1` if the contents of the `*this` are lexicog
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -264,7 +264,7 @@ Returns a copy of the allocator associated with the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -331,7 +331,7 @@ Returns a traversor to the element following the last element of the container (
 
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -381,7 +381,7 @@ Returns the maximum number of elements the container is able to hold due to syst
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -426,7 +426,7 @@ Removes all elements from the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -480,7 +480,7 @@ Inserts elements from the initializer list `il`. Returns the number of elements 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -530,7 +530,7 @@ Returns a pair consisting of a traversor to the inserted element (or to the elem
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -583,7 +583,7 @@ Returns the amount of elements removed.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -629,7 +629,7 @@ All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multim
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -676,12 +676,12 @@ Merges the values of both containers into `*this`. This is achieved by attemptin
 Returns the number of elements merged from `other` into `*this`.
 
 **<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced.
-All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
+All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion-1).
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -731,7 +731,7 @@ Exchanges the contents of the container with those of `other`.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 using int2pair = std::pair<intpair, int>;
@@ -782,7 +782,7 @@ Balances the tree or subtree.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -842,7 +842,7 @@ Returns the number of elements with a key that compares equivalent to `key`. Bec
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -885,7 +885,7 @@ It is equivalent to [`count(key)`](#count-0) or <code><a href="#find-0">find(key
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -926,7 +926,7 @@ Returns a traversor of an element with a key equivalent to `key`. If no such ele
 ```cpp
 using intpair = std::pair<int, int>;
 using doublepair = std::pair<double, double>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -979,7 +979,7 @@ Returns a range containing all the elements with a key equivalent to `key`. Beca
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -1037,7 +1037,7 @@ Finds the closest element in the container to a given `key`. Returns a pair cons
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -1087,7 +1087,7 @@ Returns a range containing all the elements inside (and on) a given region, defi
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {
@@ -1134,7 +1134,7 @@ Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, a
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {

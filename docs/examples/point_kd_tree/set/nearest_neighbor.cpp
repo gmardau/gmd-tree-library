@@ -2,7 +2,7 @@
 #include <cmath>
 
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {

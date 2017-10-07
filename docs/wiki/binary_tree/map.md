@@ -62,7 +62,7 @@ The `Threaded` parameter specifies whether the binary tree elements should have 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -131,7 +131,7 @@ Destructs and deallocates the container and all its elements.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -192,7 +192,7 @@ The `spaceship` function returns `-1` if the contents of the `*this` are lexicog
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -248,7 +248,7 @@ Returns a copy of the allocator associated with the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -333,7 +333,7 @@ Returns a reverse traversor to the element following the last element of the con
 
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -385,7 +385,7 @@ Returns the maximum number of elements the container is able to hold due to syst
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -426,7 +426,7 @@ Removes all elements from the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -484,7 +484,7 @@ Returns a pair consisting of a traversor to the inserted element (or to the elem
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -565,7 +565,7 @@ Returns a pair consisting of a traversor to the inserted element (or to the elem
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -631,7 +631,7 @@ Returns the amount of elements removed.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -675,7 +675,7 @@ All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -723,7 +723,7 @@ All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -769,7 +769,7 @@ Exchanges the contents of the container with those of `other`.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -780,8 +780,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::binary_tree_map<gmd::tree_avl, int, int, false, std::less<int>> a{{1, 0}, {3, 0}, {4, 0}, {5, 0}};
-	gmd::binary_tree_multiset<gmd::tree_rb, intpair, true, Comp> b{{2, 0}, {2, 1}, {3, 0}};
+	gmd::binary_tree_map<gmd::tree_avl, int, int, false, std::less<int>> a{{1,0}, {3,0}, {4,0}, {5,0}};
+	gmd::binary_tree_multiset<gmd::tree_rb, intpair, true, Comp> b{{2,0}, {2,1}, {3,0}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 
@@ -812,7 +812,7 @@ Returns the *`value_type`* value of the element that compares equivalent to `key
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -859,7 +859,7 @@ Returns the *`value_type`* value of the element that compares equivalent to `key
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -909,7 +909,7 @@ Returns the number of elements with a key that compares equivalent to `key`. Bec
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -948,7 +948,7 @@ It is equivalent to [`count(key)`](#count-0) or <code><a href="#find-0">find(key
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -990,7 +990,7 @@ Returns a traversor of an element with a key equivalent to `key`. If no such ele
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -1041,7 +1041,7 @@ Returns a traversor to the first element that is ***not lesser*** than `key`. If
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -1088,7 +1088,7 @@ Returns a traversor to the first element that is ***greater*** than `key`. If no
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -1126,7 +1126,7 @@ Alternatively, the first traversor may be obtained with [`lower_bound(key)`](#lo
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -1174,7 +1174,7 @@ Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, a
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 

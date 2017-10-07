@@ -812,7 +812,7 @@ struct point_kd_tree_base
 	inline ::std::enable_if_t<Multi && ::std::is_same_v<typename Node::_Info, typename Node_Other::_Info>, void>
 	merge (point_kd_tree_base<K_Other, Node_Other, Multi_Other, Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
-		if(this == reinterpret_cast<point_kd_tree_base *>(&other) || other._size == 0) return 0;
+		if(this == reinterpret_cast<point_kd_tree_base *>(&other) || other._size == 0) return;
 		if constexpr(::std::is_same_v<Node, Node_Other> && ::std::is_same_v<Allocator, Allocator_Other>)
 			if(_ATraits::is_always_equal::value || _allocator == other._allocator)
 				{ _merge_move(other); return; }
@@ -951,13 +951,13 @@ struct point_kd_tree_base
 	/* === Count === */
 	public:
 	template <typename Key>
-	::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
 	count (const Key &key)
 	{ if constexpr(!Multi) return _find(key) != &_head; else return _count(key); }
 
 	public:
 	template <typename Key>
-	::std::enable_if_t<!Multi && ::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
+	::std::enable_if_t<::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>, size_t>
 	count (const Key &key)
 	const
 	{ if constexpr(!Multi) return _find(key) != &_head; else return _count(key); }
@@ -1550,7 +1550,7 @@ struct point_kd_tree_base
 		                                    Comparator_Other, Equal_Other, Allocator_Other> &other)
 	{
 		for(typename Node_Other::_Base *node1 = other._head._down[1], *node2; node1 != &other._head; node1 = node2) {
-			node2 = _Iteration::_<1>(node1); _transfer_copy(other, node1).second; }
+			node2 = _Iteration::_<1>(node1); _transfer_copy(other, node1); }
 	}
 
 	private:

@@ -2,7 +2,7 @@
 
 using intpair = std::pair<int, int>;
 using doublepair = std::pair<double, double>;
-std::ostream& operator<< (std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
 struct Comp {

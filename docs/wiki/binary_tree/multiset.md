@@ -542,7 +542,7 @@ a: 1,0 2,0 2,1
 <a name="erase-0" href="#erase-0">#</a> *`size_type`* **erase** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
 
 Removes the elements that compare equivalent to `key`, if existent.
-Returns the number of elements removed.
+Returns the amount of elements removed.
 
 <sub>template <<code>typename T</code>></sub><br>
 <a name="erase-1" href="#erase-1">#</a> `void` **erase** (<code>const T &<b>tr</b></code>) [<>](../../../src/binary_tree/base.hpp#L)
@@ -701,8 +701,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::binary_tree_multiset<gmd::tree_avl, intpair, false, Comp> a{{1, 0}, {3, 0}, {3, 1}, {4, 0}, {5, 0}};
-	gmd::binary_tree_map<gmd::tree_rb, int, int, true, std::greater<int>> b{{2, 0}, {3, 0}};
+	gmd::binary_tree_multiset<gmd::tree_avl, intpair, false, Comp> a{{1,0}, {3,0}, {3,1}, {4,0}, {5,0}};
+	gmd::binary_tree_map<gmd::tree_rb, int, int, true, std::greater<int>> b{{2,0}, {3,0}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
 

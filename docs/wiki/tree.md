@@ -9,27 +9,41 @@
 
 #### Tree types
 
-`tree_bs`&emsp;A **binary search tree** is the basic binary tree structure, with no specific behaviour.
-
-`tree_splay`&emsp;A **splay tree** is a basic binary tree with an additional *splaying* procedure, performed every time an element is accessed. This procedure re-arranges the tree so that a specific element stands at the root.
-
-`tree_gsplay`&emsp;A **gradual splay tree** is a variant of the *splay tree*, the difference being that the *splaying* procedure places the element one level above, rather than at the root.
-
-`tree_streap`&emsp;A **streap tree** is a combination of the *splay* and *treap* trees. Each element contains an additional variable *key*, whose value is used to control the element's position in the tree (*treap*) and incremented whenever the element is accessed (*splay*).
-
-`tree_treap`&emsp;A **treap tree** is a binary tree implementation of a *heap*. Each element contains an additional variable *key*, whose value is randomly set at creation and used to control the element's position in the tree.
-
-`tree_random`&emsp;A **random tree** is a basic binary tree with a probabilistic placement criteria at element insertion. When traversing the tree to find the place for the new element, the inserting method checks if the new element should be placed at the current level, based on the size of the subtree. The larger the size, the lower the probability.
-
-`tree_wb`&emsp;A **weight-balanced tree** keeps its balance by limiting the ratio between the weights of the left and right sub-trees of every node, which can be controlled by a factor &#945;. In this implementation, &#945; is set to 0.25.
-
-`tree_scapegoat`&emsp;A **scapegoat tree** keeps its balance by limiting the ratio between the height and the logarithm of the weight of the tree, the base of which can be controlled by a factor &#945;. In this implementation, &#945; is set to 0.575.
-
-`tree_aa`&emsp;An **Arne Andersson tree** is a binary tree implementation of a *2-3 tree*. It is a height-balanced tree.
-
-`tree_rb`&emsp;A **red-black tree** is a binary tree implementation of a *2-3-4 tree*. It is a height-balanced tree.
-
-`tree_avl`&emsp;An **Adelson-Velsky and Landis tree** is a height-balanced tree. It keeps it balancing by limiting the height difference of the left and right sub-trees of every node to at most 1.
+<table>
+<tr><td><code>tree_bs</code></td>
+<td>A <b>binary search tree</b> is the basic binary tree structure, with no specific behaviour.</td>
+</tr>
+<tr><td><code>tree_splay</code></td>
+<td>A <b>splay tree</b> is a basic binary tree with an additional <i>splaying</i> procedure, performed every time an element is accessed. This procedure re-arranges the tree so that a specific element stands at the root.</td>
+</tr>
+<tr><td><code>tree_gsplay</code></td>
+<td>A <b>gradual splay tree</b> is a variant of the <i>splay tree</i>, the difference being that the <i>splaying</i> procedure places the element one level above, rather than at the root.</td>
+</tr>
+<tr><td><code>tree_streap</code></td>
+<td>A <b>streap tree</b> is a combination of the <i>splay</i> and <i>treap</i> trees. Each element contains an additional variable <i>key</i>, whose value is used to control the element's position in the tree (<i>treap</i>) and incremented whenever the element is accessed (<i>splay</i>).</td>
+</tr>
+<tr><td><code>tree_treap</code></td>
+<td>A <b>treap tree</b> is a binary tree implementation of a <i>heap</i>. Each element contains an additional variable <i>key</i>, whose value is randomly set at creation and used to control the element's position in the tree.</td>
+</tr>
+<tr><td><code>tree_random</code></td>
+<td>A <b>random tree</b> is a basic binary tree with a probabilistic placement criteria at element insertion. When traversing the tree to find the place for the new element, the inserting method checks if the new element should be placed at the current level, based on the size of the subtree. The larger the size, the lower the probability.</td>
+</tr>
+<tr><td><code>tree_wb</code></td>
+<td>A <b>weight-balanced tree</b> keeps its balance by limiting the ratio between the weights of the left and right sub-trees of every node, which can be controlled by a factor &#945;. In this implementation, &#945; is set to 0.25.</td>
+</tr>
+<tr><td><code>tree_scapegoat</code></td>
+<td>A <b>scapegoat tree</b> keeps its balance by limiting the ratio between the height and the logarithm of the weight of the tree, the base of which can be controlled by a factor &#945;. In this implementation, &#945; is set to 0.575.</td>
+</tr>
+<tr><td><code>tree_aa</code></td>
+<td>An <b>Arne Andersson tree</b> is a binary tree implementation of a <i>2-3 tree</i>. It is a height-balanced tree.</td>
+</tr>
+<tr><td><code>tree_rb</code></td>
+<td>A <b>red-black tree</b> is a binary tree implementation of a <i>2-3-4 tree</i>. It is a height-balanced tree.</td>
+</tr>
+<tr><td><code>tree_avl</code></td>
+<td>An <b>Adelson-Velsky and Landis tree</b> is a height-balanced tree. It keeps its balance by limiting the height difference of the left and right sub-trees of every node to at most 1.</td>
+</tr>
+</table>
 
 #### Type conversion
 
