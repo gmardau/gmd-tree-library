@@ -13,9 +13,10 @@ template <
 
 `gmd::point_kd_tree_set` is a container that stores a set of (unique) elements of type `Key` in a k-d tree structure, whose number of dimensions is defined by the template parameter `K`.
 
-The space partitioning is done by using a key comparison function/object of type `Comparator`, whose mechanism follows the *strict weak ordering* formalization. A valid comparison type must include a function with a signature similar to what follows:<br>
-`bool` **operator()** (<code>unsigned short int <b>d</b>, const Key &<b>k1</b>, const Key &<b>k2</b></code>)<br>
-The function returns `true` if `k1` is ***lesser*** than `k2` in the `d`'th dimension (starting at `0`); `false` otherwise.
+The space partitioning is done by using a key comparison function/object of type `Comparator`, whose mechanism follows the *strict weak ordering* formalization. A valid comparison type must include a function with a signature similar to what follows:
+
+&emsp;&emsp;`bool` **operator()** (<code>unsigned short int <b>d</b>, const Key &<b>k1</b>, const Key &<b>k2</b></code>)<br>
+&emsp;&emsp;&emsp;&emsp;The function returns `true` if `k1` is ***lesser*** than `k2` in the `d`'th dimension (starting at `0`); `false` otherwise.
 
 Because this container supports multiple dimensions, the cost of comparing the equivalence of two keys through the `Comparator` function/object alone would be too costly. As such, an additional function/object of type `Equal`, which gets defaulted to [`std::equal_to`](http://en.cppreference.com/w/cpp/utility/functional/equal_to), is requested. The template parameter `Allocator` defines the type of allocator that will be used to allocate the elements in the container, and it is defaulted to [`std::allocator`](http://en.cppreference.com/w/cpp/memory/allocator).
 
@@ -139,7 +140,7 @@ Destructs and deallocates the container and all its elements.
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
-**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
 
 #### Example
 ```cpp
@@ -675,7 +676,7 @@ Merges the values of both containers into `*this`. This is achieved by attemptin
 Returns the number of elements merged from `other` into `*this`.
 
 **<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced.
-All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
 
 #### Example
 ```cpp
@@ -725,7 +726,7 @@ c: (1,1) (2,4)
 
 Exchanges the contents of the container with those of `other`.
 
-**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated, and vice-versa; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated, and vice-versa; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion-1).
 
 #### Example
 ```cpp
@@ -733,13 +734,13 @@ using intpair = std::pair<int, int>;
 std::ostream& operator<< (std::ostream& os, const intpair& i) {
 	os << '(' << i.first << ',' << i.second << ')'; return os; }
 
-using intdoublepair = std::pair<intpair, int>;
+using int2pair = std::pair<intpair, int>;
 struct Comp {
-	bool operator() (unsigned short d, const intdoublepair &i1, const intdoublepair &i2) {
+	bool operator() (unsigned short d, const int2pair &i1, const int2pair &i2) {
 		return d == 0 ? i1.first.first < i2.first.first : i1.first.second < i2.first.second; }
 };
 struct Eq {
-	bool operator() (const intdoublepair &i1, const intdoublepair &i2) {
+	bool operator() (const int2pair &i1, const int2pair &i2) {
 		return i1.first.first == i2.first.first && i1.first.second == i2.first.second; }
 };
 
@@ -750,14 +751,14 @@ struct Comp2 {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_set<2, intdoublepair, Comp, false, Eq> a{{{1,3},0}, {{3,2},0}, {{4,2},0}, {{5,1},0}};
+	gmd::point_kd_tree_set<2, int2pair, Comp, false, Eq> a{{{1,3},0}, {{3,2},0}, {{4,2},0}, {{5,1},0}};
 	gmd::point_kd_tree_multimap<2, intpair, int, Comp2, true> b{{{2,6},0}, {{2,6},1}, {{3,1},0}};
-	std::cout << "a: "; for(intdoublepair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intdoublepair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
 
 	a.swap(b);
-	std::cout << "a: "; for(intdoublepair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intdoublepair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
 }
 ```
 ##### Output
@@ -1023,11 +1024,13 @@ equal_range (3,1): (3,1)
 <sub>template <<code>typename Measure, typename Key</code>></sub><br>
 <a name="nearest_neighbor-3" href="#nearest_neighbor-3">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>const_traversor</i>, double></code> **nearest_neighbor** (<code>const Key &<b>key</b></code> [<code>, const Measure &<b>measure</b></code>]) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Finds the closest element in the container to a given `key`. Returns a pair consisting of a traversor to the element and the distance between its key and `key`. `Measure` is a function/object type that computes the distance between two keys. It must include functions with signatures similar to what follows:<br>
-`double` **operator()** (<code>const <i>key_type</i> &<b>k1</b>, const <i>key_type</i> &<b>k2</b></code>)<br>
-The function returns the distance between `k1` and `k2`.<br>
-`double` **operator()** (<code>unsigned short int <b>d</b>, const <i>key_type</i> &<b>k1</b>, const <i>key_type</i> &<b>k2</b></code>)<br>
-The function returns the distance between `k1` and `k2` in the `d`'th dimension (starting at `0`).
+Finds the closest element in the container to a given `key`. Returns a pair consisting of a traversor to the element and the distance between its key and `key`. `Measure` is a function/object type that computes the distance between two keys. It must include functions with signatures similar to what follows:
+
+&emsp;&emsp;`double` **operator()** (<code>const <i>key_type</i> &<b>k1</b>, const <i>key_type</i> &<b>k2</b></code>)<br>
+&emsp;&emsp;&emsp;&emsp;The function returns the distance between `k1` and `k2`.
+
+&emsp;&emsp;`double` **operator()** (<code>unsigned short int <b>d</b>, const <i>key_type</i> &<b>k1</b>, const <i>key_type</i> &<b>k2</b></code>)<br>
+&emsp;&emsp;&emsp;&emsp;The function returns the distance between `k1` and `k2` in the `d`'th dimension (starting at `0`).
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
@@ -1075,8 +1078,7 @@ nearest neighbor (7,6): (6,7) distance: 1.41421
 <sub>template <<code>typename Key1, typename Key2</code>></sub><br>
 <a name="range_search-0" href="#range_search-0">#</a> *`range`* **range_search** (<code>const Key1 &<b>min</b>, Key2 &<b>max</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
 <sub>template <<code>typename Key1, typename Key2</code>></sub><br>
-<a name="range_search-1" href="#range_search-1">#</a> *`const_range`* **range_search** (<code>const Key1 &<b>min</b>, Key2 &<b>max</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)<br>
-<sub>template <<code>typename Key1, typename Key2</code>></sub>
+<a name="range_search-1" href="#range_search-1">#</a> *`const_range`* **range_search** (<code>const Key1 &<b>min</b>, Key2 &<b>max</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Returns a range containing all the elements inside (and on) a given region, defined by `min` and `max`.
 

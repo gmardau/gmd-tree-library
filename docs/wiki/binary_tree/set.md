@@ -119,7 +119,7 @@ Destructs and deallocates the container and all its elements.
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
-**<u>Note</u>:** All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+**<u>Note</u>:** All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
 
 #### Example
 ```cpp
@@ -665,7 +665,7 @@ Merges the values of both containers into `*this`. This is achieved by attemptin
 Returns the number of elements merged from `other` into `*this`.
 
 **<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced.
-All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
 
 #### Example
 ```cpp
@@ -712,7 +712,7 @@ c: 1,1 2,0
 
 Exchanges the contents of the container with those of `other`.
 
-**<u>Note</u>:** All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the tree types of `*this` and `other` are conversion compatible, then the structure of `other` is replicated, and vice-versa; otherwise, the elements are copied one by one. For more information, refer to [tree type conversion](../tree.md#type-conversion).
+**<u>Note</u>:** All four variants of *`binary_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. When copying the elements, if the containers are conversion compatible, then the structure of `other` is replicated, and vice-versa; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion).
 
 #### Example
 ```cpp
