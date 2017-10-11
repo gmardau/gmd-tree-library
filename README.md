@@ -14,7 +14,7 @@ This library adopts the single include policy. To use it, download the [latest r
 
 ## Future Development
 
-At the time of writing, the library contains only Binary trees. In future releases this library is expected to include Space Partitioning trees (namely KD-trees and Orthrees (n-analogue of quadtrees)) and B-trees.
+At the time of writing, the library contains Binary trees and Point k-d trees. In future releases this library is expected to include other Space Partitioning trees (namely Range k-d trees and Orthrees (n-analogue of quadtrees)) and B-trees.
 
 ## License
 
