@@ -192,8 +192,7 @@ a: (7,1) (7,2)
 <a name="not_equal-0" href="#not_equal-0">#</a> `bool` **operator!=** (<code><i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
 <a name="not_equal-1" href="#not_equal-1">#</a> `bool` **operator!=** (<code>const <i>point_kd_tree</i> &<b>other</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Compares the contents of `*this` and `other` lexicographically.
-The `spaceship` function returns `-1` if the contents of the `*this` are lexicographically ***lesser*** than the contents of `other`; `0` if ***equal***; `1` if ***greater***.
+Checks if `*this` and `other` contain the same elements.
 
 **<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as either *`key_type`* is the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
@@ -1013,7 +1012,7 @@ equal_range (3,1): (3,1)
 
 ---
 
-## Nearest neighbor
+### Nearest neighbor
 
 <sub>template <<code>typename Measure, typename Key</code>></sub><br>
 <a name="nearest_neighbor-0" href="#nearest_neighbor-0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, double></code> **nearest_neighbor** (<code>const Key &<b>key</b>, Measure &<b>measure</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
@@ -1073,7 +1072,7 @@ nearest neighbor (7,6): (6,7) distance: 1.41421
 
 ---
 
-## Range search
+### Range search
 
 <sub>template <<code>typename Key1, typename Key2</code>></sub><br>
 <a name="range_search-0" href="#range_search-0">#</a> *`range`* **range_search** (<code>const Key1 &<b>min</b>, Key2 &<b>max</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>

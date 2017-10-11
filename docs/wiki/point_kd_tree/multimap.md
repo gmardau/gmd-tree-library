@@ -1,17 +1,18 @@
-# gmd::point_kd_tree_multiset
+# gmd::point_kd_tree_multimap
 
 ```cpp
 template <
 	unsigned short int K,
 	typename Key,
+	typename Value,
 	typename Comparator,
 	bool Balanced = false,
 	typename Equal = std::equal_to<Key>
 	typename Allocator = std::allocator<Key>
-> struct point_kd_tree_multiset;
+> struct point_kd_tree_multimap;
 ```
 
-`gmd::point_kd_tree_multiset` is a container that stores a collection of elements of type `Key` in a k-d tree structure, whose number of dimensions is defined by the template parameter `K`.
+`gmd::point_kd_tree_multimap` is a container that stores a collection of key-value elements of type `Key`-`Value` in a k-d tree structure, whose number of dimensions is defined by the template parameter `K`.
 
 The space partitioning is done by using a key comparison function/object of type `Comparator`, whose mechanism follows the *strict weak ordering* formalization. As such, and because this container allows duplicates, the adopted definition is left < node <= right. A valid comparison type must include a function with a signature similar to what follows:
 
@@ -27,13 +28,14 @@ Being a **Point** k-d tree implies that the inserted elements also act as space 
 | Member type | Definition |
 |:-|:-|
 | *`key_type`* | `Key` |
-| *`value_type`* | `Key` |
+| *`mapped_type`* | `Value` |
+| *`value_type`* | <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>key_type</i>, <i>mapped_type</i>></code>  |
 | *`size_type`* | [`std::size_t`](http://en.cppreference.com/w/cpp/types/size_t) |
 | *`difference_type`* | [`std::ptrdiff_t`](http://en.cppreference.com/w/cpp/types/ptrdiff_t) |
 | *`key_compare`* | `Comparator` |
-| *`value_compare`* | `Comparator` |
+| *`value_compare`* | <code><i>point_kd_tree_multimap</i>::Info_Comparator</code> |
 | *`key_equal`* | `Equal` |
-| *`value_equal`* | `Equal` |
+| *`value_equal`* | <code><i>point_kd_tree_map</i>::Info_Equal</code> |
 | *`allocator_type`* | `Allocator` |
 | *`reference`* | <code><i>value_type</i> &</code> |
 | *`const_reference`* | <code>const <i>value_type</i> &</code> |
@@ -48,24 +50,24 @@ Being a **Point** k-d tree implies that the inserted elements also act as space 
 
 ### Constructor
 
-<a name="constructor-0" href="#constructor-0">#</a> **point_kd_tree_multiset** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-0" href="#constructor-0">#</a> **point_kd_tree_multimap** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Default constructor*&emsp;Constructs an empty container.
 
 <sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="constructor-1" href="#constructor-1">#</a> **point_kd_tree_multiset** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-1" href="#constructor-1">#</a> **point_kd_tree_multimap** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Range constructor*&emsp;Constructs the container with the contents of the range [`first`, `last`). It is equivalent to call the *default constructor* followed by [`insert(first, last)`](#insert-2).
 
-<a name="constructor-2" href="#constructor-2">#</a> **point_kd_tree_multiset** (<code>const <i>point_kd_tree_multiset</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-2" href="#constructor-2">#</a> **point_kd_tree_multimap** (<code>const <i>point_kd_tree_multimap</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Copy constructor*&emsp;Constructs the container with the copy of the contents of `other`. If a comparator or an equal or an allocator are not provided, they are obtained by copy from the ones in `other`. In the case of the allocator, the following is used: <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::select_on_container_copy_construction()</code>.
 
-<a name="constructor-3" href="#constructor-3">#</a> **point_kd_tree_multiset** (<code><i>point_kd_tree_multiset</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-3" href="#constructor-3">#</a> **point_kd_tree_multimap** (<code><i>point_kd_tree_multimap</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Move constructor*&emsp;Constructs the container with the contents of `other`, using move semantics. If a comparator or an equal or an allocator are not provided, they are obtained by move-construction from the ones in `other`.
 
-<a name="constructor-4" href="#constructor-4">#</a> **point_kd_tree_multiset** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-4" href="#constructor-4">#</a> **point_kd_tree_multimap** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Initializer list constructor*&emsp;Constructs the container with the contents of the initializer list `il`. It is equivalent to call the *default constructor* followed by [`insert(il)`](#insert-3).
 
@@ -83,26 +85,26 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Default constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
 	a.insert({{1,4}, {3,2}, {5,6}, {3,2}});
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Range constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b(++a.begin(), a.end());
+	gmd::point_kd_tree_multimap<2, intpair, Comp> b(++a.begin(), a.end());
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (3) Copy constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c(a);
+	gmd::point_kd_tree_multimap<2, intpair, Comp> c(a);
 	c.insert({2,3});
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
 
 	// (4) Move constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> d(std::move(b));
+	gmd::point_kd_tree_multimap<2, intpair, Comp> d(std::move(b));
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
 
 	// (5) Initializer list constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> e{{4,1}, {4,1}, {6,2}, {5,3}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> e{{4,1}, {4,1}, {6,2}, {5,3}};
 	std::cout << "e: "; for(intpair &x: e) std::cout << x << ' '; std::cout << '\n';
 }
 ```
@@ -120,7 +122,7 @@ e: (4,1) (4,1) (5,3) (6,2)
 
 ### Destructor
 
-<a name="destructor-" href="#destructor-">#</a> **~point_kd_tree_multiset** () [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="destructor-" href="#destructor-">#</a> **~point_kd_tree_multimap** () [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Destructs and deallocates the container and all its elements.
 
@@ -128,15 +130,15 @@ Destructs and deallocates the container and all its elements.
 
 ### Assign operator
 
-<a name="assign-0" href="#assign-0">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code>const <i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-0" href="#assign-0">#</a> <code><i>point_kd_tree_multimap</i> &</code>**operator=** (<code>const <i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Copy assignment*&emsp;Replaces the contents of the containers with a copy of the contents of `other`. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_copy_assignment::value</code> is set to `true`.
 
-<a name="assign-1" href="#assign-1">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code><i>point_kd_tree</i> &&<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-1" href="#assign-1">#</a> <code><i>point_kd_tree_multimap</i> &</code>**operator=** (<code><i>point_kd_tree</i> &&<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Move assignment*&emsp;Replaces the contents with those of `other` using move semantics. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_move_assignment::value</code> is set to `true`. If not, and neither <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::is_always_equal::value</code> is set `true` nor the allocators compare equal, then the elements are copied instead.
 
-<a name="assign-2" href="#assign-2">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-2" href="#assign-2">#</a> <code><i>point_kd_tree_multimap</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
@@ -156,15 +158,15 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Copy assignment
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{3,2}, {5,1}, {2,4}, {5,1}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{3,2}, {5,1}, {2,4}, {5,1}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b; b = a;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> b; b = a;
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Move assignment
 	gmd::point_kd_tree_set<2, intpair, Comp> c{{1,2}, {6,3}};
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multiset<2, intpair, Comp> d; d = std::move(c);
+	gmd::point_kd_tree_multimap<2, intpair, Comp> d; d = std::move(c);
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
 
@@ -209,8 +211,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {3,1}, {4,2}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b{{1,1}, {1,1}, {3,1}, {4,2}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,1}, {3,1}, {4,2}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> b{{1,1}, {1,1}, {3,1}, {4,2}};
 
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
@@ -273,8 +275,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset_a = gmd::point_kd_tree_multiset<2, intpair, Comp>;
-	using kdtmset_b = gmd::point_kd_tree_multiset<1, intpair, Comp>;
+	using kdtmset_a = gmd::point_kd_tree_multimap<2, intpair, Comp>;
+	using kdtmset_b = gmd::point_kd_tree_multimap<1, intpair, Comp>;
 	kdtmset_a a;
 	kdtmset_b b;
 
@@ -340,7 +342,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
+	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
 	kdtmset a{{1,6}, {8,5}, {4,2}, {3,2}, {7,3}, {4,2}};
 
 	std::cout << "a: ";
@@ -390,7 +392,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
 
 	std::cout << "empty: " << (a.empty() ? "true" : "false") << "\n";
 	std::cout << "size: " << a.size() << "\n";
@@ -435,7 +437,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{4,1}, {2,3}, {3,5}, {1,4}, {2,3}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{4,1}, {2,3}, {3,5}, {1,4}, {2,3}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	a.clear();
@@ -483,7 +485,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a, b;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a, b;
 
 	auto y = a.insert({2,1});
 	std::cout << "element: " << *y << "\n";
@@ -527,7 +529,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
 
 	auto y = a.emplace(2, 0);
 	std::cout << "element: " << *y << "\n";
@@ -576,7 +578,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {2,4}, {3,1}, {4,5}, {5,3}, {4,5}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {2,4}, {3,1}, {4,5}, {5,3}, {4,5}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	size_t y = a.erase({4,5});
@@ -623,8 +625,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,0}, {2,1}, {3,0}}, b{{2,1}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c;
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,0}, {2,1}, {3,0}}, b{{2,1}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> c;
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 
@@ -671,8 +673,8 @@ struct Comp {
 int main(const int, const char **)
 {
 	gmd::point_kd_tree_set<2, intpair, Comp> a{{1,1}, {2,4}, {3,2}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b{{2,4}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c{{2,4}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> b{{2,4}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> c{{2,4}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
@@ -730,7 +732,7 @@ struct Comp2 {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, int2pair, Comp, false, Eq>
+	gmd::point_kd_tree_multimap<2, int2pair, Comp, false, Eq>
 		a{{{1,3},0}, {{3,2},0}, {{3,2},1}, {{4,2},0}, {{5,1},0}};
 	gmd::point_kd_tree_map<2, intpair, int, Comp2, true> b{{{2,6},0}, {{3,1},0}};
 	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
@@ -772,7 +774,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{2,1}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{2,1}};
 	a.insert({{3,0}, {5,4}, {5,4}, {6,3}, {7,5}});
 	a.print([](const intpair &i){ std::cout << i; });
 
@@ -835,7 +837,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {1,2}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {1,2}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "count (1,1): " << a.count(intpair{1,1}) << "\n";
@@ -878,7 +880,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "contains (3,1): " << (a.contains(intpair{3,1}) ? "true" : "false") << "\n";
@@ -924,7 +926,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
+	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
 	kdtmset a{{1,2}, {3,1}, {4,0}, {4,0}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
@@ -972,7 +974,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "equal_range (2,0): ";
@@ -1037,7 +1039,7 @@ struct Measure {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {2,7}, {4,6}, {5,2}, {2,7}, {7,3}, {9,4}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,1}, {2,7}, {4,6}, {5,2}, {2,7}, {7,3}, {9,4}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	auto y = a.nearest_neighbor<Measure>(intpair{3,3});
@@ -1080,7 +1082,7 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
+	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
 	kdtmset a{{1,1}, {2,7}, {4,6}, {5,2}, {6,7}, {7,3}, {9,4}, {5,2}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
@@ -1131,7 +1133,7 @@ struct Print {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{2,1}, {3,0}, {5,4}, {6,3}, {7,2}, {5,4}};
+	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{2,1}, {3,0}, {5,4}, {6,3}, {7,2}, {5,4}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "\n"; a.print<true>(Print());

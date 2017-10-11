@@ -705,8 +705,9 @@ struct point_kd_tree_base
 			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
 				:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
 			return {place, false}; }
-		return {_emplace_place(side, place, _new_node(nullptr, ::std::piecewise_construct,
-			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...))), true};
+		_Node *node = _new_node(nullptr, ::std::piecewise_construct,
+			:: std::forward_as_tuple(key), ::std::forward_as_tuple(::std::forward<Args>(value)...));
+		_emplace_place(side, place, node); return {node, true};
 	}
 
 	public:
@@ -719,8 +720,9 @@ struct point_kd_tree_base
 			if constexpr(Replace) { _del_info(place); _new_info(place, ::std::piecewise_construct,
 				:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...)); }
 			return {place, false}; }
-		return {_emplace_place(side, place, _new_node(nullptr, ::std::piecewise_construct,
-			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...))), true};
+		_Node *node = _new_node(nullptr, ::std::piecewise_construct,
+			:: std::forward_as_tuple(::std::move(key)), ::std::forward_as_tuple(::std::forward<Args>(value)...));
+		_emplace_place(side, place, node); return {node, true};
 	}
 	/* === Emplace === */
 
@@ -901,8 +903,8 @@ struct point_kd_tree_base
 	{
 		int side; _Node *place = _place(side, key);
 		if(side == -1) return place->value();
-		return _emplace_place(side, place, _new_node(nullptr, ::std::piecewise_construct,
-			:: std::forward_as_tuple(key), ::std::tuple<>())).first->value();
+		_Node *node = _new_node(nullptr, ::std::piecewise_construct, ::std::forward_as_tuple(key), ::std::tuple<>());
+		_emplace_place(side, place, node); return node->value();
 	}
 
 	public:
@@ -912,8 +914,9 @@ struct point_kd_tree_base
 	{
 		int side; _Node *place = _place(side, ::std::move(key));
 		if(side == -1) return place->value();
-		return _emplace_place(side, place, _new_node(nullptr, ::std::piecewise_construct,
-			:: std::forward_as_tuple(::std::move(key)), ::std::tuple<>())).first->value();
+		_Node *node = _new_node(nullptr, ::std::piecewise_construct,
+			:: std::forward_as_tuple(::std::move(key)), ::std::tuple<>());
+		_emplace_place(side, place, node); return node->value();
 	}
 	/* === Array subscript === */
 

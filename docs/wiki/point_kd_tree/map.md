@@ -1,19 +1,20 @@
-# gmd::point_kd_tree_multiset
+# gmd::point_kd_tree_map
 
 ```cpp
 template <
 	unsigned short int K,
 	typename Key,
+	typename Value,
 	typename Comparator,
 	bool Balanced = false,
 	typename Equal = std::equal_to<Key>
 	typename Allocator = std::allocator<Key>
-> struct point_kd_tree_multiset;
+> struct point_kd_tree_map;
 ```
 
-`gmd::point_kd_tree_multiset` is a container that stores a collection of elements of type `Key` in a k-d tree structure, whose number of dimensions is defined by the template parameter `K`.
+`gmd::point_kd_tree_map` is a container that stores a set of key-value elements of type `Key`-`Value` in a k-d tree structure, whose number of dimensions is defined by the template parameter `K`.
 
-The space partitioning is done by using a key comparison function/object of type `Comparator`, whose mechanism follows the *strict weak ordering* formalization. As such, and because this container allows duplicates, the adopted definition is left < node <= right. A valid comparison type must include a function with a signature similar to what follows:
+The space partitioning is done by using a key comparison function/object of type `Comparator`, whose mechanism follows the *strict weak ordering* formalization. A valid comparison type must include a function with a signature similar to what follows:
 
 &emsp;&emsp;`bool` **operator()** (<code>unsigned short int <b>d</b>, const Key &<b>k1</b>, const Key &<b>k2</b></code>)<br>
 &emsp;&emsp;&emsp;&emsp;The function returns `true` if `k1` is ***lesser*** than `k2` in the `d`'th dimension (starting at `0`); `false` otherwise.
@@ -27,13 +28,14 @@ Being a **Point** k-d tree implies that the inserted elements also act as space 
 | Member type | Definition |
 |:-|:-|
 | *`key_type`* | `Key` |
-| *`value_type`* | `Key` |
+| *`mapped_type`* | `Value` |
+| *`value_type`* | <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>key_type</i>, <i>mapped_type</i>></code>  |
 | *`size_type`* | [`std::size_t`](http://en.cppreference.com/w/cpp/types/size_t) |
 | *`difference_type`* | [`std::ptrdiff_t`](http://en.cppreference.com/w/cpp/types/ptrdiff_t) |
 | *`key_compare`* | `Comparator` |
-| *`value_compare`* | `Comparator` |
+| *`value_compare`* | <code><i>point_kd_tree_map</i>::Info_Comparator</code> |
 | *`key_equal`* | `Equal` |
-| *`value_equal`* | `Equal` |
+| *`value_equal`* | <code><i>point_kd_tree_map</i>::Info_Equal</code> |
 | *`allocator_type`* | `Allocator` |
 | *`reference`* | <code><i>value_type</i> &</code> |
 | *`const_reference`* | <code>const <i>value_type</i> &</code> |
@@ -48,32 +50,33 @@ Being a **Point** k-d tree implies that the inserted elements also act as space 
 
 ### Constructor
 
-<a name="constructor-0" href="#constructor-0">#</a> **point_kd_tree_multiset** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-0" href="#constructor-0">#</a> **point_kd_tree_map** ([<code>const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Default constructor*&emsp;Constructs an empty container.
 
 <sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="constructor-1" href="#constructor-1">#</a> **point_kd_tree_multiset** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-1" href="#constructor-1">#</a> **point_kd_tree_map** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Range constructor*&emsp;Constructs the container with the contents of the range [`first`, `last`). It is equivalent to call the *default constructor* followed by [`insert(first, last)`](#insert-2).
 
-<a name="constructor-2" href="#constructor-2">#</a> **point_kd_tree_multiset** (<code>const <i>point_kd_tree_multiset</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-2" href="#constructor-2">#</a> **point_kd_tree_map** (<code>const <i>point_kd_tree_map</i> &<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Copy constructor*&emsp;Constructs the container with the copy of the contents of `other`. If a comparator or an equal or an allocator are not provided, they are obtained by copy from the ones in `other`. In the case of the allocator, the following is used: <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::select_on_container_copy_construction()</code>.
 
-<a name="constructor-3" href="#constructor-3">#</a> **point_kd_tree_multiset** (<code><i>point_kd_tree_multiset</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-3" href="#constructor-3">#</a> **point_kd_tree_map** (<code><i>point_kd_tree_map</i> &&<b>other</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Move constructor*&emsp;Constructs the container with the contents of `other`, using move semantics. If a comparator or an equal or an allocator are not provided, they are obtained by move-construction from the ones in `other`.
 
-<a name="constructor-4" href="#constructor-4">#</a> **point_kd_tree_multiset** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="constructor-4" href="#constructor-4">#</a> **point_kd_tree_map** (<code>const <a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code> [<code>, const <i>key_compare</i> &<b>c</b>, const <i>key_equal</i> &<b>e</b>, const <i>allocator_type</i> &<b>a</b></code>]) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Initializer list constructor*&emsp;Constructs the container with the contents of the initializer list `il`. It is equivalent to call the *default constructor* followed by [`insert(il)`](#insert-3).
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -83,44 +86,44 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Default constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
-	a.insert({{1,4}, {3,2}, {5,6}, {3,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a;
+	a.insert({{{1,4},0}, {{3,2},0}, {{5,6},0}});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Range constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b(++a.begin(), a.end());
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> b(++a.begin(), a.end());
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (3) Copy constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c(a);
-	c.insert({2,3});
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> c(a);
+	c.insert({{2,3},0});
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 
 	// (4) Move constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> d(std::move(b));
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> d(std::move(b));
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "d: "; for(int2pair &x: d) std::cout << x << ' '; std::cout << '\n';
 
 	// (5) Initializer list constructor
-	gmd::point_kd_tree_multiset<2, intpair, Comp> e{{4,1}, {4,1}, {6,2}, {5,3}};
-	std::cout << "e: "; for(intpair &x: e) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> e{{{4,1},0}, {{6,2},0}, {{5,3},0}};
+	std::cout << "e: "; for(int2pair &x: e) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,4) (3,2) (3,2) (5,6)
-b: (3,2) (3,2) (5,6)
-c: (2,3) (1,4) (3,2) (3,2) (5,6)
+a: (1,4),0 (3,2),0 (5,6),0
+b: (3,2),0 (5,6),0
+c: (2,3),0 (1,4),0 (3,2),0 (5,6),0
 b:
-d: (3,2) (3,2) (5,6)
-e: (4,1) (4,1) (5,3) (6,2)
+d: (3,2),0 (5,6),0
+e: (4,1),0 (5,3),0 (6,2),0
 ```
 
 ---
 
 ### Destructor
 
-<a name="destructor-" href="#destructor-">#</a> **~point_kd_tree_multiset** () [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="destructor-" href="#destructor-">#</a> **~point_kd_tree_map** () [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Destructs and deallocates the container and all its elements.
 
@@ -128,15 +131,15 @@ Destructs and deallocates the container and all its elements.
 
 ### Assign operator
 
-<a name="assign-0" href="#assign-0">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code>const <i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-0" href="#assign-0">#</a> <code><i>point_kd_tree_map</i> &</code>**operator=** (<code>const <i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Copy assignment*&emsp;Replaces the contents of the containers with a copy of the contents of `other`. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_copy_assignment::value</code> is set to `true`.
 
-<a name="assign-1" href="#assign-1">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code><i>point_kd_tree</i> &&<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-1" href="#assign-1">#</a> <code><i>point_kd_tree_map</i> &</code>**operator=** (<code><i>point_kd_tree</i> &&<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Move assignment*&emsp;Replaces the contents with those of `other` using move semantics. The allocator is replaced only if <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::propagate_on_container_move_assignment::value</code> is set to `true`. If not, and neither <code><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a><<i>allocator_type</i>>::is_always_equal::value</code> is set `true` nor the allocators compare equal, then the elements are copied instead.
 
-<a name="assign-2" href="#assign-2">#</a> <code><i>point_kd_tree_multiset</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="assign-2" href="#assign-2">#</a> <code><i>point_kd_tree_map</i> &</code>**operator=** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 *Initializer list assignment*&emsp;Replaces the contents with those of the initializer list `il`.
 
@@ -145,8 +148,9 @@ Destructs and deallocates the container and all its elements.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -156,31 +160,31 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Copy assignment
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{3,2}, {5,1}, {2,4}, {5,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b; b = a;
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{3,2},0}, {{5,1},0}, {{2,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> b; b = a;
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Move assignment
-	gmd::point_kd_tree_set<2, intpair, Comp> c{{1,2}, {6,3}};
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multiset<2, intpair, Comp> d; d = std::move(c);
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> c{{{1,2},0}, {{6,3},0}, {{1,2},1}};
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> d; d = std::move(c);
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "d: "; for(int2pair &x: d) std::cout << x << ' '; std::cout << '\n';
 
 	// (3) Initializer list assignment
-	a = {{7,1}, {7,2}, {7,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a = {{{7,1},0}, {{7,2},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (3,2) (2,4) (5,1) (5,1)
-b: (3,2) (2,4) (5,1) (5,1)
-c: (1,2) (6,3)
+a: (2,4),0 (3,2),0 (5,1),0
+b: (2,4),0 (3,2),0 (5,1),0
+c: (1,2),0 (1,2),1 (6,3),0
 c:
-d: (1,2) (6,3)
-a: (7,1) (7,1) (7,2)
+d: (1,2),0 (6,3),0
+a: (7,1),0 (7,2),0
 ```
 
 ---
@@ -199,8 +203,9 @@ Checks if `*this` and `other` contain the same elements.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -209,21 +214,21 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {3,1}, {4,2}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b{{1,1}, {1,1}, {3,1}, {4,2}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,2},0}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> b{{{1,2},1}, {{3,1},0}, {{4,2},0}};
 
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "a == b: " << (a == b ? "true" : "false") << '\n';
 	std::cout << "b != a: " << (b != a ? "true" : "false") << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (3,1) (4,2)
-b: (1,1) (1,1) (3,1) (4,2)
-a == b: false
-b != a: true
+a: (1,2),0 (3,1),0 (4,2),0
+b: (1,2),1 (3,1),0 (4,2),0
+a == b: true
+b != a: false
 ```
 
 ---
@@ -263,8 +268,9 @@ Returns a copy of the allocator associated with the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -273,33 +279,33 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset_a = gmd::point_kd_tree_multiset<2, intpair, Comp>;
-	using kdtmset_b = gmd::point_kd_tree_multiset<1, intpair, Comp>;
-	kdtmset_a a;
-	kdtmset_b b;
+	using kdtmap_a = gmd::point_kd_tree_map<2, intpair, int, Comp>;
+	using kdtmap_b = gmd::point_kd_tree_map<2, intpair, int, Comp>;
+	kdtmap_a a;
+	kdtmap_b b;
 
-	kdtmset_a::key_compare x = a.key_comp();
-	kdtmset_b::value_equal y = b.value_eq();
+	kdtmap_a::key_compare x = a.key_comp();
+	kdtmap_b::value_equal y = b.value_eq();
 	std::cout << "a (d=0, (1,2) < (2,3)): " << (x(0, {1,2}, {2,3}) ? "true" : "false") << '\n';
-	std::cout << "b ((1,2) == (1,3)): " << (y({1,2}, {1,3}) ? "true" : "false") << '\n';
+	std::cout << "b ((1,2) == (1,3)): " << (y({{1,2},0}, {{1,3},1}) ? "true" : "false") << '\n';
 
-	kdtmset_a::allocator_type z = a.get_allocator();
-	intpair *i = std::allocator_traits<kdtmset_a::allocator_type>::allocate(z, 2);
-	new(&i[0]) intpair(1,2);
-	new(&i[1]) intpair(3,2);
+	kdtmap_a::allocator_type z = a.get_allocator();
+	int2pair *i = std::allocator_traits<kdtmap_a::allocator_type>::allocate(z, 2);
+	new(&i[0]) int2pair({1,2},0);
+	new(&i[1]) int2pair({3,2},1);
 	std::cout << "i[0]: " << i[0] << '\n';
 	std::cout << "i[1]: " << i[1] << '\n';
-	i[0].~intpair();
-	i[1].~intpair();
-	std::allocator_traits<kdtmset_a::allocator_type>::deallocate(z, i, 2);
+	i[0].~int2pair();
+	i[1].~int2pair();
+	std::allocator_traits<kdtmap_a::allocator_type>::deallocate(z, i, 2);
 }
 ```
 ##### Output
 ```
 a (d=0, (1,2) < (2,3)): true
 b ((1,2) == (1,3)): false
-i[0]: (1,2)
-i[1]: (3,2)
+i[0]: (1,2),0
+i[1]: (3,2),1
 ```
 
 ---
@@ -330,8 +336,9 @@ Returns a traversor to the element following the last element of the container (
 
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -340,15 +347,15 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
-	kdtmset a{{1,6}, {8,5}, {4,2}, {3,2}, {7,3}, {4,2}};
+	using kdtmap = gmd::point_kd_tree_map<2, intpair, int, Comp>;
+	kdtmap a{{{1,6},0}, {{8,5},0}, {{4,2},0}, {{3,2},0}, {{7,3},0}};
 
 	std::cout << "a: ";
-	for(kdtmset::traversor x = a.begin(); x != a.end(); ++x)
+	for(kdtmap::traversor x = a.begin(); x != a.end(); ++x)
 		std::cout << *x << " ";
 	std::cout << "\n";
 
-	kdtmset::traversor x = a.root();
+	kdtmap::traversor x = a.root();
 	std::cout << "root: " << *x << "\n";
 	if(x.greater()())
 		std::cout << "greater: " << *x.greater() << "\n";
@@ -356,9 +363,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (3,2) (1,6) (4,2) (4,2) (7,3) (8,5)
-root: (4,2)
-greater: (7,3)
+a: (3,2),0 (1,6),0 (4,2),0 (7,3),0 (8,5),0
+root: (4,2),0
+greater: (8,5),0
 ```
 
 ---
@@ -380,8 +387,9 @@ Returns the maximum number of elements the container is able to hold due to syst
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -390,12 +398,12 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a;
 
 	std::cout << "empty: " << (a.empty() ? "true" : "false") << "\n";
 	std::cout << "size: " << a.size() << "\n";
-	a.insert({{3,2}, {1,3}, {2,4}, {3,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a.insert({{{3,2},0}, {{1,3},0}, {{2,4},0}});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "empty: " << (a.empty() ? "true" : "false") << "\n";
 	std::cout << "size: " << a.size() << "\n";
 
@@ -406,10 +414,10 @@ int main(const int, const char **)
 ```
 empty: true
 size: 0
-a: (1,3) (2,4) (3,2) (3,2)
+a: (1,3),0 (2,4),0 (3,2),0
 empty: false
-size: 4
-max_size: 576460752303423487
+size: 3
+max_size: 461168601842738790
 ```
 
 ---
@@ -425,8 +433,9 @@ Removes all elements from the container.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -435,17 +444,17 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{4,1}, {2,3}, {3,5}, {1,4}, {2,3}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{4,1},0}, {{2,3},0}, {{3,5},0}, {{1,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	a.clear();
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "size: " << a.size() << "\n";
 }
 ```
 ##### Output
 ```
-a: (1,4) (2,3) (4,1) (2,3) (3,5)
+a: (2,3),0 (1,4),0 (3,5),0 (4,1),0
 a:
 size: 0
 ```
@@ -454,27 +463,34 @@ size: 0
 
 ### Insert
 
-<a name="insert-0" href="#insert-0">#</a> *`traversor`* **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
-<a name="insert-1" href="#insert-1">#</a> *`traversor`* **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false</code>></sub><br>
+<a name="insert-0" href="#insert-0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert** (<code>const <i>value_type</i> &<b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
+<sub>template <<code>bool Replace = false</code>></sub><br>
+<a name="insert-1" href="#insert-1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **insert** (<code><i>value_type</i> &&<b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Inserts `info` in the container.
-Returns a traversor to the inserted element.
+Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place.
 
-<sub>template <<code>typename T1, typename T2</code>></sub><br>
-<a name="insert-2" href="#insert-2">#</a> `void` **insert** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false, typename T1, typename T2</code>></sub><br>
+<a name="insert-2" href="#insert-2">#</a> *`size_type`* **insert** (<code>const T1 &<b>first</b>, const T2 &<b>last</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Inserts elements from range [`first`, `last`).
+Returns the number of elements inserted.
 Even though `first` and `last` can be of different types, `last` must be reachable from `first` and `T1` needs to satisfy [EqualityComparable](http://en.cppreference.com/w/cpp/concept/EqualityComparable) towards `T2`.
 
-<a name="insert-3" href="#insert-3">#</a> `void` **insert** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false</code>></sub><br>
+<a name="insert-3" href="#insert-3">#</a> *`size_type`* **insert** (<code><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a><<i>value_type</i>> &<b>il</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Inserts elements from the initializer list `il`.
+Inserts elements from the initializer list `il`. Returns the number of elements inserted.
+
+**<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced. Also, the return values (`bool` and *`size_type`*) are set to `true` and `+1` only if the elements were inserted ***without*** need for replacement.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -483,42 +499,58 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a, b;
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a, b;
 
-	auto y = a.insert({2,1});
-	std::cout << "element: " << *y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	auto y = a.insert({{2,1},0});
+	std::cout << "inserted: " << (y.second ? "true" : "false") << "\n";
+	std::cout << "element: " << *y.first << "\n";
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	a.insert({{1,4}, {2,1}, {3,0}, {4,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	size_t z = a.insert({{{1,4},0}, {{2,1},1}, {{3,0},0}, {{4,2},0}});
+	std::cout << "# inserted: " << z << "\n";
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	b.insert(a.root(), a.cend());
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-element: (2,1)
-a: (2,1)
-a: (1,4) (2,1) (3,0) (2,1) (4,2)
-b: (2,1) (2,1) (3,0) (4,2)
+inserted: true
+element: (2,1),0
+a: (2,1),0
+# inserted: 3
+a: (1,4),0 (2,1),0 (3,0),0 (4,2),0
+b: (2,1),0 (3,0),0 (4,2),0
 ```
 
 ---
 
 ### Emplace
 
-<sub>template <<code>typename... Args</code>></sub><br>
-<a name="emplace-" href="#emplace-">#</a> *`traversor`* **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
+<a name="emplace-" href="#emplace-">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **emplace** (<code>Args&&... <b>info</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Inserts a new element in the container constructed *in-place* with `info`.
-Returns a traversor to the inserted element.
+Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place.
+
+**Note:** If `Replace` is set to `true` and an element the compares equivalent already exists in the container, its *`value_type`* value is replaced. Also, the return value (`bool`) is set to `true` only if the element was inserted ***without*** need for replacement.
+
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
+<a name="try_emplace-0" href="#try_emplace-0">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code>const <i>key_type</i> &<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+
+<sub>template <<code>bool Replace = false, typename... Args</code>></sub><br>
+<a name="try_emplace-1" href="#try_emplace-1">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **try_emplace** (<code><i>key_type</i> &&<b>key</b>, Args&&... <b>value</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+
+Inserts a new element in the container constructed *in-place* with `{key, value}` if there exists no element with the same key in container.
+Returns a pair consisting of a traversor to the inserted element (or to the element that prevented the insertion) and a boolean value set to `true` if the insertion took place. This function differs from [`emplace()`](#emplace1) by avoiding the creation and subsequent deletion of an internal tree structure node (and potentially the construction of `value`) if an element with the same key already exists in the container.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -527,31 +559,39 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a;
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a;
 
-	auto y = a.emplace(2, 0);
-	std::cout << "element: " << *y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	auto y = a.emplace(intpair{2,0}, 0);
+	std::cout << "emplaced: " << (y.second ? "true" : "false") << "\n";
+	std::cout << "element: " << *y.first << "\n";
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	y = a.emplace(2, 0);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	y = a.emplace<true>(intpair{2,0}, 1);
+	std::cout << "emplaced: " << (y.second ? "true" : "false") << "\n";
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	a.try_emplace({2,0}, 2);
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-element: (2,0)
-a: (2,0)
-a: (2,0) (2,0)
+emplaced: true
+element: (2,0),0
+a: (2,0),0
+emplaced: false
+a: (2,0),1
+a: (2,0),1
 ```
 
 ---
 
 ### Erase
 
-<a name="erase-0" href="#erase-0">#</a> *`size_type`* **erase** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<a name="erase-0" href="#erase-0">#</a> `bool` **erase** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Removes the elements that compare equivalent to `key`, if existent.
-Returns the amount of elements removed.
+Removes the element that compares equivalent to `key`, if existent.
+Returns `true` if an element is found and removed; `false` otherwise.
 
 <sub>template <<code>typename T</code>></sub><br>
 <a name="erase-1" href="#erase-1">#</a> `void` **erase** (<code>const T &<b>tr</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
@@ -566,8 +606,9 @@ Returns the amount of elements removed.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -576,45 +617,45 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {2,4}, {3,1}, {4,5}, {5,3}, {4,5}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,2},0}, {{2,4},0}, {{3,1},0}, {{4,5},0}, {{5,3},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	size_t y = a.erase({4,5});
-	std::cout << "# erased: " << y << '\n';
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a.erase({4,5});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	y = a.erase({{1,3}, {2,4}, {5,3}});
+	size_t y = a.erase({{1,3}, {2,4}, {5,3}});
 	std::cout << "# erased: " << y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (3,1) (1,2) (2,4) (4,5) (5,3) (4,5)
+a: (1,2),0 (2,4),0 (3,1),0 (5,3),0 (4,5),0
+a: (1,2),0 (2,4),0 (3,1),0 (5,3),0
 # erased: 2
-a: (1,2) (2,4) (3,1) (5,3)
-# erased: 2
-a: (1,2) (3,1)
+a: (1,2),0 (3,1),0
 ```
 
 ---
 
 ### Transfer
 
-<sub>template<<code>typename T</code>></sub><br>
-<a name="transfer-" href="#transfer-">#</a> *`traversor`* **transfer** (<code><i>point_kd_tree</i> &<b>other</b>, const T &<b>tr</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template<<code>bool Replace = false, typename T</code>></sub><br>
+<a name="transfer-" href="#transfer-">#</a> <code><a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a><<i>traversor</i>, bool></code> **transfer** (<code><i>point_kd_tree</i> &<b>other</b>, const T &<b>tr</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Transfers an element from `other` into the container.
-Returns a traversor to the transferred element.
+Transfers an element from `other` into the container, if it does not exist.
+Returns a pair consisting of a traversor to the transferred element (or to the element that prevented the transferral) and a boolean value set to `true` if the transferral took place.
 `tr` must be a non const traversor in `other`.
 
-**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same.
+**<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced. Also, the return value (`bool`) is set to `true` only if the element was transferred without need for replacement.
+All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -623,39 +664,45 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,0}, {2,1}, {3,0}}, b{{2,1}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c;
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,1},0}, {{1,1},1}, {{2,4},0}, {{3,2},0}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> b{{{2,4},0}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> c{{{2,4},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 
-	b.transfer(a, a.root());
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	b.merge(a);
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
-	c.transfer(a, a.begin());
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	c.merge<true>(a);
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ###### Output
 ```
-a: (1,0) (2,1) (3,0)
-b: (2,1)
-a: (1,0) (3,0)
-b: (2,1) (2,1)
-a: (3,0)
-c: (1,0)
+a: (1,1),0 (1,1),1 (2,4),0 (3,2),0
+b: (2,4),0
+c: (2,4),1
+a: (1,1),0 (2,4),0
+b: (1,1),1 (2,4),0 (3,2),0
+a:
+c: (1,1),0 (2,4),0
 ```
 
 ---
 
 ### Merge
 
-<a name="merge-" href="#merge-">#</a> `void` **merge** (<code><i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+<sub>template<<code>bool Replace = false</code>></sub><br>
+<a name="merge-" href="#merge-">#</a> *`size_type`* **merge** (<code><i>point_kd_tree</i> &<b>other</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
 
 Merges the values of both containers into `*this`. This is achieved by attempting to transfer the elements of `other` one by one using `transfer`.
+Returns the number of elements merged from `other` into `*this`.
 
-**<u>Note</u>:** All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion-1).
+**<u>Note</u>:** If `Replace` is set to `true` and an element that compares equivalent already exists in the container, its *`value_type`* value is replaced.
+All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multimap`*) are accepted, as well as any template signature, as long as *`value_type`* is the same. If the container is empty and the containers are conversion compatible, then the structure of `other` is replicated; otherwise, the elements are copied one by one. For more information, refer to [type conversion](../tree.md#type-conversion-1).
 
 #### Example
 ```cpp
@@ -670,9 +717,9 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_set<2, intpair, Comp> a{{1,1}, {2,4}, {3,2}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> b{{2,4}};
-	gmd::point_kd_tree_multiset<2, intpair, Comp> c{{2,4}};
+	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {1,1}, {2,4}, {3,2}};
+	gmd::point_kd_tree_map<2, intpair, Comp> b{{2,4}};
+	gmd::point_kd_tree_map<2, intpair, Comp> c{{2,4}};
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
@@ -681,20 +728,20 @@ int main(const int, const char **)
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
 
-	c.merge(b);
+	c.merge<true>(a);
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (2,4) (3,2)
+a: (1,1) (1,1) (2,4) (3,2)
 b: (2,4)
 c: (2,4)
+a: (1,1) (2,4)
+b: (1,1) (2,4) (3,2)
 a:
-b: (1,1) (2,4) (3,2) (2,4)
-a:
-c: (1,1) (2,4) (3,2) (2,4) (2,4)
+c: (1,1) (2,4)
 ```
 
 ---
@@ -710,10 +757,10 @@ Exchanges the contents of the container with those of `other`.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
-
 using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
+
 struct Comp {
 	bool operator() (unsigned short d, const int2pair &i1, const int2pair &i2) {
 		return d == 0 ? i1.first.first < i2.first.first : i1.first.second < i2.first.second; }
@@ -730,23 +777,22 @@ struct Comp2 {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, int2pair, Comp, false, Eq>
-		a{{{1,3},0}, {{3,2},0}, {{3,2},1}, {{4,2},0}, {{5,1},0}};
-	gmd::point_kd_tree_map<2, intpair, int, Comp2, true> b{{{2,6},0}, {{3,1},0}};
-	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp2, false> a{{{1,3},0}, {{3,2},0}, {{4,2},0}, {{5,1},0}};
+	gmd::point_kd_tree_multiset<2, int2pair, Comp, true, Eq> b{{{2,6},0}, {{2,6},1}, {{3,1},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	a.swap(b);
-	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,3),0 (3,2),0 (5,1),0 (3,2),1 (4,2),0
-b: (3,1),0 (2,6),0
-a: (2,6),0 (3,1),0
-b: (4,2),0 (5,1),0 (3,2),0 (1,3),0
+a: (4,2),0 (5,1),0 (3,2),0 (1,3),0
+b: (2,6),0 (3,1),0 (2,6),1
+a: (3,1),0 (2,6),0
+b: (3,2),0 (1,3),0 (4,2),0 (5,1),0
 ```
 
 ---
@@ -762,8 +808,9 @@ Balances the tree or subtree.
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -772,39 +819,139 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{2,1}};
-	a.insert({{3,0}, {5,4}, {5,4}, {6,3}, {7,5}});
-	a.print([](const intpair &i){ std::cout << i; });
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{2,1},0}};
+	a.insert({{{3,0},0}, {{5,4},0}, {{6,3},0}, {{7,5},0}});
+	a.print([](const int2pair &i){ std::cout << i; });
 
 	a.balance(a.root().greater().greater());
-	std::cout << "\n"; a.print([](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print([](const int2pair &i){ std::cout << i; });
 
 	a.balance();
-	std::cout << "\n"; a.print([](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print([](const int2pair &i){ std::cout << i; });
 }
 ```
 ##### Output
 ```
-              ┌──╴(7,5)
-          ┌──╴(5,4)
-          │   └──╴(6,3)
-      ┌──╴(5,4)
-  ┌──╴(3,0)
-─╴(2,1)
+              ┌──╴(7,5),0
+          ┌──╴(6,3),0
+      ┌──╴(5,4),0
+  ┌──╴(3,0),0
+─╴(2,1),0
 
-          ┌──╴(7,5)
-      ┌──╴(6,3)
-      │   │   ┌──╴(5,4)
-      │   └──╴(5,4)
-  ┌──╴(3,0)
-─╴(2,1)
+          ┌──╴(7,5),0
+      ┌──╴(6,3),0
+      │   └──╴(5,4),0
+  ┌──╴(3,0),0
+─╴(2,1),0
 
-      ┌──╴(7,5)
-  ┌──╴(5,4)
-  │   └──╴(6,3)
-─╴(5,4)
-  └──╴(2,1)
-      └──╴(3,0)
+  ┌──╴(7,5),0
+  │   └──╴(6,3),0
+─╴(5,4),0
+  └──╴(2,1),0
+      └──╴(3,0),0
+```
+
+---
+
+## Element access
+
+### Array subscript
+
+<a name="array_subscript-0" href="#array_subscript-0">#</a> <code><i>value_type</i> &</code> **operator[]** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
+<a name="array_subscript-1" href="#array_subscript-1">#</a> <code><i>value_type</i> &</code> **operator[]** (<code><i>key_type</i> &&<b>key</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)
+
+Returns the *`value_type`* value of the element that compares equivalent to `key`. If no such element exists, an insertion is performed.
+
+#### Example
+```cpp
+using intpair = std::pair<int, int>;
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
+
+struct Comp {
+	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
+		return d == 0 ? i1.first < i2.first : i1.second < i2.second; }
+};
+
+int main(const int, const char **)
+{
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{3,1},1}, {{1,2},2}, {{2,3},3}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "access value of key (2,3): " << a[{2,3}] << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "setting value of key (3,1): " << (a[{3,1}] = 3) << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "access value of key (4,2): " << a[{4,2}] << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "setting value of key (5,5): " << (a[{5,5}] = 5) << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+}
+```
+##### Output
+```
+a: (1,2),2 (2,3),3 (3,1),1
+access value of key (2,3): 3
+a: (1,2),2 (2,3),3 (3,1),1
+setting value of key (3,1): 3
+a: (1,2),2 (2,3),3 (3,1),3
+access value of key (4,2): 0
+a: (1,2),2 (2,3),3 (3,1),3 (4,2),0
+setting value of key (5,5): 5
+a: (1,2),2 (2,3),3 (3,1),3 (4,2),0 (5,5),5
+```
+
+---
+
+### At
+
+<a name="at-0" href="#at-0">#</a> <code><i>value_type</i> &</code> **at** (<code>const <i>key_type</i> &<b>key</b></code>) [<>](../../../src/point_kd_tree/base.hpp#L)<br>
+<a name="at-1" href="#at-1">#</a> <code>const <i>value_type</i> &</code> **at** (<code>const <i>key_type</i> &<b>key</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
+
+Returns the *`value_type`* value of the element that compares equivalent to `key`. If no such element exists, an exception of type [`std::out_of_range`](http://en.cppreference.com/w/cpp/error/out_of_range) is thrown.
+
+#### Example
+```cpp
+using intpair = std::pair<int, int>;
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
+
+struct Comp {
+	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
+		return d == 0 ? i1.first < i2.first : i1.second < i2.second; }
+};
+
+int main(const int, const char **)
+{
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{3,1},1}, {{1,2},2}, {{2,3},3}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "access value of key (2,3): " << a.at(intpair{2,3}) << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	std::cout << "setting value of key (3,1): " << (a.at(intpair{3,1}) = 3) << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+
+	try {
+		std::cout << "access value of key (4,2): " << a.at(intpair{4,2}) << '\n';
+	} catch (std::exception &e) {
+		std::cout << e.what() << '\n';
+	}
+}
+```
+##### Output
+```
+a: (1,2),2 (2,3),3 (3,1),1
+access value of key (2,3): 3
+a: (1,2),2 (2,3),3 (3,1),1
+setting value of key (3,1): 3
+a: (1,2),2 (2,3),3 (3,1),3
+access value of key (4,2): point_kd_tree_map.at() out_of_range
 ```
 
 ---
@@ -818,15 +965,16 @@ int main(const int, const char **)
 <sub>template <<code>typename Key</code>></sub><br>
 <a name="count-1" href="#count-1">#</a> *`size_type`* **count** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Returns the number of elements with a key that compares equivalent to `key`.
+Returns the number of elements with a key that compares equivalent to `key`. Because this container does not allow duplicates, the return value is either `0` or `1`.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -835,8 +983,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {1,2}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "count (1,1): " << a.count(intpair{1,1}) << "\n";
 	std::cout << "count (1,2): " << a.count(intpair{1,2}) << "\n";
@@ -844,9 +992,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (1,2) (3,1) (4,0)
+a: (1,2),0 (3,1),0 (4,0),0
 count (1,1): 0
-count (1,2): 2
+count (1,2): 1
 ```
 
 ---
@@ -858,18 +1006,19 @@ count (1,2): 2
 <sub>template <<code>typename Key</code>></sub><br>
 <a name="contains-1" href="#contains-1">#</a> `bool` **contains** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Checks if there exists at least one element with a key that compares equivalent to `key`.
+Checks if there exists an element with a key that compares equivalent to `key`.
 Returns `true` if such element exists; `false` otherwise.
 
-It is equivalent to  <code><a href="#find-0">find(key)</a> != <a href="#end-0">end()</a></code>.
+It is equivalent to [`count(key)`](#count-0) or <code><a href="#find-0">find(key)</a> != <a href="#end-0">end()</a></code>.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -878,8 +1027,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "contains (3,1): " << (a.contains(intpair{3,1}) ? "true" : "false") << "\n";
 	std::cout << "contains (3,2): " << (a.contains(intpair{3,2}) ? "true" : "false") << "\n";
@@ -887,7 +1036,7 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (3,1) (4,0) (3,1)
+a: (1,2),0 (3,1),0 (4,0),0
 contains (3,1): true
 contains (3,2): false
 ```
@@ -908,9 +1057,10 @@ Returns a traversor of an element with a key equivalent to `key`. If no such ele
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
+using int2pair = std::pair<intpair, int>;
 using doublepair = std::pair<double, double>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	using is_transparent = void;
@@ -924,26 +1074,26 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
-	kdtmset a{{1,2}, {3,1}, {4,0}, {4,0}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	using kdtmap = gmd::point_kd_tree_map<2, intpair, int, Comp>;
+	kdtmap a{{{1,2},0}, {{3,1},0}, {{4,0},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "find (1.0,3.0): ";
-	kdtmset::traversor y = a.find(doublepair{1.0,3.0});
+	kdtmap::traversor y = a.find(doublepair{1.0,3.0});
 	if(y != a.end()) std::cout << "true - " << *y << "\n";
 	else             std::cout << "false\n";
 
 	std::cout << "find (4.0,0.0): ";
-	kdtmset::const_traversor z = a.find(doublepair{4.0,0.0});
+	kdtmap::const_traversor z = a.find(doublepair{4.0,0.0});
 	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 }
 ```
 ##### Output
 ```
-a: (3,1) (1,2) (4,0) (4,0)
+a: (1,2),0 (3,1),0 (4,0),0
 find (1.0,3.0): false
-find (4.0,0.0): true - (4,0)
+find (4.0,0.0): true - (4,0),0
 ```
 
 ---
@@ -955,15 +1105,16 @@ find (4.0,0.0): true - (4,0)
 <sub>template <<code>typename Key</code>></sub><br>
 <a name="equal_range-1" href="#equal_range-1">#</a> *`const_range`* **equal_range** (<code>const Key &<b>key</b></code>) `const` [<>](../../../src/point_kd_tree/base.hpp#L)
 
-Returns a range containing all the elements with a key equivalent to `key`.
+Returns a range containing all the elements with a key equivalent to `key`. Because this container does not allow duplicates, the range will have at most size 1.
 
 **<u>Note</u>:** The function is ***valid*** only if either `Key` and *`key_type`* are the same or <code><i>key_compare</i>::is_transparent</code> is valid.
 
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -972,12 +1123,12 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "equal_range (2,0): ";
 	auto y = a.equal_range(intpair{2,0});
-	if(y.empty()) std::cout << "no elements found\n";
+	if(y.empty()) std::cout << "no element found\n";
 	else          std::cout << "element found\n";
 
 	std::cout << "equal_range (3,1): ";
@@ -989,9 +1140,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (3,1) (4,0) (3,1)
-equal_range (2,0): no elements found
-equal_range (3,1): (3,1) (3,1)
+a: (1,2),0 (3,1),0 (4,0),0
+equal_range (2,0): no element found
+equal_range (3,1): (3,1),0
 ```
 
 ---
@@ -1020,8 +1171,9 @@ Finds the closest element in the container to a given `key`. Returns a pair cons
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -1037,8 +1189,9 @@ struct Measure {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {2,7}, {4,6}, {5,2}, {2,7}, {7,3}, {9,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp>
+		a{{{1,1},0}, {{2,7},0}, {{4,6},0}, {{5,2},0}, {{6,7},0}, {{7,3},0}, {{9,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	auto y = a.nearest_neighbor<Measure>(intpair{3,3});
 	std::cout << "nearest neighbor (3,3): " << *y.first << " distance: " << y.second << '\n';
@@ -1049,9 +1202,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,1) (2,7) (2,7) (4,6) (5,2) (7,3) (9,4)
-nearest neighbor (3,3): (5,2) distance: 2.23607
-nearest neighbor (7,6): (9,4) distance: 2.82843
+a: (1,1),0 (4,6),0 (2,7),0 (5,2),0 (7,3),0 (9,4),0 (6,7),0
+nearest neighbor (3,3): (5,2),0 distance: 2.23607
+nearest neighbor (7,6): (6,7),0 distance: 1.41421
 ```
 
 ---
@@ -1070,8 +1223,9 @@ Returns a range containing all the elements inside (and on) a given region, defi
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -1080,21 +1234,21 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multiset<2, intpair, Comp>;
-	kdtmset a{{1,1}, {2,7}, {4,6}, {5,2}, {6,7}, {7,3}, {9,4}, {5,2}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	using kdtmap = gmd::point_kd_tree_map<2, intpair, int, Comp>;
+	kdtmap a{{{1,1},0}, {{2,7},0}, {{4,6},0}, {{5,2},0}, {{6,7},0}, {{7,3},0}, {{9,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	kdtmset::range y = a.range_search(intpair{3,2}, intpair{7,6});
+	kdtmap::range y = a.range_search(intpair{3,2}, intpair{7,6});
 	std::cout << "range search (3,2)-(7,6): ";
-	for(kdtmset::range::iterator z = y.begin(); z != y.end(); ++z)
+	for(kdtmap::range::iterator z = y.begin(); z != y.end(); ++z)
 		std::cout << *z << ' ';
 	std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (4,6) (2,7) (5,2) (5,2) (7,3) (9,4) (6,7)
-range search (3,2)-(7,6): (5,2) (4,6) (7,3) (5,2)
+a: (1,1),0 (4,6),0 (2,7),0 (5,2),0 (7,3),0 (9,4),0 (6,7),0
+range search (3,2)-(7,6): (5,2),0 (4,6),0 (7,3),0
 ```
 
 ---
@@ -1117,8 +1271,9 @@ Prints the tree or subtree to the ***stdout***. If `Verbose` is set to `true`, a
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -1126,30 +1281,29 @@ struct Comp {
 };
 
 struct Print {
-	void operator() (const intpair &i) const { std::cout << i ; }
+	void operator() (const int2pair &i) const { std::cout << i ; }
 };
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{2,1}, {3,0}, {5,4}, {6,3}, {7,2}, {5,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp>
+		a{{{2,1},0}, {{3,0},0}, {{5,4},0}, {{6,3},0}, {{7,2},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "\n"; a.print<true>(Print());
-	std::cout << "\n"; a.print(a.root().greater(), [](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print(a.root().greater(), [](const int2pair &i){ std::cout << i; });
 }
 ```
 ##### Output
 ```
-a: (3,0) (2,1) (5,4) (7,2) (6,3) (5,4)
+a: (3,0),0 (2,1),0 (5,4),0 (7,2),0 (6,3),0
 
-      ┌──╴0 (5,4)
-  ┌──╴1 (6,3)
-  │   └──╴0 (7,2)
-─╴0 (5,4)
-  └──╴1 (2,1)
-      └──╴0 (3,0)
+  ┌──╴1 (6,3),0
+  │   └──╴0 (7,2),0
+─╴0 (5,4),0
+  └──╴1 (2,1),0
+      └──╴0 (3,0),0
 
-  ┌──╴(5,4)
-┄╴(6,3)
-  └──╴(7,2)
+┄╴(6,3),0
+  └──╴(7,2),0
 ```
