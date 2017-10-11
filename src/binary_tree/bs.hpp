@@ -1,3 +1,21 @@
+// gmd-tree-library - C++ - Binary Search tree
+
+// Copyright (C) 2017 Gustavo Martins
+
+// This file is part of the gmd-tree-library. This library is free
+// software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef _GMD_BINARY_TREE_BS_
 #define _GMD_BINARY_TREE_BS_
 
@@ -52,6 +70,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_bs, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -89,27 +109,19 @@ struct binary_tree_subbase<tree_bs, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
-	{ return _Base::_insert_bottom(info); }
+	_insert_ (Arg &&info)
+	{ return _Base::_insert_bottom(::std::forward<Arg>(info)); }
 
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
-	{ return _Base::_insert_bottom(::std::move(info)); }
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, const typename Node::_Info &info)
-	{ return _Base::_insert_hint_bottom(hint, info); }
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, typename Node::_Info &&info)
-	{ return _Base::_insert_hint_bottom(hint, ::std::move(info)); }
+	_insert_hint_ (_Node *hint, Arg &&info)
+	{ return _Base::_insert_hint_bottom(hint, ::std::forward<Arg>(info)); }
 	/* === Insert === */
 
 
@@ -143,7 +155,7 @@ struct binary_tree_subbase<tree_bs, Node, Multi, Comparator, Allocator>
 			_Base::_replace_node(node, replacement, del); }
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 };
 

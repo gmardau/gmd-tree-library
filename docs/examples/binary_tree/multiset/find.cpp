@@ -20,13 +20,13 @@ int main(const int, const char **)
 	std::cout << "a: "; for(Info &x: a) std::cout << x.v[0] << ',' << x.v[1] << ' '; std::cout << '\n';
 
 	std::cout << "find 2.0: ";
-	btmset::reverse_traversor y = a.find<btmset::reverse_traversor>(2.0);
+	btmset::reverse_traversor y = a.find(2.0);
 	if(y != a.rend()) std::cout << "true - " << (*y).v[0] << ',' << y->v[0] << "\n";
 	else              std::cout << "false\n";
 
 	std::cout << "find 4.0: ";
-	btmset::const_traversor z = a.find_short<btmset::traversor>(4.0);
-	if(z != a.rend()) std::cout << "true - " << z->v[0] << ',' << z->v[1] << "\n";
+	btmset::const_traversor z = a.find_short(4.0);
+	if(z != a.cend()) std::cout << "true - " << z->v[0] << ',' << z->v[1] << "\n";
 	else              std::cout << "false\n";
 
 	return 0;

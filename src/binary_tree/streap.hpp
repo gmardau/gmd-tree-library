@@ -1,3 +1,21 @@
+// gmd-tree-library - C++ - Streap tree
+
+// Copyright (C) 2017 Gustavo Martins
+
+// This file is part of the gmd-tree-library. This library is free
+// software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef _GMD_BINARY_TREE_STREAP_
 #define _GMD_BINARY_TREE_STREAP_
 
@@ -34,9 +52,9 @@ struct binary_tree_node<tree_streap, Key, Value, Info, SetMap, Threaded>
 	binary_tree_node (_Base *up) : _Base(up) {}
 	template <bool _ = Threaded, typename = ::std::enable_if_t<_>>
 	binary_tree_node (_Base *up, _Base *prev, _Base *next) : _Base(up, prev, next) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree == Node_Other::_Tree>>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree == Node_Other::_Tree>>
 	binary_tree_node (_Base *up, Node_Other *other) : _Base(up), _key(other->_key) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
 	binary_tree_node (_Base *up, Node_Other *) : _Base(up) {}
 	/* === Constructor & Destructor === */
 
@@ -55,6 +73,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -132,7 +152,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 	/* === Find (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	find (const Key &key)
 	{ _Node *node = _Base::_find(key); if(node != &(_Base::_head)) { ++_key(node); _sift_up(node); } return T(node); }
@@ -142,7 +162,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 	/* === Find short (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	find_short (const Key &key)
 	{ _Node *node = _Base::_find_short(key); if(node != &(_Base::_head)) { ++_key(node); _sift_up(node); } return T(node); }
@@ -152,7 +172,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 	/* === Lower bound (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	lower_bound (const Key &key)
 	{ _Node *node = _Base::_lower_bound(key); if(node != &(_Base::_head)) { ++_key(node); _sift_up(node); } return T(node); }
@@ -162,7 +182,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 	/* === Upper bound (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	inline ::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	inline ::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, T>
 	upper_bound (const Key &key)
 	{ _Node *node = _Base::_upper_bound(key); if(node != &(_Base::_head)) { ++_key(node); _sift_up(node); } return T(node); }
@@ -172,7 +192,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 	/* === Equal range (override) === */
 	public:
 	template <typename T = typename _Base::_Traversor, typename Key>
-	::std::enable_if_t<(std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
+	::std::enable_if_t<(::std::is_same_v<typename Node::_Key, Key> || _is_transparent_v<Comparator, Key>)
 	                          && _Base::template _is_traversor_v<T>, ::std::pair<T, T>>
 	equal_range (const Key &key)
 	{
@@ -189,37 +209,23 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
+	_insert_ (Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(info);
+		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::forward<Arg>(info));
 		++_key(result.first); _sift_up(result.first); return result;
 	}
 
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
+	_insert_hint_ (_Node *hint, Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::move(info));
-		++_key(result.first); _sift_up(result.first); return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, const typename Node::_Info &info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, info);
-		++_key(result.first); _sift_up(result.first); return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, typename Node::_Info &&info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::move(info));
+		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::forward<Arg>(info));
 		++_key(result.first); _sift_up(result.first); return result;
 	}
 	/* === Insert === */
@@ -253,7 +259,7 @@ struct binary_tree_subbase<tree_streap, Node, Multi, Comparator, Allocator>
 		else                      _Base::_remove_node(node, node->_down[1], del);
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
 

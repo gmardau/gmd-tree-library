@@ -1,3 +1,21 @@
+// gmd-tree-library - C++ - Random tree
+
+// Copyright (C) 2017 Gustavo Martins
+
+// This file is part of the gmd-tree-library. This library is free
+// software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef _GMD_BINARY_TREE_RANDOM_
 #define _GMD_BINARY_TREE_RANDOM_
 
@@ -34,9 +52,9 @@ struct binary_tree_node<tree_random, Key, Value, Info, SetMap, Threaded>
 	binary_tree_node (_Base *up) : _Base(up) {}
 	template <bool _ = Threaded, typename = ::std::enable_if_t<_>>
 	binary_tree_node (_Base *up, _Base *prev, _Base *next) : _Base(up, prev, next) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree == Node_Other::_Tree>>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree == Node_Other::_Tree>>
 	binary_tree_node (_Base *up, Node_Other *other) : _Base(up), _size(other->_size) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
 	binary_tree_node (_Base *up, Node_Other *) : _Base(up) {}
 	/* === Constructor & Destructor === */
 
@@ -55,6 +73,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_random, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -98,41 +118,26 @@ struct binary_tree_subbase<tree_random, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
+	_insert_ (Arg &&info)
 	{
 		int side = 0; size_t depth;
-		_Node *node = _place(side, _Node::key(info), depth);
+		_Node *node = _place(side, _Node::key(::std::forward<Arg>(info)), depth);
 		if(!Multi && side == -1) return {node, false};
-		node = _Base::_insert_place_bottom(side, node, info);
+		node = _Base::_insert_place_bottom(side, node, ::std::forward<Arg>(info));
 		_balance_insert(node, depth);
 		return {node, true};
 	}
 
 	private:
-	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
-	{
-		int side = 0; size_t depth;
-		_Node *node = _place(side, _Node::key(::std::move(info)), depth);
-		if(!Multi && side == -1) return {node, false};
-		node = _Base::_insert_place_bottom(side, node, ::std::move(info));
-		_balance_insert(node, depth);
-		return {node, true};
-	}
-
-	private:
+	template <typename Arg>
 	inline ::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *, const typename Node::_Info &info)
-	{ return _insert_(info); }
-
-	private:
-	inline ::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *, typename Node::_Info &&info)
-	{ return _insert_(::std::move(info)); }
+	_insert_hint_ (_Node *, Arg &&info)
+	{ return _insert_(::std::forward<Arg>(info)); }
 	/* === Insert === */
 
 
@@ -166,7 +171,7 @@ struct binary_tree_subbase<tree_random, Node, Multi, Comparator, Allocator>
 		else                      _Base::_remove_node(node, node->_down[1], del);
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
 

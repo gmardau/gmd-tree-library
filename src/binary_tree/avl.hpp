@@ -1,3 +1,21 @@
+// gmd-tree-library - C++ - Adelson-Velsky and Landis tree
+
+// Copyright (C) 2017 Gustavo Martins
+
+// This file is part of the gmd-tree-library. This library is free
+// software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef _GMD_BINARY_TREE_AVL_
 #define _GMD_BINARY_TREE_AVL_
 
@@ -34,9 +52,9 @@ struct binary_tree_node<tree_avl, Key, Value, Info, SetMap, Threaded>
 	binary_tree_node (_Base *up) : _Base(up) {}
 	template <bool _ = Threaded, typename = ::std::enable_if_t<_>>
 	binary_tree_node (_Base *up, _Base *prev, _Base *next) : _Base(up, prev, next) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree == Node_Other::_Tree>>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree == Node_Other::_Tree>>
 	binary_tree_node (_Base *up, Node_Other *other) : _Base(up), _balance(other->_balance) {}
-	template <typename Node_Other, typename = std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
+	template <typename Node_Other, typename =::std::enable_if_t<_Tree != Node_Other::_Tree>, typename = void>
 	binary_tree_node (_Base *up, Node_Other *) : _Base(up) {}
 	/* === Constructor & Destructor === */
 
@@ -55,6 +73,8 @@ template <typename Node, bool Multi, typename Comparator, typename Allocator>
 struct binary_tree_subbase<tree_avl, Node, Multi, Comparator, Allocator>
 : public binary_tree_base<Node, Multi, Comparator, Allocator>
 {
+	template <typename, bool, typename, typename> friend struct binary_tree_base;
+
 	private:
 	using _Node      = typename Node::_Base;
 	using _Base      = binary_tree_base<Node, Multi, Comparator, Allocator>;
@@ -98,40 +118,24 @@ struct binary_tree_subbase<tree_avl, Node, Multi, Comparator, Allocator>
 
 
 	/* ##################################################################### */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* === Insert === */
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (const typename Node::_Info &info)
+	_insert_ (Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(info);
+		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::forward<Arg>(info));
 		if(result.second) _balance_insert(result.first);
 		return result;
 	}
 
 	private:
+	template <typename Arg>
 	::std::pair<_Node *, bool>
-	_insert_ (typename Node::_Info &&info)
+	_insert_hint_ (_Node *hint, Arg &&info)
 	{
-		::std::pair<_Node *, bool> result = _Base::_insert_bottom(::std::move(info));
-		if(result.second) _balance_insert(result.first);
-		return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, const typename Node::_Info &info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, info);
-		if(result.second) _balance_insert(result.first);
-		return result;
-	}
-
-	private:
-	::std::pair<_Node *, bool>
-	_insert_hint_ (_Node *hint, typename Node::_Info &&info)
-	{
-		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::move(info));
+		::std::pair<_Node *, bool> result = _Base::_insert_hint_bottom(hint, ::std::forward<Arg>(info));
 		if(result.second) _balance_insert(result.first);
 		return result;
 	}
@@ -188,7 +192,7 @@ struct binary_tree_subbase<tree_avl, Node, Multi, Comparator, Allocator>
 		}
 	}
 	/* === Erase === */
-	/* ######################### Virtual functions ######################### */
+	/* ############################# Modifiers ############################# */
 	/* ##################################################################### */
 
 

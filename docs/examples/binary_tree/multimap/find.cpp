@@ -1,7 +1,7 @@
 #include <iostream>
 
 using intpair = std::pair<int, int>;
-std::ostream& operator<<(std::ostream& os, const intpair& i) {
+std::ostream &operator<< (std::ostream &os, const intpair &i) {
 	os << i.first << ',' << i.second; return os;
 }
 
@@ -19,13 +19,13 @@ int main(const int, const char **)
 	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "find 2.0: ";
-	btmmap::reverse_traversor y = a.find<btmmap::reverse_traversor>(2.0);
+	btmmap::reverse_traversor y = a.find(2.0);
 	if(y != a.rend()) std::cout << "true - " << *y << "\n";
 	else              std::cout << "false\n";
 
 	std::cout << "find 4: ";
-	btmmap::const_traversor z = a.find_short<btmmap::traversor>(4);
-	if(z != a.rend()) std::cout << "true - " << *z << "\n";
+	btmmap::const_traversor z = a.find_short(4);
+	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 
 	return 0;
