@@ -85,37 +85,37 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Default constructor
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
-	a.insert({{1,4}, {3,2}, {5,6}, {3,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a;
+	a.insert({{{1,4},0}, {{3,2},0}, {{5,6},0}, {{3,2},1}});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Range constructor
-	gmd::point_kd_tree_multimap<2, intpair, Comp> b(++a.begin(), a.end());
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> b(++a.begin(), a.end());
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (3) Copy constructor
-	gmd::point_kd_tree_multimap<2, intpair, Comp> c(a);
-	c.insert({2,3});
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> c(a);
+	c.insert({{2,3},0});
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 
 	// (4) Move constructor
-	gmd::point_kd_tree_multimap<2, intpair, Comp> d(std::move(b));
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> d(std::move(b));
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "d: "; for(int2pair &x: d) std::cout << x << ' '; std::cout << '\n';
 
 	// (5) Initializer list constructor
-	gmd::point_kd_tree_multimap<2, intpair, Comp> e{{4,1}, {4,1}, {6,2}, {5,3}};
-	std::cout << "e: "; for(intpair &x: e) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> e{{{4,1},0}, {{4,1},1}, {{6,2},0}, {{5,3},0}};
+	std::cout << "e: "; for(int2pair &x: e) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,4) (3,2) (3,2) (5,6)
-b: (3,2) (3,2) (5,6)
-c: (2,3) (1,4) (3,2) (3,2) (5,6)
+a: (1,4),0 (3,2),0 (3,2),1 (5,6),0
+b: (3,2),0 (3,2),1 (5,6),0
+c: (2,3),0 (1,4),0 (3,2),0 (3,2),1 (5,6),0
 b:
-d: (3,2) (3,2) (5,6)
-e: (4,1) (4,1) (5,3) (6,2)
+d: (3,2),0 (3,2),1 (5,6),0
+e: (4,1),0 (4,1),1 (5,3),0 (6,2),0
 ```
 
 ---
@@ -158,31 +158,31 @@ struct Comp {
 int main(const int, const char **)
 {
 	// (1) Copy assignment
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{3,2}, {5,1}, {2,4}, {5,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multimap<2, intpair, Comp> b; b = a;
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{3,2},0}, {{5,1},0}, {{2,4},0}, {{5,1},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> b; b = a;
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	// (2) Move assignment
-	gmd::point_kd_tree_set<2, intpair, Comp> c{{1,2}, {6,3}};
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
-	gmd::point_kd_tree_multimap<2, intpair, Comp> d; d = std::move(c);
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "d: "; for(intpair &x: d) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> c{{{1,2},0}, {{6,3},0}};
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> d; d = std::move(c);
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "d: "; for(int2pair &x: d) std::cout << x << ' '; std::cout << '\n';
 
 	// (3) Initializer list assignment
-	a = {{7,1}, {7,2}, {7,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a = {{{7,1},0}, {{7,2},0}, {{7,1},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (3,2) (2,4) (5,1) (5,1)
-b: (3,2) (2,4) (5,1) (5,1)
-c: (1,2) (6,3)
+a: (3,2),0 (2,4),0 (5,1),0 (5,1),1
+b: (3,2),0 (2,4),0 (5,1),0 (5,1),1
+c: (1,2),0 (6,3),0
 c:
-d: (1,2) (6,3)
-a: (7,1) (7,1) (7,2)
+d: (1,2),0 (6,3),0
+a: (7,1),0 (7,1),1 (7,2),0
 ```
 
 ---
@@ -211,19 +211,19 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,1}, {3,1}, {4,2}};
-	gmd::point_kd_tree_multimap<2, intpair, Comp> b{{1,1}, {1,1}, {3,1}, {4,2}};
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,2},0}};
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> b{{{1,2},0}, {{1,2},1}, {{3,1},0}, {{4,2},0}};
 
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "a == b: " << (a == b ? "true" : "false") << '\n';
 	std::cout << "b != a: " << (b != a ? "true" : "false") << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (3,1) (4,2)
-b: (1,1) (1,1) (3,1) (4,2)
+a: (1,2),0 (3,1),0 (4,2),0
+b: (1,2),0 (1,2),1 (3,1),0 (4,2),0
 a == b: false
 b != a: true
 ```
@@ -275,33 +275,33 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset_a = gmd::point_kd_tree_multimap<2, intpair, Comp>;
-	using kdtmset_b = gmd::point_kd_tree_multimap<1, intpair, Comp>;
-	kdtmset_a a;
-	kdtmset_b b;
+	using kdtmmap_a = gmd::point_kd_tree_multimap<2, intpair, int, Comp>;
+	using kdtmmap_b = gmd::point_kd_tree_multimap<2, intpair, int, Comp>;
+	kdtmmap_a a;
+	kdtmmap_b b;
 
-	kdtmset_a::key_compare x = a.key_comp();
-	kdtmset_b::value_equal y = b.value_eq();
+	kdtmmap_a::key_compare x = a.key_comp();
+	kdtmmap_b::value_equal y = b.value_eq();
 	std::cout << "a (d=0, (1,2) < (2,3)): " << (x(0, {1,2}, {2,3}) ? "true" : "false") << '\n';
-	std::cout << "b ((1,2) == (1,3)): " << (y({1,2}, {1,3}) ? "true" : "false") << '\n';
+	std::cout << "b ((1,2) == (1,3)): " << (y({{1,2},0}, {{1,3},1}) ? "true" : "false") << '\n';
 
-	kdtmset_a::allocator_type z = a.get_allocator();
-	intpair *i = std::allocator_traits<kdtmset_a::allocator_type>::allocate(z, 2);
-	new(&i[0]) intpair(1,2);
-	new(&i[1]) intpair(3,2);
+	kdtmmap_a::allocator_type z = a.get_allocator();
+	int2pair *i = std::allocator_traits<kdtmmap_a::allocator_type>::allocate(z, 2);
+	new(&i[0]) int2pair({1,2},0);
+	new(&i[1]) int2pair({3,2},1);
 	std::cout << "i[0]: " << i[0] << '\n';
 	std::cout << "i[1]: " << i[1] << '\n';
-	i[0].~intpair();
-	i[1].~intpair();
-	std::allocator_traits<kdtmset_a::allocator_type>::deallocate(z, i, 2);
+	i[0].~int2pair();
+	i[1].~int2pair();
+	std::allocator_traits<kdtmmap_a::allocator_type>::deallocate(z, i, 2);
 }
 ```
 ##### Output
 ```
 a (d=0, (1,2) < (2,3)): true
 b ((1,2) == (1,3)): false
-i[0]: (1,2)
-i[1]: (3,2)
+i[0]: (1,2),0
+i[1]: (3,2),1
 ```
 
 ---
@@ -342,15 +342,15 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
-	kdtmset a{{1,6}, {8,5}, {4,2}, {3,2}, {7,3}, {4,2}};
+	using kdtmmap = gmd::point_kd_tree_multimap<2, intpair, int, Comp>;
+	kdtmmap a{{{1,6},0}, {{8,5},0}, {{4,2},0}, {{3,2},0}, {{7,3},0}, {{4,2},1}};
 
 	std::cout << "a: ";
-	for(kdtmset::traversor x = a.begin(); x != a.end(); ++x)
+	for(kdtmmap::traversor x = a.begin(); x != a.end(); ++x)
 		std::cout << *x << " ";
 	std::cout << "\n";
 
-	kdtmset::traversor x = a.root();
+	kdtmmap::traversor x = a.root();
 	std::cout << "root: " << *x << "\n";
 	if(x.greater()())
 		std::cout << "greater: " << *x.greater() << "\n";
@@ -358,9 +358,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (3,2) (1,6) (4,2) (4,2) (7,3) (8,5)
-root: (4,2)
-greater: (7,3)
+a: (3,2),0 (1,6),0 (4,2),0 (4,2),1 (7,3),0 (8,5),0
+root: (4,2),0
+greater: (7,3),0
 ```
 
 ---
@@ -392,12 +392,12 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a;
 
 	std::cout << "empty: " << (a.empty() ? "true" : "false") << "\n";
 	std::cout << "size: " << a.size() << "\n";
-	a.insert({{3,2}, {1,3}, {2,4}, {3,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a.insert({{{3,2},0}, {{1,3},0}, {{2,4},0}, {{3,2},1}});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "empty: " << (a.empty() ? "true" : "false") << "\n";
 	std::cout << "size: " << a.size() << "\n";
 
@@ -408,10 +408,10 @@ int main(const int, const char **)
 ```
 empty: true
 size: 0
-a: (1,3) (2,4) (3,2) (3,2)
+a: (1,3),0 (2,4),0 (3,2),0 (3,2),1
 empty: false
 size: 4
-max_size: 576460752303423487
+max_size: 461168601842738790
 ```
 
 ---
@@ -437,17 +437,17 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{4,1}, {2,3}, {3,5}, {1,4}, {2,3}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{4,1},0}, {{2,3},0}, {{3,5},0}, {{1,4},0}, {{2,3},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	a.clear();
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 	std::cout << "size: " << a.size() << "\n";
 }
 ```
 ##### Output
 ```
-a: (1,4) (2,3) (4,1) (2,3) (3,5)
+a: (1,4),0 (2,3),0 (4,1),0 (2,3),1 (3,5),0
 a:
 size: 0
 ```
@@ -485,25 +485,25 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a, b;
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a, b;
 
-	auto y = a.insert({2,1});
+	auto y = a.insert({{2,1},0});
 	std::cout << "element: " << *y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	a.insert({{1,4}, {2,1}, {3,0}, {4,2}});
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a.insert({{{1,4},0}, {{2,1},1}, {{3,0},0}, {{4,2},0}});
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	b.insert(a.root(), a.cend());
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-element: (2,1)
-a: (2,1)
-a: (1,4) (2,1) (3,0) (2,1) (4,2)
-b: (2,1) (2,1) (3,0) (4,2)
+element: (2,1),0
+a: (2,1),0
+a: (1,4),0 (2,1),0 (3,0),0 (2,1),1 (4,2),0
+b: (2,1),0 (2,1),1 (3,0),0 (4,2),0
 ```
 
 ---
@@ -529,21 +529,21 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a;
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a;
 
-	auto y = a.emplace(2, 0);
+	auto y = a.emplace(intpair{2,0}, 0);
 	std::cout << "element: " << *y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	y = a.emplace(2, 0);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	a.emplace(intpair{2,0}, 1);
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-element: (2,0)
-a: (2,0)
-a: (2,0) (2,0)
+element: (2,0),0
+a: (2,0),0
+a: (2,0),0 (2,0),1
 ```
 
 ---
@@ -578,25 +578,26 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {2,4}, {3,1}, {4,5}, {5,3}, {4,5}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp>
+		a{{{1,2},0}, {{2,4},0}, {{3,1},0}, {{4,5},0}, {{5,3},0}, {{4,5},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	size_t y = a.erase({4,5});
-	std::cout << "# erased: " << y << '\n';
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "# erased: " << y << "\n";
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	y = a.erase({{1,3}, {2,4}, {5,3}});
 	std::cout << "# erased: " << y << "\n";
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (3,1) (1,2) (2,4) (4,5) (5,3) (4,5)
+a: (3,1),0 (1,2),0 (2,4),0 (4,5),0 (5,3),0 (4,5),1
 # erased: 2
-a: (1,2) (2,4) (3,1) (5,3)
+a: (1,2),0 (2,4),0 (3,1),0 (5,3),0
 # erased: 2
-a: (1,2) (3,1)
+a: (1,2),0 (3,1),0
 ```
 
 ---
@@ -625,28 +626,28 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,0}, {2,1}, {3,0}}, b{{2,1}};
-	gmd::point_kd_tree_multimap<2, intpair, Comp> c;
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,0},0}, {{2,1},0}, {{3,0},0}}, b{{{2,1},1}};
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> c;
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	b.transfer(a, a.root());
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	c.transfer(a, a.begin());
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ###### Output
 ```
-a: (1,0) (2,1) (3,0)
-b: (2,1)
-a: (1,0) (3,0)
-b: (2,1) (2,1)
-a: (3,0)
-c: (1,0)
+a: (1,0),0 (2,1),0 (3,0),0
+b: (2,1),1
+a: (1,0),0 (3,0),0
+b: (2,1),1 (2,1),0
+a: (3,0),0
+c: (1,0),0
 ```
 
 ---
@@ -672,31 +673,31 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_set<2, intpair, Comp> a{{1,1}, {2,4}, {3,2}};
-	gmd::point_kd_tree_multimap<2, intpair, Comp> b{{2,4}};
-	gmd::point_kd_tree_multimap<2, intpair, Comp> c{{2,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_map<2, intpair, int, Comp> a{{{1,1},0}, {{2,4},0}, {{3,2},0}};
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> b{{{2,4},1}};
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> c{{{2,4},2}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 
 	b.merge(a);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	c.merge(b);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (2,4) (3,2)
-b: (2,4)
-c: (2,4)
+a: (1,1),0 (2,4),0 (3,2),0
+b: (2,4),1
+c: (2,4),2
 a:
-b: (1,1) (2,4) (3,2) (2,4)
+b: (1,1),0 (2,4),1 (3,2),0 (2,4),0
 a:
-c: (1,1) (2,4) (3,2) (2,4) (2,4)
+c: (1,1),0 (2,4),2 (3,2),0 (2,4),0 (2,4),1
 ```
 
 ---
@@ -732,23 +733,23 @@ struct Comp2 {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, int2pair, Comp, false, Eq>
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp2, false>
 		a{{{1,3},0}, {{3,2},0}, {{3,2},1}, {{4,2},0}, {{5,1},0}};
-	gmd::point_kd_tree_map<2, intpair, int, Comp2, true> b{{{2,6},0}, {{3,1},0}};
-	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	gmd::point_kd_tree_set<2, int2pair, Comp, true, Eq> b{{{2,6},0}, {{3,1},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	a.swap(b);
-	std::cout << "a: "; for(int2pair &x: a) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
-	std::cout << "b: "; for(int2pair &x: b) std::cout << x.first << ',' << x.second << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,3),0 (3,2),0 (5,1),0 (3,2),1 (4,2),0
-b: (3,1),0 (2,6),0
-a: (2,6),0 (3,1),0
-b: (4,2),0 (5,1),0 (3,2),0 (1,3),0
+a: (4,2),0 (5,1),0 (3,2),0 (1,3),0 (3,2),1
+b: (2,6),0 (3,1),0
+a: (3,1),0 (2,6),0
+b: (3,2),0 (1,3),0 (4,2),0 (5,1),0
 ```
 
 ---
@@ -774,39 +775,39 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{2,1}};
-	a.insert({{3,0}, {5,4}, {5,4}, {6,3}, {7,5}});
-	a.print([](const intpair &i){ std::cout << i; });
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{2,1},0}};
+	a.insert({{{3,0},0}, {{5,4},0}, {{5,4},1}, {{6,3},0}, {{7,5},0}});
+	a.print([](const int2pair &i){ std::cout << i; });
 
 	a.balance(a.root().greater().greater());
-	std::cout << "\n"; a.print([](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print([](const int2pair &i){ std::cout << i; });
 
 	a.balance();
-	std::cout << "\n"; a.print([](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print([](const int2pair &i){ std::cout << i; });
 }
 ```
 ##### Output
 ```
-              ┌──╴(7,5)
-          ┌──╴(5,4)
-          │   └──╴(6,3)
-      ┌──╴(5,4)
-  ┌──╴(3,0)
-─╴(2,1)
+              ┌──╴(7,5),0
+          ┌──╴(5,4),1
+          │   └──╴(6,3),0
+      ┌──╴(5,4),0
+  ┌──╴(3,0),0
+─╴(2,1),0
 
-          ┌──╴(7,5)
-      ┌──╴(6,3)
-      │   │   ┌──╴(5,4)
-      │   └──╴(5,4)
-  ┌──╴(3,0)
-─╴(2,1)
+          ┌──╴(7,5),0
+      ┌──╴(6,3),0
+      │   │   ┌──╴(5,4),1
+      │   └──╴(5,4),0
+  ┌──╴(3,0),0
+─╴(2,1),0
 
-      ┌──╴(7,5)
-  ┌──╴(5,4)
-  │   └──╴(6,3)
-─╴(5,4)
-  └──╴(2,1)
-      └──╴(3,0)
+      ┌──╴(7,5),0
+  ┌──╴(5,4),1
+  │   └──╴(6,3),0
+─╴(5,4),0
+  └──╴(2,1),0
+      └──╴(3,0),0
 ```
 
 ---
@@ -837,8 +838,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {1,2}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}, {{1,2},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "count (1,1): " << a.count(intpair{1,1}) << "\n";
 	std::cout << "count (1,2): " << a.count(intpair{1,2}) << "\n";
@@ -846,7 +847,7 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (1,2) (3,1) (4,0)
+a: (1,2),0 (1,2),1 (3,1),0 (4,0),0
 count (1,1): 0
 count (1,2): 2
 ```
@@ -880,8 +881,8 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}, {{3,1},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "contains (3,1): " << (a.contains(intpair{3,1}) ? "true" : "false") << "\n";
 	std::cout << "contains (3,2): " << (a.contains(intpair{3,2}) ? "true" : "false") << "\n";
@@ -889,7 +890,7 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (3,1) (4,0) (3,1)
+a: (1,2),0 (3,1),0 (4,0),0 (3,1),1
 contains (3,1): true
 contains (3,2): false
 ```
@@ -926,26 +927,26 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
-	kdtmset a{{1,2}, {3,1}, {4,0}, {4,0}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	using kdtmmap = gmd::point_kd_tree_multimap<2, intpair, int, Comp>;
+	kdtmmap a{{{1,2},0}, {{3,1},0}, {{4,0},0}, {{4,0},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "find (1.0,3.0): ";
-	kdtmset::traversor y = a.find(doublepair{1.0,3.0});
+	kdtmmap::traversor y = a.find(doublepair{1.0,3.0});
 	if(y != a.end()) std::cout << "true - " << *y << "\n";
 	else             std::cout << "false\n";
 
 	std::cout << "find (4.0,0.0): ";
-	kdtmset::const_traversor z = a.find(doublepair{4.0,0.0});
+	kdtmmap::const_traversor z = a.find(doublepair{4.0,0.0});
 	if(z != a.cend()) std::cout << "true - " << *z << "\n";
 	else              std::cout << "false\n";
 }
 ```
 ##### Output
 ```
-a: (3,1) (1,2) (4,0) (4,0)
+a: (3,1),0 (1,2),0 (4,0),0 (4,0),1
 find (1.0,3.0): false
-find (4.0,0.0): true - (4,0)
+find (4.0,0.0): true - (4,0),0
 ```
 
 ---
@@ -974,12 +975,12 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,2}, {3,1}, {4,0}, {3,1}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,2},0}, {{3,1},0}, {{4,0},0}, {{3,1},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "equal_range (2,0): ";
 	auto y = a.equal_range(intpair{2,0});
-	if(y.empty()) std::cout << "no elements found\n";
+	if(y.empty()) std::cout << "no element found\n";
 	else          std::cout << "element found\n";
 
 	std::cout << "equal_range (3,1): ";
@@ -991,9 +992,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,2) (3,1) (4,0) (3,1)
-equal_range (2,0): no elements found
-equal_range (3,1): (3,1) (3,1)
+a: (1,2),0 (3,1),0 (4,0),0 (3,1),1
+equal_range (2,0): no element found
+equal_range (3,1): (3,1),0 (3,1),1
 ```
 
 ---
@@ -1039,8 +1040,9 @@ struct Measure {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{1,1}, {2,7}, {4,6}, {5,2}, {2,7}, {7,3}, {9,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp>
+		a{{{1,1},0}, {{2,7},0}, {{4,6},0}, {{5,2},0}, {{2,7},1}, {{6,7},0}, {{7,3},0}, {{9,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	auto y = a.nearest_neighbor<Measure>(intpair{3,3});
 	std::cout << "nearest neighbor (3,3): " << *y.first << " distance: " << y.second << '\n';
@@ -1051,9 +1053,9 @@ int main(const int, const char **)
 ```
 ##### Output
 ```
-a: (1,1) (2,7) (2,7) (4,6) (5,2) (7,3) (9,4)
-nearest neighbor (3,3): (5,2) distance: 2.23607
-nearest neighbor (7,6): (9,4) distance: 2.82843
+a: (1,1),0 (4,6),0 (2,7),0 (2,7),1 (5,2),0 (7,3),0 (9,4),0 (6,7),0
+nearest neighbor (3,3): (5,2),0 distance: 2.23607
+nearest neighbor (7,6): (6,7),0 distance: 1.41421
 ```
 
 ---
@@ -1082,21 +1084,21 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	using kdtmset = gmd::point_kd_tree_multimap<2, intpair, Comp>;
-	kdtmset a{{1,1}, {2,7}, {4,6}, {5,2}, {6,7}, {7,3}, {9,4}, {5,2}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	using kdtmmap = gmd::point_kd_tree_multimap<2, intpair, int, Comp>;
+	kdtmmap a{{{1,1},0}, {{2,7},0}, {{4,6},0}, {{5,2},0}, {{2,7},0}, {{6,7},0}, {{7,3},0}, {{9,4},0}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
-	kdtmset::range y = a.range_search(intpair{3,2}, intpair{7,6});
+	kdtmmap::range y = a.range_search(intpair{3,2}, intpair{7,6});
 	std::cout << "range search (3,2)-(7,6): ";
-	for(kdtmset::range::iterator z = y.begin(); z != y.end(); ++z)
+	for(kdtmmap::range::iterator z = y.begin(); z != y.end(); ++z)
 		std::cout << *z << ' ';
 	std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (4,6) (2,7) (5,2) (5,2) (7,3) (9,4) (6,7)
-range search (3,2)-(7,6): (5,2) (4,6) (7,3) (5,2)
+a: (1,1),0 (4,6),0 (2,7),0 (2,7),0 (5,2),0 (7,3),0 (9,4),0 (6,7),0
+range search (3,2)-(7,6): (5,2),0 (4,6),0 (7,3),0
 ```
 
 ---
@@ -1133,25 +1135,26 @@ struct Print {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multimap<2, intpair, Comp> a{{2,1}, {3,0}, {5,4}, {6,3}, {7,2}, {5,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp>
+		a{{{2,1},0}, {{3,0},0}, {{5,4},0}, {{6,3},0}, {{7,2},0}, {{5,4},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
 
 	std::cout << "\n"; a.print<true>(Print());
-	std::cout << "\n"; a.print(a.root().greater(), [](const intpair &i){ std::cout << i; });
+	std::cout << "\n"; a.print(a.root().greater(), [](const int2pair &i){ std::cout << i; });
 }
 ```
 ##### Output
 ```
-a: (3,0) (2,1) (5,4) (7,2) (6,3) (5,4)
+a: (3,0),0 (2,1),0 (5,4),0 (7,2),0 (6,3),0 (5,4),1
 
-      ┌──╴0 (5,4)
-  ┌──╴1 (6,3)
-  │   └──╴0 (7,2)
-─╴0 (5,4)
-  └──╴1 (2,1)
-      └──╴0 (3,0)
+      ┌──╴0 (5,4),1
+  ┌──╴1 (6,3),0
+  │   └──╴0 (7,2),0
+─╴0 (5,4),0
+  └──╴1 (2,1),0
+      └──╴0 (3,0),0
 
-  ┌──╴(5,4)
-┄╴(6,3)
-  └──╴(7,2)
+  ┌──╴(5,4),1
+┄╴(6,3),0
+  └──╴(7,2),0
 ```

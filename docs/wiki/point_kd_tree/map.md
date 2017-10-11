@@ -707,8 +707,9 @@ All four variants of *`point_kd_tree`* (*`set`*, *`map`*, *`multiset`*, *`multim
 #### Example
 ```cpp
 using intpair = std::pair<int, int>;
-std::ostream &operator<< (std::ostream &os, const intpair &i) {
-	os << '(' << i.first << ',' << i.second << ')'; return os; }
+using int2pair = std::pair<intpair, int>;
+std::ostream &operator<< (std::ostream &os, const int2pair &i) {
+	os << '(' << i.first.first << ',' << i.first.second << ')' << ',' << i.second; return os; }
 
 struct Comp {
 	bool operator() (unsigned short d, const intpair &i1, const intpair &i2) {
@@ -717,31 +718,31 @@ struct Comp {
 
 int main(const int, const char **)
 {
-	gmd::point_kd_tree_multiset<2, intpair, Comp> a{{1,1}, {1,1}, {2,4}, {3,2}};
-	gmd::point_kd_tree_map<2, intpair, Comp> b{{2,4}};
-	gmd::point_kd_tree_map<2, intpair, Comp> c{{2,4}};
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	gmd::point_kd_tree_multimap<2, intpair, int, Comp> a{{{1,1},0}, {{1,1},1}, {{2,4},0}, {{3,2},0}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> b{{{2,4},0}};
+	gmd::point_kd_tree_map<2, intpair, int, Comp> c{{{2,4},1}};
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 
 	b.merge(a);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "b: "; for(intpair &x: b) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "b: "; for(int2pair &x: b) std::cout << x << ' '; std::cout << '\n';
 
 	c.merge<true>(a);
-	std::cout << "a: "; for(intpair &x: a) std::cout << x << ' '; std::cout << '\n';
-	std::cout << "c: "; for(intpair &x: c) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "a: "; for(int2pair &x: a) std::cout << x << ' '; std::cout << '\n';
+	std::cout << "c: "; for(int2pair &x: c) std::cout << x << ' '; std::cout << '\n';
 }
 ```
 ##### Output
 ```
-a: (1,1) (1,1) (2,4) (3,2)
-b: (2,4)
-c: (2,4)
-a: (1,1) (2,4)
-b: (1,1) (2,4) (3,2)
+a: (1,1),0 (1,1),1 (2,4),0 (3,2),0
+b: (2,4),0
+c: (2,4),1
+a: (1,1),0 (2,4),0
+b: (1,1),1 (2,4),0 (3,2),0
 a:
-c: (1,1) (2,4)
+c: (1,1),0 (2,4),0
 ```
 
 ---
